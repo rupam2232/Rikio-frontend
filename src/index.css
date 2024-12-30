@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    font-family: Roboto, Arial, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f100; 
+  border-radius: 10px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(53, 40, 73);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(104, 71, 152);
+}
+
+@supports (scrollbar-color: auto) {
+  html {
+    scrollbar-width: calc(10px); 
+    scrollbar-color: rgb(53, 40, 73) #f1f1f100; 
+    }
+}
+  
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+
+  input[type="number"] {
+    /* Hides the arrows in most browsers */
+    -moz-appearance: textfield; /* Firefox */
+    -webkit-appearance: none; /* Chrome, Safari, Edge */
+    appearance: none;
+  }
+  
+  /* For Chrome and Safari to completely hide the up/down controls */
+  input[type="number"]::-webkit-inner-spin-button, 
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+  
+
+.light{
+    --background: 245, 245, 245 ;
+    --text: 0, 0, 0;
+    --border: 0, 0, 0;
+    --shadow: 0, 0, 0;
+    --secondary: 75, 85, 99 ;
+    background: rgba(var(--background));
+}
+
+.dark{
+    --background: 0, 0, 0;
+    --text: 245, 245, 245;
+    --border: 245, 245, 245;
+    --shadow: 0, 0, 0;
+    --secondary: 209, 213, 219 ;
+    background: rgba(var(--background));
+}
