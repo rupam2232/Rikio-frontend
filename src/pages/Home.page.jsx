@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import axios from '../utils/axiosInstance.js'
 import { timeAgo } from '../utils/timeAgo.js'
 import { videoDuration } from '../utils/videoDuration.js'
-import  formatNumbers  from '../utils/formatNumber.js'
+import formatNumbers from '../utils/formatNumber.js'
 import joinedAt from '../utils/joinedAt.js'
 import errorMessage from '../utils/errorMessage.js'
+import setAvatar from '../utils/setAvatar.js'
 import { useNavigate, NavLink, useSearchParams } from 'react-router-dom'
 import { VideoNotFound, Loading, Button } from '../components/index.js'
 import { BadgeCheck, Calendar } from 'lucide-react';
@@ -115,7 +116,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -125,7 +128,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -135,7 +140,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -145,7 +152,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +164,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -165,7 +176,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -175,7 +188,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -185,7 +200,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -195,7 +212,9 @@ const Home = () => {
                             <div className="flex gap-x-2">
                                 <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
                                 </div>
-                                <div className="w-full h-16 rounded-xl animate-pulse bg-muted/90">
+                                <div className="w-full h-16">
+                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
+                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
                                 </div>
                             </div>
                         </div>
@@ -220,19 +239,61 @@ const Home = () => {
                 {videos ? videos.map((video) => (
                     <div key={video._id} className="aspect-video rounded-xl">
                         <div className='relative mb-2 w-full pt-[56%]' aria-label='Thubmnail'>
-                            <NavLink to={`video/${video._id}`}>
+                            <NavLink to={`/video/${video._id}`}>
                                 <div className="absolute inset-0">
-                                    <img src={video.thumbnail} alt="thumbnail" className='w-full h-full object-cover rounded-md' />
+                                    <img src={video.thumbnail} alt={`${video.title} uploaded by @${video.owner.username}`} className='w-full h-full object-cover rounded-md' />
                                 </div>
                                 <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
                             </NavLink>
                         </div>
                         <div className="flex gap-x-2 cursor-pointer">
-                            <NavLink to={`@${video.owner.username}`} className="h-10 w-10 shrink-0">
-                                <img src={video.owner.avatar} alt={video.owner.fullName} className="h-full w-full rounded-full object-cover" />
-                            </NavLink>
+                            <HoverCard>
+                                <HoverCardTrigger>
+                                    <div onClick={() => navigate(`/@${video.owner.username}`)} className="cursor-pointer">
+                                        <Avatar className='h-10 w-10 shrink-0'>
+                                            <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
+                                        </Avatar>
+                                    </div>
+                                </HoverCardTrigger>
+                                <HoverCardContent>
+                                    <div className='w-full flex flex-col gap-x-2 cursor-auto'>
+                                        <div className="w-full flex justify-between items-center">
+                                            <NavLink className="w-min" to={`/@${video.owner.username}`}>
+                                                <Avatar className='h-12 w-12'>
+                                                    <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
+                                                </Avatar>
+                                            </NavLink>
+                                            {video.isSubscribed ? <Button onClick={() => toggleSubscribe(video.owner._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(video.owner._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
+                                        </div>
+                                        <div>
+                                            <h3 className='font-bold'>
+                                                <NavLink className="hover:underline" to={`/@${video.owner.username}`}>{video.owner.fullName}</NavLink> {video.owner.verified &&
+                                                    <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                        <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                    </span>
+                                                }</h3>
+                                            <p className='text-sm'>
+                                                <NavLink to={`/@${video.owner.username}`}>
+                                                    {`@${video.owner.username}`}
+                                                </NavLink>
+                                            </p>
+                                            <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{video.owner?.bio}</p>
+                                            <p className='text-sidebar-foreground/70 text-sm mt-2'>
+                                                <span className='text-primary font-bold mr-3'>
+                                                    {`${formatNumbers(video.owner.subscribers)}`}
+                                                </span>
+                                                Subscribers
+                                            </p>
+                                            <p className='text-sm mt-2'>
+                                                <Calendar className='w-4 h-4 mr-3 inline-block ' />
+                                                <span className='text-sidebar-foreground/70'>Joined {joinedAt(video.owner.createdAt)} </span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </HoverCardContent>
+                            </HoverCard>
                             <div className="w-full">
-                                <NavLink to={`video/${video._id}`} >
+                                <NavLink to={`/video/${video._id}`} >
                                     <h6 className="mb-1 font-semibold max-h-16 line-clamp-2 text-lg whitespace-normal" title={video.title}>{video.title}</h6>
                                     <p className="flex text-sm text-secondary-foreground" title={`${formatNumbers(video.views)} views | uploaded ${timeAgo(video.createdAt)}`}>
                                         <span>{formatNumbers(video.views)} views </span>
@@ -242,24 +303,24 @@ const Home = () => {
                                 <HoverCard>
                                     <HoverCardTrigger onClick={() => navigate(`/@${video.owner.username}`)} className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</HoverCardTrigger>
                                     <HoverCardContent>
-                                        <div className='w-full flex flex-col gap-x-2'>
+                                        <div className='w-full flex flex-col gap-x-2 cursor-auto'>
                                             <div className="w-full flex justify-between items-center">
-                                                <NavLink className="w-min" to={`@${video.owner.username}`}>
+                                                <NavLink className="w-min" to={`/@${video.owner.username}`}>
                                                     <Avatar className='h-12 w-12'>
-                                                        <AvatarImage src={video.owner.avatar} className="object-cover" />
+                                                        <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
                                                     </Avatar>
                                                 </NavLink>
                                                 {video.isSubscribed ? <Button onClick={() => toggleSubscribe(video.owner._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(video.owner._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
                                             </div>
                                             <div>
                                                 <h3 className='font-bold'>
-                                                    <NavLink className="hover:underline" to={`@${video.owner.username}`}>{video.owner.fullName}</NavLink> {video.owner.verified &&
+                                                    <NavLink className="hover:underline" to={`/@${video.owner.username}`}>{video.owner.fullName}</NavLink> {video.owner.verified &&
                                                         <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
                                                             <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
                                                         </span>
                                                     }</h3>
                                                 <p className='text-sm'>
-                                                    <NavLink to={`@${video.owner.username}`}>
+                                                    <NavLink to={`/@${video.owner.username}`}>
                                                         {`@${video.owner.username}`}
                                                     </NavLink>
                                                 </p>

@@ -18,8 +18,6 @@ export default function App() {
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.userData);
-  console.log( user )
-  // dispatch(login({userData:  {name: 'Rupam Mondal', avatar: 'https://example.com/avatar.jpg'} }));
 
   useEffect(() => {
     if (!user) { // Only fetch if the user is not already in Redux
@@ -33,7 +31,7 @@ export default function App() {
         })
         .catch((error) => {
           dispatch(logout());
-          console.log( error )
+          console.error( error )
         });
     }
   }, [dispatch, user]); // Only fetch if `user` is not already set
@@ -45,14 +43,6 @@ export default function App() {
         <SidebarInset>
           <Header />
           <Separator />
-          {/* <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-              <div className="aspect-video rounded-xl bg-muted/50" />
-              <div className="aspect-video rounded-xl bg-muted/50" />
-              <div className="aspect-video rounded-xl bg-muted/50" />
-            </div>
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-          </div> */}
           <main className='w-full h-full'>
             <Outlet />
           </main>
