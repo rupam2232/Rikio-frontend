@@ -3,9 +3,8 @@ import React from 'react'
 const Logo = ({ className }) => {
     return (
         <svg
-            className={className}
+            className={`${className} fill-fill`}
             viewBox="0 0 63 64"
-            fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <path
                 d="M47.25 47.458C55.9485 38.7595 55.9485 24.6565 47.25 15.958C38.5515 7.25952 24.4485 7.25952 15.75 15.958C7.05151 24.6565 7.05151 38.7595 15.75 47.458C24.4485 56.1565 38.5515 56.1565 47.25 47.458Z"

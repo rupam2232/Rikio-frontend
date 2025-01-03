@@ -3,7 +3,7 @@ import { VideoNotAvl } from './index.js'
 
 const VideoNotFound = () => {
   return (
-    <section className="w-full pb-[70px] sm:ml-[70px] sm:pb-0 lg:ml-0 overflow-hidden">
+    <section className="w-full h-full pb-[70px] sm:pb-0 overflow-hidden">
                 <div className="flex h-full items-center justify-center">
                     <div className="w-full max-w-sm text-center">
                         <p className="mb-3 w-full">

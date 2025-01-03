@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
-import { Input, Like, PlaylistBtn, SubscribeBtn, SubscribersBtn, Tick, Send, Button, Refresh, Loading } from "./index.js"
+import { Input, Like, PlaylistBtn, SubscribeBtn, SubscribersBtn, Tick, Send, Button, Refresh, Loading } from "../components/index.js"
 import { NavLink, useNavigate } from 'react-router-dom'
-import { formatViews } from '../utils/views.js'
+import formatNumbers from '../utils/formatNumber.js'
 import axios from '../utils/axiosInstance.js'
 import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
+import joinedAt from '../utils/joinedAt.js'
 import toast from "react-hot-toast"
+import { BadgeCheck, Calendar, UserRoundCheck, UserRoundPlus } from 'lucide-react'
+import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card"
+import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 
 const Video = () => {
     const [fullDesc, setFullDesc] = useState(false)
@@ -23,7 +31,7 @@ const Video = () => {
     const [isCommentSubmitting, setIsCommentSubmitting] = useState(false)
     const { videoId } = useParams()
     const navigate = useNavigate()
-    // console.log(comment)
+    
     const toggleSubscribe = () => {
         axios.post(`/subscription/c/${video.owner._id}`)
             .then((value) => {
@@ -65,6 +73,8 @@ const Video = () => {
     }
 
     console.log(comment)
+    console.log(video)
+    console.log(like)
 
     const addVideoComment = () => {
         setIsCommentSubmitting(true)
@@ -163,10 +173,10 @@ const Video = () => {
             .finally(() => setLoader(false));
     }, [])
 
-    if(loader){
-    return (<div className='w-full pb-[70px] lg:ml-0 sm:ml-[70px] sm:pb-0 flex justify-center items-center'>
-        <Loading className={`w-16 h-16`} left="-left-28" width="min-w-32" hieght="h-8"/>
-    </div>)
+    if (loader) {
+        return (<div className='w-full pb-[70px] sm:pb-0 flex justify-center items-center'>
+            <Loading className={`w-16 h-16`} left="-left-28" width="min-w-32" hieght="h-6" />
+        </div>)
     }
 
     if (error) {
@@ -175,15 +185,16 @@ const Video = () => {
 
     return (
         <>
-            <section className="w-full pb-[70px] sm:ml-[70px] sm:pb-0">
+            <section className="w-full">
                 <div className="flex w-full flex-wrap gap-4 p-4 lg:flex-nowrap">
                     <div className="col-span-12 w-full">
-                        <div className="relative mb-4 w-full pt-[56%]">
+                        <div className="relative aspect-video mb-4 w-full rounded-lg border border-primary/30">
                             <div className="absolute inset-0">
                                 <video
-                                    className="h-full w-full"
+                                    className="h-full w-full rounded-lg"
                                     controls
                                     autoPlay
+                                    controlsList='nodownload'
                                     poster={video.thumbnail}
                                 >
                                     <source
@@ -192,44 +203,31 @@ const Video = () => {
                                 </video>
                             </div>
                         </div>
-                        <div className="mb-4 w-full rounded-lg border p-4 duration-200">
+                        <div className="mb-4 w-full rounded-lg border border-primary/30 p-4 duration-200">
                             <div className="flex flex-wrap gap-y-2">
                                 <div className="w-full md:w-1/2 lg:w-full xl:w-1/2">
-                                    <h1 className="text-lg font-bold">{video.title}</h1>
-                                    <div className="flex text-sm text-gray-200">
-                                        <p>{formatViews(video.views)} views </p>
+                                    <h1 className="text-lg font-bold" title={video.title}>{video.title}</h1>
+                                    <div className="flex text-sm text-sidebar-foreground/95" title={`${formatNumbers(video.views)} views | uploaded ${timeAgo(video.createdAt)}`}>
+                                        <p>{formatNumbers(video.views)} views </p>
                                         <p className=" before:content-['•'] before:px-2">{timeAgo(video.createdAt)}</p>
                                     </div>
                                 </div>
                                 <div className="w-full md:w-1/2 lg:w-full xl:w-1/2">
                                     <div className="flex items-center justify-between gap-x-4 md:justify-end lg:justify-between xl:justify-end">
-                                        <div className="flex overflow-hidden rounded-lg border">
-                                            <button
-                                                className="group/btn flex items-center gap-x-2 border-r border-gray-700 px-4 py-1.5 after:content-[attr(data-like)] hover:bg-white/10 "
-                                                data-like={like.totalLikes}
-                                                data-like-alt={like.totalLikes + 1} onClick={toggleLike}>
-                                                <span className="flex w-5 items-center ">
-                                                    {like.isLiked ? <span className="inline-block w-5 shrink-0 text-[#ae7aff]"> <Like /> </span> : <span className="inline-block w-5 shrink-0 "> <Like /> </span>}
+                                        <div className="flex">
+                                            <Button
+                                                className="flex items-center border font-medium text-lg border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] [&_svg]:size-5"
+                                                data-like={formatNumbers(like.totalLikes)} onClick={toggleLike}>
+                                                <span className="inline-block">
+                                                    {like.isLiked ? <Like className='fill-primary text-background' /> : <Like className='fill-transparent' />}
                                                 </span>
-                                            </button>
+                                            </Button>
                                             {/* dislike button */}
                                             {/* <button
                                                 className="group/btn flex items-center gap-x-2 px-4 py-1.5 after:content-[attr(data-like)] hover:bg-white/10 focus:after:content-[attr(data-like-alt)]"
                                                 data-like="20"
                                                 data-like-alt="21">
                                                 <span className="inline-block w-5 group-focus/btn:text-[#ae7aff]">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke-width="1.5"
-                                                        stroke="currentColor"
-                                                        aria-hidden="true">
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            d="M7.5 15h2.25m8.024-9.75c.011.05.028.1.052.148.591 1.2.924 2.55.924 3.977a8.96 8.96 0 01-.999 4.125m.023-8.25c-.076-.365.183-.75.575-.75h.908c.889 0 1.713.518 1.972 1.368.339 1.11.521 2.287.521 3.507 0 1.553-.295 3.036-.831 4.398C20.613 14.547 19.833 15 19 15h-1.053c-.472 0-.745-.556-.5-.96a8.95 8.95 0 00.303-.54m.023-8.25H16.48a4.5 4.5 0 01-1.423-.23l-3.114-1.04a4.5 4.5 0 00-1.423-.23H6.504c-.618 0-1.217.247-1.605.729A11.95 11.95 0 002.25 12c0 .434.023.863.068 1.285C2.427 14.306 3.346 15 4.372 15h3.126c.618 0 .991.724.725 1.282A7.471 7.471 0 007.5 19.5a2.25 2.25 0 002.25 2.25.75.75 0 00.75-.75v-.633c0-.573.11-1.14.322-1.672.304-.76.93-1.33 1.653-1.715a9.04 9.04 0 002.86-2.4c.498-.634 1.226-1.08 2.032-1.08h.384"></path>
-                                                    </svg>
                                                 </span>
                                             </button> */}
                                         </div>
@@ -279,50 +277,88 @@ const Video = () => {
                                 </div>
                             </div>
                             <div className="mt-4 flex items-center justify-between">
-                                <div className="flex items-center gap-x-4 group cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
-                                    <div className="mt-2 h-12 w-12 shrink-0">
-                                        <img
-                                            src={setAvatar(video.owner.avatar)}
-                                            className="h-full w-full rounded-full object-cover" />
+                                <HoverCard>
+                                    <HoverCardTrigger>
+                                    <div className="flex items-center gap-x-4 group cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
+                                        <Avatar className='h-12 w-12'>
+                                            <AvatarImage src={video.owner.avatar} className="object-cover" />
+                                        </Avatar>
+                                        <div className="block">
+                                            <p className="font-bold relative">
+                                                {video.owner.fullName}{video.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                </span>}</p>
+                                            <p className="text-sm text-sidebar-foreground/95">{formatNumbers(sub.length)} Subscribers</p>
+                                        </div>
                                     </div>
-                                    <div className="block">
-                                        <p className="text-gray-200 font-bold relative">
-                                            <span className="absolute -top-8 hidden opacity-0 group-hover:opacity-100 group-hover:block transition-all bg-slate-600 text-white px-2 py-1 rounded-md text-xs">
-                                                {`@${video.owner.username}`}
-                                            </span>
-                                            {video.owner.fullName} {video.owner.verified && <span> verified</span>}</p>
-                                        <p className="text-sm text-gray-400">{formatViews(sub.length)} Subscribers</p>
-                                    </div>
-                                </div>
+                                    </HoverCardTrigger>
+                                    <HoverCardContent>
+                                        <div className='w-full flex flex-col gap-x-2'>
+                                            <div className="w-full flex justify-between items-center">
+                                                <NavLink className="w-min" to={`@${video.owner.username}`}>
+                                                    <Avatar className='h-12 w-12'>
+                                                        <AvatarImage src={video.owner.avatar} className="object-cover" />
+                                                    </Avatar>
+                                                </NavLink>
+                                                {subscribed ? <Button onClick={() => toggleSubscribe(video.owner._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={toggleSubscribe} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
+                                            </div>
+                                            <div>
+                                                <h3 className='font-bold'>
+                                                    <NavLink className="hover:underline" to={`@${video.owner.username}`}>{video.owner.fullName}</NavLink> {video.owner.verified &&
+                                                        <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                            <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                        </span>
+                                                    }</h3>
+                                                <p className='text-sm'>
+                                                    <NavLink to={`@${video.owner.username}`}>
+                                                        {`@${video.owner.username}`}
+                                                    </NavLink>
+                                                </p>
+                                                <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{video.owner?.bio}</p>
+                                                <p className='text-sidebar-foreground/70 text-sm mt-2'>
+                                                    <span className='text-primary font-bold mr-3'>
+                                                        {`${formatNumbers(sub.length)}`}
+                                                    </span>
+                                                    Subscribers
+                                                </p>
+                                                <p className='text-sm mt-2'>
+                                                    <Calendar className='w-4 h-4 mr-3 inline-block ' />
+                                                    <span className='text-sidebar-foreground/70'>Joined {joinedAt(video.owner.createdAt)} </span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </HoverCardContent>
+                                </HoverCard>
                                 <div className="block">
-                                    <button
-                                        className="group/btn mr-1 flex w-full items-center gap-x-2 bg-[#ae7aff] px-3 py-2 text-center font-bold text-black shadow-[5px_5px_0px_0px_#4f4e4e] transition-all duration-150 ease-in-out active:translate-x-[5px] active:translate-y-[5px] active:shadow-[0px_0px_0px_0px_#4f4e4e] sm:w-auto" onClick={toggleSubscribe}>
+                                    <Button
+                                        className="gap-0 group flex w-full items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary sm:w-auto" onClick={toggleSubscribe}>
                                         {subscribed ? <>
-                                            <span className=" w-5 inline-block">
-                                                <SubscribersBtn />
+                                            <span className=" w-5 inline-block group-hover:text-red-600">
+                                                <UserRoundCheck />
                                             </span>
-                                            <span>Subscribed</span></> :
+                                            <span data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className='w-20 group-hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)] group-hover:text-red-600'></span></> :
                                             <>
                                                 <span className="inline-block w-5">
-                                                    <SubscribeBtn />
+                                                    <UserRoundPlus />
                                                 </span>
-                                                <span>Subscribe</span>
+                                                <span className='w-20'>Subscribe</span>
                                             </>}
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
                             <hr className="my-4 border-white" />
-                            <div className={`text-sm cursor-pointer ${fullDesc ? "h-auto" : "h-5  line-clamp-1"}`} role="button" tabIndex="0" onClick={() => setFullDesc(!fullDesc)}>
-                                <p>
+                            <div className={`relative ${fullDesc ? "" : "pb-4"}`}  role="button" tabIndex="0" onClick={() => setFullDesc(!fullDesc)}>
+                                <p className={`relative text-sm cursor-pointer ${fullDesc ? "h-auto" : " line-clamp-3 "}`}>
                                     {video.description}
                                 </p>
+                                {/* <p className={`text-sm ${fullDesc ? "mt-4" : "absolute top-0 z-20 translate-y-16"}`}>{fullDesc ? "See less" : " See more..."}</p> */}
                             </div>
                         </div>
-                        <button className="peer w-full rounded-lg border p-4 text-left duration-200 hover:bg-white/5 focus:bg-white/5 sm:hidden"><h6 className="font-semibold">{formatViews(comment.totalComments)} Comments ...</h6></button>
+                        <button type='button' className="peer w-full border-primary/30 rounded-lg border p-4 text-left duration-200 sm:hidden"><h6 className="font-semibold">{formatNumbers(comment.totalComments)} Comments ...</h6></button>
                         <div
-                            className="fixed inset-x-0 top-full z-[60] h-[calc(100%-69px)] overflow-auto rounded-lg border bg-[#121212] p-4 duration-200 hover:top-[67px] peer-focus:top-[67px] sm:static sm:h-auto sm:max-h-[500px] lg:max-h-none">
+                            className="fixed border-primary/30 inset-x-0 top-full z-[60] h-[calc(100%-69px)] overflow-auto rounded-lg border p-4 duration-200 hover:top-[67px] peer-focus:top-[67px] sm:static sm:h-auto sm:max-h-[500px] lg:max-h-none">
                             <div className="block">
-                                <h6 className="mb-4 font-semibold">{formatViews(comment.totalComments)} Comments</h6>
+                                <h6 className="mb-4 font-semibold">{formatNumbers(comment.totalComments)} Comments</h6>
                                 <div className='relative'>
                                     <textarea
                                         type="text"
@@ -330,14 +366,14 @@ const Video = () => {
                                         placeholder="Add a Comment"
                                         value={postComment}
                                         autoComplete="off"
-                                        onChange={(e)=> setPostComment(e.target.value)}
+                                        onChange={(e) => setPostComment(e.target.value)}
                                         onKeyDown={handleEnter}
                                         maxLength="900"
                                     />
 
                                     <Button title="send" className={`px-[5px] py-[5px] absolute rounded-md right-1 top-1 bg-slate-700 ${(postComment === "") ? "brightness-75" : "brightness-100"} hover:bg-slate-600 transition-colors`} disabled={(postComment === "") ? true : false} onClick={addVideoComment}>
 
-                                        {isCommentSubmitting ? <Refresh height="24px" width="24px" fill="white" className={`animate-spin`}/> : <Send height="24px" width="24px" fill="white"  className={`relative`}/>}
+                                        {isCommentSubmitting ? <Refresh height="24px" width="24px" fill="white" className={`animate-spin`} /> : <Send height="24px" width="24px" fill="white" className={`relative`} />}
 
                                     </Button>
                                 </div>
@@ -359,7 +395,7 @@ const Video = () => {
                                         </p>
                                             <span className="text-sm before:content-['•'] before:px-1">{timeAgo(comment.createdAt)}</span>
                                             {comment.isEdited && <span>(Edited)</span>}
-                                            </div>
+                                        </div>
                                             : <p className="flex items-center text-gray-200">
                                                 {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span> verified</span>}
                                                 <span className="text-sm before:content-['•'] before:px-1">{timeAgo(comment.createdAt)}</span>

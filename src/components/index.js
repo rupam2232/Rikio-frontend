@@ -19,14 +19,32 @@ import ArrowBack from "../assets/ArrowBack.jsx"
 import Refresh from "../assets/Refresh.jsx"
 import Send from "../assets/Send.jsx"
 
-import Button from "./Button.jsx"
-import Input from "./Input.jsx"
-import Video from "./Video.jsx"
+import {Button} from "./ui/button.jsx"
+import {Input} from "./ui/input.jsx"
+import { 
+    DropdownMenu, 
+    DropdownMenuContent, 
+    DropdownMenuItem, 
+    DropdownMenuTrigger
+} from "./ui/dropdown-menu"
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarHeader,
+    SidebarProvider, 
+    SidebarTrigger,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+  } from "./ui/sidebar"
+import { useTheme } from "./ThemeProvider.jsx"
+import { ModeToggle } from "./ModeToggle.jsx"
 import Login from "./login.jsx"
 import Signup from "./Signup.jsx"
-import Home from "./Home.jsx"
-import Aside from "./Aside.jsx"
-import Header from "./Header.jsx"
 import VideoNotFound from "./VideoNotFound.jsx"
 import Loading from "./Loading.jsx"
 // import { LoaderIcon } from "react-hot-toast"
@@ -55,12 +73,26 @@ export {
 
     Button,
     Input,
-    Video,
+    DropdownMenu, 
+    DropdownMenuContent, 
+    DropdownMenuItem, 
+    DropdownMenuTrigger,
+    useTheme,
+    ModeToggle,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarHeader,
+    SidebarProvider, 
+    SidebarTrigger,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
     Login,
     Signup,
-    Home,
-    Aside,
-    Header,
     VideoNotFound,
     Loading
 }

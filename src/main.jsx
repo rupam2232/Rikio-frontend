@@ -4,11 +4,14 @@ import './index.css'
 import App from './App.jsx'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { Provider } from 'react-redux'
+import store from './store/store.js'
+import Authlayout from './components/AuthLayout.jsx'
 
-import {Home} from './components/index.js'
-import {Video} from "./components/index.js"
+import  Home  from './pages/Home.page.jsx'
 import Signup from './pages/Signup.page.jsx'
 import Login from './pages/Login.page.jsx'
+import Video from './pages/Video.page.jsx'
 
 const router = createBrowserRouter([
   {
@@ -18,23 +21,25 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />
-      },{
+      }, {
         path: '/video/:videoId',
         element: <Video />,
       }
     ]
-  },{
-      path: '/signup',
-      element: <Signup />,
-  },{
+  }, {
+    path: '/signup',
+    element: <Signup />,
+  }, {
     path: '/login',
     element: <Login />,
-}
+  }
 ])
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
-    <Toaster position='top-right'/>
-   </StrictMode>, 
+    <Provider store={store}>
+      <RouterProvider router={router} />
+      <Toaster position='top-right' />
+    </Provider>
+  </StrictMode>,
 )
