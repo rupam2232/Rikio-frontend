@@ -5,21 +5,31 @@ import { NavLink, useNavigate } from "react-router-dom"
 import { Logo, Button, Input } from "./index.js"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
+import { useDispatch } from 'react-redux'
+import { logout, login } from '../store/authSlice.js'
 
 function Login() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm()
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
-    const login = async (data) => {
+    const tryLogin = async (data) => {
         try {
-            await axios.post(`/users/login`, {
+            let loginResponse = await axios.post(`/users/login`, {
                 email: data.emailOrUsername,
                 username: data.emailOrUsername,
                 password: data.password
             })
+
+            dispatch(login({userData: loginResponse.data.data.user}))
+            toast.success(loginResponse.data.message,{
+                style:{ color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
             navigate("/")
 
         } catch (error) {
+            dispatch(logout())
             toast.error(errorMessage(error),{
                 style:{ color: "#ffffff", backgroundColor: "#333333" },
                 position: "top-center"
@@ -45,7 +55,7 @@ function Login() {
                         Sign Up
                     </NavLink>
                 </p>
-                <form onSubmit={handleSubmit(login)} className='mt-8'>
+                <form onSubmit={handleSubmit(tryLogin)} className='mt-8'>
                     <div className='space-y-5'>
                         <div className="w-full">
                             <Input
@@ -76,7 +86,7 @@ function Login() {
                         </div>
                         <Button
                             type="submit"
-                            classname="w-full"
+                            className="w-full"
                             disabled={isSubmitting}
                         >{isSubmitting ? "Loging..." : "Log in"}</Button>
                     </div>

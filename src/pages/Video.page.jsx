@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
-import { Input, Like, PlaylistBtn, SubscribeBtn, SubscribersBtn, Tick, Send, Button, Refresh, Loading } from "../components/index.js"
+import { Like, PlaylistBtn, Tick, Button,CommentOptions } from "../components/index.js"
 import { NavLink, useNavigate } from 'react-router-dom'
 import formatNumbers from '../utils/formatNumber.js'
 import axios from '../utils/axiosInstance.js'
@@ -9,13 +9,21 @@ import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import joinedAt from '../utils/joinedAt.js'
 import toast from "react-hot-toast"
-import { BadgeCheck, Calendar, UserRoundCheck, UserRoundPlus } from 'lucide-react'
+import { BadgeCheck, Calendar, UserRoundCheck, UserRoundPlus, SendHorizonal, Loader, LoaderCircle } from 'lucide-react'
 import {
     HoverCard,
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
 
@@ -25,18 +33,21 @@ const Video = () => {
     const [video, setVideo] = useState({})
     const [like, setLike] = useState({})
     const [sub, setSub] = useState([])
-    const [comment, setComment] = useState({})
+    const [allComment, setAllComment] = useState({})
     const [postComment, setPostComment] = useState("")
     const [subscribed, setSubscribed] = useState(false)
     const [loader, setLoader] = useState(true)
     const [error, setError] = useState("")
     const [isCommentSubmitting, setIsCommentSubmitting] = useState(false)
+    const [isEditing, setIsEditing] = useState(false)
+    const [editingComment, setEditingComment] = useState({})
     const { videoId } = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const textArea = useRef()
 
     const toggleSubscribe = (ownerId) => {
-        
+
         axios.post(`/subscription/c/${ownerId}`)
             .then((value) => {
                 if (value.data.message.toLowerCase() === "subscribed") {
@@ -45,13 +56,22 @@ const Video = () => {
                         axios.get(`/subscription/u/${ownerId}`)
                             .then((value) => {
                                 setSub(value.data.data.subscribers);
+                                let commentData = [...allComment.comments]
+                                let updatedComment = commentData.map((coment) => {
+                                    if (coment.ownerInfo._id === video.owner._id) {
+                                        coment.isSubscribed = true
+                                        coment.subscribers = value.data.data.subscribers.length
+                                    }
+                                    return coment
+                                })
+                                setAllComment({ ...allComment, comments: updatedComment })
                             })
                             .catch((error) => {
                                 console.error(error.message);
                             });
                     } else {
                         setSubscribed(subscribed)
-                        let commentData = [...comment.comments]
+                        let commentData = [...allComment.comments]
                         let updatedComment = commentData.map((coment) => {
                             if (coment.ownerInfo._id === ownerId) {
                                 coment.isSubscribed = true
@@ -59,7 +79,7 @@ const Video = () => {
                             }
                             return coment
                         })
-                        setComment({ ...comment, comments: updatedComment})
+                        setAllComment({ ...allComment, comments: updatedComment })
                     }
                 } else if (value.data.message.toLowerCase() === "unsubscribed") {
                     if (ownerId === video.owner._id) {
@@ -67,13 +87,22 @@ const Video = () => {
                         axios.get(`/subscription/u/${ownerId}`)
                             .then((value) => {
                                 setSub(value.data.data.subscribers);
+                                let commentData = [...allComment.comments]
+                                let updatedComment = commentData.map((coment) => {
+                                    if (coment.ownerInfo._id === video.owner._id) {
+                                        coment.isSubscribed = false
+                                        coment.subscribers = value.data.data.subscribers.length
+                                    }
+                                    return coment
+                                })
+                                setAllComment({ ...allComment, comments: updatedComment })
                             })
                             .catch((error) => {
                                 console.error(error.message);
                             });
                     } else {
                         setSubscribed(subscribed)
-                        let commentData = [...comment.comments]
+                        let commentData = [...allComment.comments]
                         let updatedComment = commentData.map((coment) => {
                             if (coment.ownerInfo._id === ownerId) {
                                 coment.isSubscribed = false
@@ -81,11 +110,11 @@ const Video = () => {
                             }
                             return coment
                         })
-                        setComment({ ...comment, comments: updatedComment})
+                        setAllComment({ ...allComment, comments: updatedComment })
                     }
                 } else {
                     setSubscribed(subscribed)
-                    setComment(comment)
+                    setAllComment(allComment)
                 }
             })
             .catch((error) => {
@@ -102,19 +131,24 @@ const Video = () => {
             })
     }
 
-    const addVideoComment = () => {
+    const handleCancelEdit = () => {
+        setIsEditing(false)
+        setPostComment("")
+    }
+
+    const handleVideoComment = () => {
         setIsCommentSubmitting(true)
+        if (!isEditing) {
         axios.post(`/comment/v/${videoId}`, { content: postComment })
             .then((_) => {
                 setPostComment("")
                 axios.get(`/comment/v/${videoId}`)
                     .then((value) => {
-                        setComment(value.data.data);
+                        setAllComment(value.data.data);
                     })
                     .catch((error) => {
                         console.error(error.message);
                     })
-                    .finally(() => setIsCommentSubmitting(false))
             })
             .catch((error) => {
                 if (error.status === 401) {
@@ -126,9 +160,34 @@ const Video = () => {
                     navigate("/login")
                 }
                 console.error(errorMessage(error));
-                setLike(like)
             })
             .finally(() => setIsCommentSubmitting(false))
+        } else {
+            axios.patch(`/comment/c/${editingComment._id}`, { content: postComment })
+                .then((_) => {
+                    setPostComment("")
+                    setIsEditing(false)
+                    axios.get(`/comment/v/${videoId}`)
+                        .then((value) => {
+                            setAllComment(value.data.data);
+                        })
+                        .catch((error) => {
+                            console.error(error.message);
+                        })
+                })
+                .catch((error) => {
+                    if (error.status === 401) {
+                        toast.error("You need to login first", {
+                            style: { color: "#ffffff", backgroundColor: "#333333" },
+                            position: "top-center"
+                        })
+                        dispatch(logout())
+                        navigate("/login")
+                    }
+                    console.error(errorMessage(error));
+                })
+                .finally(() => setIsCommentSubmitting(false))
+        }
     }
 
     const toggleLike = () => {
@@ -160,7 +219,7 @@ const Video = () => {
 
     const handleEnter = (e) => {
         if ((e.key === "Enter" && !e.nativeEvent.shiftKey) && postComment && !isCommentSubmitting) {
-            addVideoComment();
+            handleVideoComment();
         }
     };
 
@@ -173,7 +232,7 @@ const Video = () => {
 
                 axios.get(`/comment/v/${videoId}`)
                     .then((value) => {
-                        setComment(value.data.data);
+                        setAllComment(value.data.data);
                     })
                     .catch((error) => {
                         console.error(error.message);
@@ -204,8 +263,8 @@ const Video = () => {
     }, [])
 
     if (loader) {
-        return (<div className='w-full h-full flex justify-center items-center'>
-            <Loading className={`w-16 h-16`} left="-left-28" width="min-w-32" hieght="h-6" />
+        return (<div className ='w-full h-full flex justify-center items-center'>
+            <LoaderCircle className = "w-16 h-16 animate-spin" />
         </div>)
     }
 
@@ -216,6 +275,7 @@ const Video = () => {
     return (
         <>
             <section className="w-full">
+                {/* <commentOptions className="yoo"></commentOptions> */}
                 <div className="flex w-full flex-wrap gap-4 p-4 lg:flex-nowrap">
                     <div className="col-span-12 w-full">
                         <div className="relative aspect-video mb-4 w-full rounded-lg border border-primary/30">
@@ -236,8 +296,8 @@ const Video = () => {
                         <div className="mb-4 w-full rounded-lg border border-primary/30 p-4 duration-200">
                             <div className="flex flex-wrap gap-y-2">
                                 <div className="w-full md:w-1/2 lg:w-full xl:w-1/2">
-                                    <h1 className="text-lg font-bold" title={video.title}>{video.title}</h1>
-                                    <div className="flex text-sm text-sidebar-foreground/95" title={`${formatNumbers(video.views)} views | uploaded ${timeAgo(video.createdAt)}`}>
+                                    <h1 className="text-lg w-min font-bold" title={video.title}>{video.title}</h1>
+                                    <div className="flex text-sm w-max text-sidebar-foreground/95" title={`${formatNumbers(video.views)} views | uploaded ${timeAgo(video.createdAt)}`}>
                                         <p>{formatNumbers(video.views)} views </p>
                                         <p className=" before:content-['•'] before:px-2">{timeAgo(video.createdAt)}</p>
                                     </div>
@@ -249,7 +309,7 @@ const Video = () => {
                                                 className="flex items-center border font-medium text-lg border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] [&_svg]:size-5"
                                                 data-like={formatNumbers(like.totalLikes)} onClick={toggleLike}>
                                                 <span className="inline-block">
-                                                    {like.isLiked ? <Like className='fill-[#ae7aff] text-primary' /> : <Like className='fill-transparent' />}
+                                                    {like.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}
                                                 </span>
                                             </Button>
                                             {/* dislike button */}
@@ -384,11 +444,11 @@ const Video = () => {
                                 </p>
                             </div>
                         </div>
-                        <button type='button' className="peer w-full border-primary/30 rounded-lg border p-4 text-left text-primary duration-200 sm:hidden"><h6 className="font-semibold">{formatNumbers(comment.totalComments)} Comments ...</h6></button>
+                        <button type='button' className="peer w-full border-primary/30 rounded-lg border p-4 text-left text-primary duration-200 sm:hidden"><h6 className="font-semibold">{formatNumbers(allComment.totalComments)} Comments ...</h6></button>
                         <div
                             className="fixed bg-background border-primary/30 inset-x-0 top-full z-[60] h-[calc(100%-69px)] overflow-auto rounded-lg border p-4 duration-200 hover:top-[67px] peer-focus:top-[67px] sm:static sm:h-auto sm:max-h-[500px] lg:max-h-none">
                             <div className="block">
-                                <h6 className="mb-4 font-semibold">{formatNumbers(comment.totalComments)} Comments</h6>
+                                <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
                                 <div className='relative'>
                                     <textarea
                                         type="text"
@@ -399,18 +459,24 @@ const Video = () => {
                                         onChange={(e) => setPostComment(e.target.value)}
                                         onKeyDown={handleEnter}
                                         maxLength="900"
+                                        ref={textArea}
                                     />
+                                    <div className='flex items-center gap-3'>
+                                        <Button title="send"disabled={(postComment === "")||(postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
 
-                                    <Button title="send" className={`px-[5px] py-[5px] w-8 h-3/4 absolute rounded-md right-1 top-1 bg-slate-600 ${(postComment === "") ? "brightness-75" : "brightness-100"} hover:bg-slate-500 transition-colors`} disabled={(postComment === "") ? true : false} onClick={addVideoComment}>
+                                            {isCommentSubmitting ? <Loader height="24px" width="24px" className=
+                                            "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
 
-                                        {isCommentSubmitting ? <Refresh height="24px" width="24px" fill="white" className={`animate-spin`} /> : <Send height="24px" width="24px" fill="white" className={`relative`} />}
-
-                                    </Button>
+                                        </Button>
+                                        {isEditing && <Button title="cancel" onClick={handleCancelEdit}>
+                                            cancel
+                                        </Button>}
+                                    </div>
                                 </div>
                             </div>
                             <hr className="my-4 border-white" />
 
-                            {comment.comments ? comment.comments.length !== 0 ? comment.comments.map((comment) => (<div key={comment._id} className="block">
+                            {allComment.comments ? allComment.comments.length !== 0 ? allComment.comments.map((comment) => (<div key={comment._id} className="block">
                                 <div className="flex gap-x-4 relative">
                                     <HoverCard>
                                         <HoverCardTrigger>
@@ -511,8 +577,8 @@ const Video = () => {
                                         </div>
 
                                         <HoverCard>
-                                            <HoverCardTrigger>
-                                                <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
+                                            <HoverCardTrigger className='w-min block'>
+                                                <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
                                             </HoverCardTrigger>
                                             <HoverCardContent>
                                                 <div className='w-full flex flex-col gap-x-2 cursor-auto'>
@@ -554,11 +620,7 @@ const Video = () => {
                                         <p className="mt-3 text-sm whitespace-pre-wrap line-clamp-5">{comment.content}</p>
                                     </div>
 
-                                    {comment.isCommentOwner && <div className='flex cursor-pointer px-[15px] py-2 rounded-full transition-colors hover:bg-primary/30 flex-col gap-1 h-max w-max absolute right-2'>
-                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
-                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
-                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
-                                    </div>}
+                                    {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} editingComment={setEditingComment} isEditing={setIsEditing} setComment={setPostComment} videoId={videoId} setAllComment={setAllComment} />}
 
                                 </div>
                                 <hr className="my-4 border-primary" />

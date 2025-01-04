@@ -4,9 +4,8 @@ import errorMessage from "../utils/errorMessage.js"
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button, Input, Logo, ArrowBack, Refresh } from './index.js'
 import toast from "react-hot-toast"
-
-// import {login} from '../store/authSlice'
-// import {useDispatch} from 'react-redux'
+import { useDispatch } from 'react-redux'
+import { logout, login } from '../store/authSlice.js'
 
 function Signup() {
     const [fullName, setFullName] = useState("");
@@ -32,6 +31,7 @@ function Signup() {
     const step = searchParams.get('step') || "1";
     const [step1, setStep1] = useState(false);
     const [step2, setStep2] = useState(false);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (step !== "1" && step !== "2" && step !== "3") {
@@ -292,12 +292,14 @@ function Signup() {
                     style: { color: "#ffffff", backgroundColor: "#333333" },
                     position: "top-center"
                 })
+                dispatch(login({ userData: loginResponse.data.data.user }))
                 navigate("/")
             } catch (error) {
                 toast.error(errorMessage(error), {
                     style: { color: "#ffffff", backgroundColor: "#333333" },
                     position: "top-center"
                 })
+                dispatch(logout())
                 for (let i = 0; i < 6; i++) {
                     newCode[i] = "";
                 }
@@ -309,6 +311,7 @@ function Signup() {
                 style: { color: "#ffffff", backgroundColor: "#333333" },
                 position: "top-center"
             })
+            dispatch(logout())
             for (let i = 0; i < 6; i++) {
                 newCode[i] = "";
             }

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   BadgeCheck,
   Bell,
@@ -29,9 +27,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "./ui/sidebar";
+import { useSelector } from "react-redux";
+import setAvatar from '../utils/setAvatar.js'
 
-export function NavUser({ user }) {
+export function NavUser() {
   const { isMobile } = useSidebar();
+  const user = useSelector((state) => state.auth.userData);
 
   return (
     <SidebarMenu>
@@ -42,12 +43,11 @@ export function NavUser({ user }) {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-full">
+                <AvatarImage src={setAvatar(user.avatar)} alt={user.fullName} className="object-cover"/>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
+                <span className="truncate font-semibold">{user.fullName}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -61,12 +61,12 @@ export function NavUser({ user }) {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <Avatar className="h-8 w-8 rounded-full">
+                  <AvatarImage src={setAvatar(user.avatar)} alt={user.fullName}  className="object-cover"/>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate font-semibold">{user.fullName}<span title="verified" className=" ml-1 cursor-pointer"><BadgeCheck className="inline-block size-4 fill-blue-600 text-background"/></span> 
+                  </span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>

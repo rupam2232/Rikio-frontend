@@ -1,8 +1,10 @@
 import { Logo, Input, Button, ModeToggle, SidebarTrigger } from './index'
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from "react-redux";
 
 const Header = () => {
+    const user = useSelector((state) => state.auth.userData);
     const navigate = useNavigate();
     const signUpPage = () => navigate("/signup");
     const loginPage = () => navigate("/login");
@@ -21,7 +23,7 @@ const Header = () => {
                     <Input type="search" placeholder="Search" className="border-zinc-500 pl-8 " />
 
                     <span className="peer-focus:opacity-0 transition-opacity absolute left-2.5 top-1/2 inline-block -translate-y-1/2 h-4 w-4">
-                        <Search className='w-full h-full'/>
+                        <Search className='w-full h-full' />
                     </span>
                     <Button title='search' className="ml-auto w-max block" type='button'>
                         <Search className="w-6 h-6" />
@@ -30,9 +32,8 @@ const Header = () => {
 
                 <div className=" flex w-max gap-3 sm:items-center sm:px-0 justify-center">
                     <ModeToggle className="border-zinc-500" title="toggle theme" />
-                    <Button title='Login' className="md:block hidden" onClick={loginPage}>Log in</Button>
-
-                    <Button title='Signup' className="md:block hidden" onClick={signUpPage}>Sign up</Button>
+                    {!user && <Button title='Login' className="md:block hidden" onClick={loginPage}>Log in</Button>}
+                    {!user && <Button title='Signup' className="md:block hidden" onClick={signUpPage}>Sign up</Button>}
                 </div>
             </nav>
         </header>

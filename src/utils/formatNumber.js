@@ -1,7 +1,7 @@
 export default function formatNumbers(number = 1) {
     if (isNaN(number) || number < 0) {
         console.error("Not a valid positive number");
-        return;
+        return 0;
     }
 
     if (number >= 1_000_000_000) {

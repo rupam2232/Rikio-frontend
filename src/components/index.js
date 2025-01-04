@@ -47,7 +47,7 @@ import Login from "./login.jsx"
 import Signup from "./Signup.jsx"
 import VideoNotFound from "./VideoNotFound.jsx"
 import Loading from "./Loading.jsx"
-// import { LoaderIcon } from "react-hot-toast"
+import CommentOptions from "./CommentOptions.jsx"
 
 export {
     Logo,
@@ -94,5 +94,6 @@ export {
     Login,
     Signup,
     VideoNotFound,
-    Loading
+    Loading,
+    CommentOptions
 }
