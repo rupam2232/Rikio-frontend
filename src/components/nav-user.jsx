@@ -9,7 +9,6 @@ import {
 
 import {
   Avatar,
-  AvatarFallback,
   AvatarImage,
 } from "./ui/avatar";
 import {
@@ -44,7 +43,7 @@ export function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-full">
-                <AvatarImage src={setAvatar(user.avatar)} alt={user.fullName} className="object-cover"/>
+                <AvatarImage src={setAvatar(user.avatar)} alt={`@${user.username}`} className="object-cover" />
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.fullName}</span>
@@ -62,10 +61,10 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-full">
-                  <AvatarImage src={setAvatar(user.avatar)} alt={user.fullName}  className="object-cover"/>
+                  <AvatarImage src={setAvatar(user.avatar)} alt={user.fullName} className="object-cover" />
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.fullName}<span title="verified" className=" ml-1 cursor-pointer"><BadgeCheck className="inline-block size-4 fill-blue-600 text-background"/></span> 
+                  <span className="truncate font-semibold">{user.fullName}{user.verified && <span title="verified" className=" ml-1 cursor-pointer"><BadgeCheck className="inline-block size-4 fill-blue-600 text-background" /></span>}
                   </span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>

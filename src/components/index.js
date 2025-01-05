@@ -48,6 +48,7 @@ import Signup from "./Signup.jsx"
 import VideoNotFound from "./VideoNotFound.jsx"
 import Loading from "./Loading.jsx"
 import CommentOptions from "./CommentOptions.jsx"
+import AccountHover from "./AccountHover.jsx"
 
 export {
     Logo,
@@ -95,5 +96,6 @@ export {
     Signup,
     VideoNotFound,
     Loading,
-    CommentOptions
+    CommentOptions,
+    AccountHover
 }

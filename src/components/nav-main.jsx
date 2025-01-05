@@ -4,23 +4,22 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  useSidebar,
 } from "./ui/sidebar";
 
 import { NavLink } from "react-router-dom";
 
 export function NavMain({ items }) {
+  const { toggleSidebar } = useSidebar()
   return (
 
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild tooltip={item.title}>
-              <NavLink to={item.url}>
+            <SidebarMenuButton asChild className={`text-lg sm:text-base [&>svg]:size-5 sm:[&>svg]:size-4`} onClick={toggleSidebar} tooltip={item.title}>
+              <NavLink to={item.url} >
                 <item.icon />
                 <span>{item.title}</span>
               </NavLink>

@@ -6,14 +6,9 @@ import formatNumbers from '../utils/formatNumber.js'
 import joinedAt from '../utils/joinedAt.js'
 import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
+import { AccountHover } from '../components/index.js'
 import { useNavigate, NavLink, useSearchParams } from 'react-router-dom'
-import { VideoNotFound, Loading, Button } from '../components/index.js'
-import { BadgeCheck, Calendar } from 'lucide-react';
-import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger,
-} from "@/components/ui/hover-card"
+import { VideoNotFound } from '../components/index.js'
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 import toast from "react-hot-toast"
 
@@ -247,51 +242,15 @@ const Home = () => {
                             </NavLink>
                         </div>
                         <div className="flex gap-x-2 cursor-pointer">
-                            <HoverCard>
-                                <HoverCardTrigger>
-                                    <div onClick={() => navigate(`/@${video.owner.username}`)} className="cursor-pointer">
-                                        <Avatar className='h-10 w-10 shrink-0'>
-                                            <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                        </Avatar>
-                                    </div>
-                                </HoverCardTrigger>
-                                <HoverCardContent>
-                                    <div className='w-full flex flex-col gap-x-2 cursor-auto'>
-                                        <div className="w-full flex justify-between items-center">
-                                            <NavLink className="w-min" to={`/@${video.owner.username}`}>
-                                                <Avatar className='h-12 w-12'>
-                                                    <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                                </Avatar>
-                                            </NavLink>
-                                            {video.isSubscribed ? <Button onClick={() => toggleSubscribe(video.owner._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(video.owner._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
-                                        </div>
-                                        <div>
-                                            <h3 className='font-bold'>
-                                                <NavLink className="hover:underline" to={`/@${video.owner.username}`}>{video.owner.fullName}</NavLink> {video.owner.verified &&
-                                                    <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                        <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                    </span>
-                                                }</h3>
-                                            <p className='text-sm'>
-                                                <NavLink to={`/@${video.owner.username}`}>
-                                                    {`@${video.owner.username}`}
-                                                </NavLink>
-                                            </p>
-                                            <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{video.owner?.bio}</p>
-                                            <p className='text-sidebar-foreground/70 text-sm mt-2'>
-                                                <span className='text-primary font-bold mr-3'>
-                                                    {`${formatNumbers(video.owner.subscribers)}`}
-                                                </span>
-                                                Subscribers
-                                            </p>
-                                            <p className='text-sm mt-2'>
-                                                <Calendar className='w-4 h-4 mr-3 inline-block ' />
-                                                <span className='text-sidebar-foreground/70'>Joined {joinedAt(video.owner.createdAt)} </span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </HoverCardContent>
-                            </HoverCard>
+                           
+                            <AccountHover user={{ ...video.owner, isSubscribed: video.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                <div onClick={() => navigate(`/@${video.owner.username}`)} className="cursor-pointer">
+                                    <Avatar className='h-10 w-10 shrink-0'>
+                                        <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
+                                    </Avatar>
+                                </div>
+                            </AccountHover>
+
                             <div className="w-full">
                                 <NavLink to={`/video/${video._id}`} >
                                     <h6 className="mb-1 font-semibold max-h-16 line-clamp-2 text-lg whitespace-normal" title={video.title}>{video.title}</h6>
@@ -300,45 +259,11 @@ const Home = () => {
                                         <span className=" before:content-['•'] before:px-2">{timeAgo(video.createdAt)}</span>
                                     </p>
                                 </NavLink>
-                                <HoverCard>
-                                    <HoverCardTrigger onClick={() => navigate(`/@${video.owner.username}`)} className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</HoverCardTrigger>
-                                    <HoverCardContent>
-                                        <div className='w-full flex flex-col gap-x-2 cursor-auto'>
-                                            <div className="w-full flex justify-between items-center">
-                                                <NavLink className="w-min" to={`/@${video.owner.username}`}>
-                                                    <Avatar className='h-12 w-12'>
-                                                        <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                                    </Avatar>
-                                                </NavLink>
-                                                {video.isSubscribed ? <Button onClick={() => toggleSubscribe(video.owner._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(video.owner._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
-                                            </div>
-                                            <div>
-                                                <h3 className='font-bold'>
-                                                    <NavLink className="hover:underline" to={`/@${video.owner.username}`}>{video.owner.fullName}</NavLink> {video.owner.verified &&
-                                                        <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                            <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                        </span>
-                                                    }</h3>
-                                                <p className='text-sm'>
-                                                    <NavLink to={`/@${video.owner.username}`}>
-                                                        {`@${video.owner.username}`}
-                                                    </NavLink>
-                                                </p>
-                                                <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{video.owner?.bio}</p>
-                                                <p className='text-sidebar-foreground/70 text-sm mt-2'>
-                                                    <span className='text-primary font-bold mr-3'>
-                                                        {`${formatNumbers(video.owner.subscribers)}`}
-                                                    </span>
-                                                    Subscribers
-                                                </p>
-                                                <p className='text-sm mt-2'>
-                                                    <Calendar className='w-4 h-4 mr-3 inline-block ' />
-                                                    <span className='text-sidebar-foreground/70'>Joined {joinedAt(video.owner.createdAt)} </span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </HoverCardContent>
-                                </HoverCard>
+                                
+                                <AccountHover user={{ ...video.owner, isSubscribed: video.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                    <span onClick={() => navigate(`/@${video.owner.username}`)} className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
+                                </AccountHover>
+
                             </div>
                         </div>
                     </div>

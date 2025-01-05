@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
-import { Like, PlaylistBtn, Tick, Button,CommentOptions } from "../components/index.js"
+import { Like, PlaylistBtn, Tick, Button, CommentOptions, AccountHover } from "../components/index.js"
 import { NavLink, useNavigate } from 'react-router-dom'
 import formatNumbers from '../utils/formatNumber.js'
 import axios from '../utils/axiosInstance.js'
@@ -10,20 +10,7 @@ import setAvatar from '../utils/setAvatar.js'
 import joinedAt from '../utils/joinedAt.js'
 import toast from "react-hot-toast"
 import { BadgeCheck, Calendar, UserRoundCheck, UserRoundPlus, SendHorizonal, Loader, LoaderCircle } from 'lucide-react'
-import {
-    HoverCard,
-    HoverCardContent,
-    HoverCardTrigger,
-} from "@/components/ui/hover-card"
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
 
@@ -139,29 +126,29 @@ const Video = () => {
     const handleVideoComment = () => {
         setIsCommentSubmitting(true)
         if (!isEditing) {
-        axios.post(`/comment/v/${videoId}`, { content: postComment })
-            .then((_) => {
-                setPostComment("")
-                axios.get(`/comment/v/${videoId}`)
-                    .then((value) => {
-                        setAllComment(value.data.data);
-                    })
-                    .catch((error) => {
-                        console.error(error.message);
-                    })
-            })
-            .catch((error) => {
-                if (error.status === 401) {
-                    toast.error("You need to login first", {
-                        style: { color: "#ffffff", backgroundColor: "#333333" },
-                        position: "top-center"
-                    })
-                    dispatch(logout())
-                    navigate("/login")
-                }
-                console.error(errorMessage(error));
-            })
-            .finally(() => setIsCommentSubmitting(false))
+            axios.post(`/comment/v/${videoId}`, { content: postComment })
+                .then((_) => {
+                    setPostComment("")
+                    axios.get(`/comment/v/${videoId}`)
+                        .then((value) => {
+                            setAllComment(value.data.data);
+                        })
+                        .catch((error) => {
+                            console.error(error.message);
+                        })
+                })
+                .catch((error) => {
+                    if (error.status === 401) {
+                        toast.error("You need to login first", {
+                            style: { color: "#ffffff", backgroundColor: "#333333" },
+                            position: "top-center"
+                        })
+                        dispatch(logout())
+                        navigate("/login")
+                    }
+                    console.error(errorMessage(error));
+                })
+                .finally(() => setIsCommentSubmitting(false))
         } else {
             axios.patch(`/comment/c/${editingComment._id}`, { content: postComment })
                 .then((_) => {
@@ -193,11 +180,10 @@ const Video = () => {
     const toggleLike = () => {
         axios.post(`/like/toggle/v/${videoId}`)
             .then((res) => {
-                console.log(res.data)
+                
                 if (res.data.message.trim().toLowerCase() === "liked") {
                     setLike({ _id: video._id, totalLikes: like.totalLikes + 1, isLiked: true })
                 } else if (res.data.message.trim().toLowerCase() === "like removed") {
-                    console.log("like removed")
                     setLike({ _id: video._id, totalLikes: like.totalLikes - 1, isLiked: false })
                 } else {
                     setLike(like)
@@ -263,8 +249,8 @@ const Video = () => {
     }, [])
 
     if (loader) {
-        return (<div className ='w-full h-full flex justify-center items-center'>
-            <LoaderCircle className = "w-16 h-16 animate-spin" />
+        return (<div className='w-full h-full flex justify-center items-center'>
+            <LoaderCircle className="w-16 h-16 animate-spin" />
         </div>)
     }
 
@@ -275,7 +261,6 @@ const Video = () => {
     return (
         <>
             <section className="w-full">
-                {/* <commentOptions className="yoo"></commentOptions> */}
                 <div className="flex w-full flex-wrap gap-4 p-4 lg:flex-nowrap">
                     <div className="col-span-12 w-full">
                         <div className="relative aspect-video mb-4 w-full rounded-lg border border-primary/30">
@@ -367,59 +352,20 @@ const Video = () => {
                                 </div>
                             </div>
                             <div className="mt-4 flex items-center justify-between">
-                                <HoverCard>
-                                    <HoverCardTrigger>
-                                        <div className="flex items-center gap-x-4 group cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
-                                            <Avatar className='h-12 w-12'>
-                                                <AvatarImage src={setAvatar(video.owner.avatar)} className="object-cover" />
-                                            </Avatar>
-                                            <div className="block">
-                                                <p className="font-bold relative">
-                                                    {video.owner.fullName}{video.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                        <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                    </span>}</p>
-                                                <p className="text-sm text-sidebar-foreground/95">{formatNumbers(sub.length)} Subscribers</p>
-                                            </div>
+                                <AccountHover user={{ ...video.owner, isSubscribed: subscribed, subscribers: sub.length }} toggleSubscribe={toggleSubscribe}>
+                                    <div className="flex items-center gap-x-4 group cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
+                                        <Avatar className='h-12 w-12'>
+                                            <AvatarImage src={setAvatar(video.owner.avatar)} className="object-cover" />
+                                        </Avatar>
+                                        <div className="block">
+                                            <p className="font-bold relative">
+                                                {video.owner.fullName}{video.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                </span>}</p>
+                                            <p className="text-sm text-sidebar-foreground/95">{formatNumbers(sub.length)} Subscribers</p>
                                         </div>
-                                    </HoverCardTrigger>
-                                    <HoverCardContent>
-                                        <div className='w-full flex flex-col gap-x-2 cursor-auto'>
-                                            <div className="w-full flex justify-between items-center">
-                                                <NavLink className="w-min" to={`/@${video.owner.username}`}>
-                                                    <Avatar className='h-12 w-12'>
-                                                        <AvatarImage src={setAvatar(video.owner.avatar)}
-                                                            alt={video.owner.username} className="object-cover" />
-                                                    </Avatar>
-                                                </NavLink>
-                                                {subscribed ? <Button onClick={() => toggleSubscribe(video.owner._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(video.owner._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
-                                            </div>
-                                            <div>
-                                                <h3 className='font-bold'>
-                                                    <NavLink className="hover:underline" to={`/@${video.owner.username}`}>{video.owner.fullName}</NavLink> {video.owner.verified &&
-                                                        <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                            <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                        </span>
-                                                    }</h3>
-                                                <p className='text-sm'>
-                                                    <NavLink to={`/@${video.owner.username}`}>
-                                                        {`@${video.owner.username}`}
-                                                    </NavLink>
-                                                </p>
-                                                <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{video.owner?.bio}</p>
-                                                <p className='text-sidebar-foreground/70 text-sm mt-2'>
-                                                    <span className='text-primary font-bold mr-3'>
-                                                        {`${formatNumbers(sub.length)}`}
-                                                    </span>
-                                                    Subscribers
-                                                </p>
-                                                <p className='text-sm mt-2'>
-                                                    <Calendar className='w-4 h-4 mr-3 inline-block ' />
-                                                    <span className='text-sidebar-foreground/70'>Joined {joinedAt(video.owner.createdAt)} </span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </HoverCardContent>
-                                </HoverCard>
+                                    </div>
+                                </AccountHover>
                                 <div className="block">
                                     <Button
                                         className="gap-0 group flex w-full items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary sm:w-auto" onClick={() => toggleSubscribe(video.owner._id)}>
@@ -452,7 +398,7 @@ const Video = () => {
                                 <div className='relative'>
                                     <textarea
                                         type="text"
-                                        className="w-full resize-none h-auto max-h-20 rounded-lg border bg-transparent border-primary/90 pl-2 pr-12 py-1 scroll-smooth scroll-m-0 placeholder-primary"
+                                        className="w-full resize-none h-auto max-h-20 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
                                         placeholder="Add a Comment"
                                         value={postComment}
                                         autoComplete="off"
@@ -462,10 +408,10 @@ const Video = () => {
                                         ref={textArea}
                                     />
                                     <div className='flex items-center gap-3'>
-                                        <Button title="send"disabled={(postComment === "")||(postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
+                                        <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
 
                                             {isCommentSubmitting ? <Loader height="24px" width="24px" className=
-                                            "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
+                                                "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
 
                                         </Button>
                                         {isEditing && <Button title="cancel" onClick={handleCancelEdit}>
@@ -478,145 +424,33 @@ const Video = () => {
 
                             {allComment.comments ? allComment.comments.length !== 0 ? allComment.comments.map((comment) => (<div key={comment._id} className="block">
                                 <div className="flex gap-x-4 relative">
-                                    <HoverCard>
-                                        <HoverCardTrigger>
-                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="flex h-11 w-11 shrink-0 cursor-pointer">
-                                                <img
-                                                    src={setAvatar(comment.ownerInfo.avatar)}
-                                                    alt={`@${comment.ownerInfo.username}`}
-                                                    className="w-full h-full rounded-full object-cover" />
-                                            </div>
-                                        </HoverCardTrigger>
-                                        <HoverCardContent>
-                                            <div className='w-full flex flex-col gap-x-2 cursor-auto'>
-                                                <div className="w-full flex justify-between items-center">
-                                                    <NavLink className="w-min" to={`/@${comment.ownerInfo.username}`}>
-                                                        <Avatar className='h-12 w-12'>
-                                                            <AvatarImage src={setAvatar(comment.ownerInfo.avatar)} alt={`@${comment.ownerInfo.username}`} className="object-cover" />
-                                                        </Avatar>
-                                                    </NavLink>
-                                                    {comment.isSubscribed ? <Button onClick={() => toggleSubscribe(comment.ownerInfo._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(comment.ownerInfo._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
-                                                </div>
-                                                <div>
-                                                    <h3 className='font-bold'>
-                                                        <NavLink className="hover:underline" to={`/@${comment.ownerInfo.username}`}>{comment.ownerInfo.fullName}</NavLink> {comment.ownerInfo.verified &&
-                                                            <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                                <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                            </span>
-                                                        }</h3>
-                                                    <p className='text-sm'>
-                                                        <NavLink to={`/@${comment.ownerInfo.username}`}>
-                                                            {`@${comment.ownerInfo.username}`}
-                                                        </NavLink>
-                                                    </p>
-                                                    <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{comment.ownerInfo?.bio}</p>
-                                                    <p className='text-sidebar-foreground/70 text-sm mt-2'>
-                                                        <span className='text-primary font-bold mr-3'>
-                                                            {`${formatNumbers(comment.subscribers)}`}
-                                                        </span>
-                                                        Subscribers
-                                                    </p>
-                                                    <p className='text-sm mt-2'>
-                                                        <Calendar className='w-4 h-4 mr-3 inline-block ' />
-                                                        <span className='text-sidebar-foreground/70'>Joined {joinedAt(comment.ownerInfo.createdAt)} </span>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </HoverCardContent>
-                                    </HoverCard>
+
+                                    <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="flex h-11 w-11 shrink-0 cursor-pointer">
+                                            <img
+                                                src={setAvatar(comment.ownerInfo.avatar)}
+                                                alt={`@${comment.ownerInfo.username}`}
+                                                className="w-full h-full rounded-full object-cover" />
+                                        </div>
+                                    </AccountHover>
                                     <div className="block">
 
                                         <div className="flex items-center">
-                                            <HoverCard>
-                                                <HoverCardTrigger>
-                                                    <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
-                                                        {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                            <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                        </span>}
-                                                    </div>
-                                                </HoverCardTrigger>
-                                                <HoverCardContent>
-                                                    <div className='w-full flex flex-col gap-x-2 cursor-auto'>
-                                                        <div className="w-full flex justify-between items-center">
-                                                            <NavLink className="w-min" to={`/@${comment.ownerInfo.username}`}>
-                                                                <Avatar className='h-12 w-12'>
-                                                                    <AvatarImage src={setAvatar(comment.ownerInfo.avatar)} alt={`@${comment.ownerInfo.username}`} className="object-cover" />
-                                                                </Avatar>
-                                                            </NavLink>
-                                                            {comment.isSubscribed ? <Button onClick={() => toggleSubscribe(comment.ownerInfo._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(comment.ownerInfo._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
-                                                        </div>
-                                                        <div>
-                                                            <h3 className='font-bold'>
-                                                                <NavLink className="hover:underline" to={`/@${comment.ownerInfo.username}`}>{comment.ownerInfo.fullName}</NavLink> {comment.ownerInfo.verified &&
-                                                                    <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                                        <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                                    </span>
-                                                                }</h3>
-                                                            <p className='text-sm'>
-                                                                <NavLink to={`/@${comment.ownerInfo.username}`}>
-                                                                    {`@${comment.ownerInfo.username}`}
-                                                                </NavLink>
-                                                            </p>
-                                                            <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{comment.ownerInfo?.bio}</p>
-                                                            <p className='text-sidebar-foreground/70 text-sm mt-2'>
-                                                                <span className='text-primary font-bold mr-3'>
-                                                                    {`${formatNumbers(comment.subscribers)}`}
-                                                                </span>
-                                                                Subscribers
-                                                            </p>
-                                                            <p className='text-sm mt-2'>
-                                                                <Calendar className='w-4 h-4 mr-3 inline-block ' />
-                                                                <span className='text-sidebar-foreground/70'>Joined {joinedAt(comment.ownerInfo.createdAt)} </span>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </HoverCardContent>
-                                            </HoverCard>
+                                            <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                                <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
+                                                    {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                        <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                    </span>}
+                                                </div>
+                                            </AccountHover>
+
                                             <span className="text-sm flex items-center before:content-['•'] before:px-1">{timeAgo(comment.createdAt)}</span>
                                             {comment.isEdited && <span className='text-sm ml-2'>(Edited)</span>}
                                         </div>
+                                        <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
+                                        </AccountHover>
 
-                                        <HoverCard>
-                                            <HoverCardTrigger className='w-min block'>
-                                                <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
-                                            </HoverCardTrigger>
-                                            <HoverCardContent>
-                                                <div className='w-full flex flex-col gap-x-2 cursor-auto'>
-                                                    <div className="w-full flex justify-between items-center">
-                                                        <NavLink className="w-min" to={`/@${comment.ownerInfo.username}`}>
-                                                            <Avatar className='h-12 w-12'>
-                                                                <AvatarImage src={setAvatar(comment.ownerInfo.avatar)} alt={`@${comment.ownerInfo.username}`} className="object-cover" />
-                                                            </Avatar>
-                                                        </NavLink>
-                                                        {comment.isSubscribed ? <Button onClick={() => toggleSubscribe(comment.ownerInfo._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(comment.ownerInfo._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
-                                                    </div>
-                                                    <div>
-                                                        <h3 className='font-bold'>
-                                                            <NavLink className="hover:underline" to={`/@${comment.ownerInfo.username}`}>{comment.ownerInfo.fullName}</NavLink> {comment.ownerInfo.verified &&
-                                                                <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                                </span>
-                                                            }</h3>
-                                                        <p className='text-sm'>
-                                                            <NavLink to={`/@${comment.ownerInfo.username}`}>
-                                                                {`@${comment.ownerInfo.username}`}
-                                                            </NavLink>
-                                                        </p>
-                                                        <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{comment.ownerInfo?.bio}</p>
-                                                        <p className='text-sidebar-foreground/70 text-sm mt-2'>
-                                                            <span className='text-primary font-bold mr-3'>
-                                                                {`${formatNumbers(comment.subscribers)}`}
-                                                            </span>
-                                                            Subscribers
-                                                        </p>
-                                                        <p className='text-sm mt-2'>
-                                                            <Calendar className='w-4 h-4 mr-3 inline-block ' />
-                                                            <span className='text-sidebar-foreground/70'>Joined {joinedAt(comment.ownerInfo.createdAt)} </span>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </HoverCardContent>
-                                        </HoverCard>
                                         <p className="mt-3 text-sm whitespace-pre-wrap line-clamp-5">{comment.content}</p>
                                     </div>
 

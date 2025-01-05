@@ -58,26 +58,16 @@ input[type="search"]::-webkit-search-cancel-button {
     appearance: none;
     margin: 0;
   }
+ 
+  .active{
+    color: hsl(var(--background));
+    background-color: hsl(var(--primary));
+  }
+  .active:hover{
+    color: hsl(var(--background)) !important;
+    background-color: hsl(var(--primary)) !important;
+  }
   
-
-/* .light{
-    --background: 245, 245, 245 ;
-    --text: 0, 0, 0;
-    --border: 0, 0, 0;
-    --shadow: 0, 0, 0;
-    --secondary: 75, 85, 99 ;
-    background: rgba(var(--background));
-}
-
-.dark{
-    --background: 0, 0, 0;
-    --text: 245, 245, 245;
-    --border: 245, 245, 245;
-    --shadow: 0, 0, 0;
-    --secondary: 209, 213, 219 ;
-    background: rgba(var(--background));
-} */
-
 
 @layer base {
   :root {

@@ -6,7 +6,8 @@ import {
   History,
   Video,
   FolderClosed,
-  UserRoundCheck
+  UserRoundCheck,
+  X
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -21,6 +22,8 @@ import {
   useSidebar,
 } from "./ui/sidebar";
 import { useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
+import { Button } from "./index.js"
 
 const items = [
   {
@@ -67,8 +70,8 @@ export function AppSidebar(props) {
       <SidebarHeader>
       </SidebarHeader>
 
-      <SidebarGroupAction title="Close" onClick={toggleSidebar} type="button" style={{ zIndex: 100, width: "2rem" }}>
-        <CircleX style={{ width: "100%" }} /> <span className="sr-only">Close</span>
+      <SidebarGroupAction title="Close" className="[&>svg]:size-6 sm:[&>svg]:size-5 z-30" onClick={toggleSidebar} type="button">
+        <X /> <span className="sr-only">Close</span>
       </SidebarGroupAction>
 
 
@@ -76,7 +79,12 @@ export function AppSidebar(props) {
         <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter>
-        {user && <NavUser />}
+        {user ? <NavUser /> :
+          <>
+            <Button><NavLink className="sm:hidden" to="/login">Login</NavLink></Button>
+            <Button><NavLink className="sm:hidden" to="/signup">Signup</NavLink></Button>
+          </>
+        }
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

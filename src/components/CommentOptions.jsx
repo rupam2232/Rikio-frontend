@@ -6,6 +6,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Trash2, EditIcon } from 'lucide-react'
 import { Button } from "./index.js"
 import axios from "../utils/axiosInstance"
@@ -26,26 +37,26 @@ const CommentOptions = ({ className, textarea, setAllComment, videoId, currentCo
 
   const deleteComment = () => {
     axios.delete(`/comment/c/${currentComment._id}`)
-            .then((_) => {
-                axios.get(`/comment/v/${videoId}`)
-                    .then((value) => {
-                        setAllComment(value.data.data);
-                    })
-                    .catch((error) => {
-                        console.error(error.message);
-                    })
-            })
-            .catch((error) => {
-                if (error.status === 401) {
-                    toast.error("You need to login first", {
-                        style: { color: "#ffffff", backgroundColor: "#333333" },
-                        position: "top-center"
-                    })
-                    dispatch(logout())
-                    navigate("/login")
-                }
-                console.error(errorMessage(error));
-            })
+      .then((_) => {
+        axios.get(`/comment/v/${videoId}`)
+          .then((value) => {
+            setAllComment(value.data.data);
+          })
+          .catch((error) => {
+            console.error(error.message);
+          })
+      })
+      .catch((error) => {
+        if (error.status === 401) {
+          toast.error("You need to login first", {
+            style: { color: "#ffffff", backgroundColor: "#333333" },
+            position: "top-center"
+          })
+          dispatch(logout())
+          navigate("/login")
+        }
+        console.error(errorMessage(error));
+      })
   }
   return (
     <DropdownMenu>
@@ -63,11 +74,25 @@ const CommentOptions = ({ className, textarea, setAllComment, videoId, currentCo
           </Button>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="py-0 px-0 w-max">
-          <Button className="bg-transparent w-max text-red-600 shadow-none hover:bg-transparent hover:text-red-600" onClick={deleteComment}>
-            <Trash2 />Delete
-          </Button>
-        </DropdownMenuItem>
+        <AlertDialog>
+          <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors">
+            <Button className="bg-transparent w-max text-red-600 shadow-none hover:bg-transparent hover:text-red-600" >
+              <Trash2 />Delete
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your comment.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={deleteComment}>Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </DropdownMenuContent>
     </DropdownMenu>
   )

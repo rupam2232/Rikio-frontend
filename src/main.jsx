@@ -12,6 +12,7 @@ import  Home  from './pages/Home.page.jsx'
 import Signup from './pages/Signup.page.jsx'
 import Login from './pages/Login.page.jsx'
 import Video from './pages/Video.page.jsx'
+import NotFound from './pages/NotFound.page'
 
 // limo
 
@@ -34,6 +35,9 @@ const router = createBrowserRouter([
   }, {
     path: '/login',
     element: <Login />,
+  },{
+    path: '*',
+    element: <NotFound />
   }
 ])
 
