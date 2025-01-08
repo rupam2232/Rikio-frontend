@@ -20,7 +20,7 @@ export default function App() {
   const user = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
-    if (!user) { // Only fetch if the user is not already in Redux
+    if (!user) {
       axios.get('/users/current-user')
         .then((res) => {
           if( res.data.data ) {
@@ -34,7 +34,7 @@ export default function App() {
           console.error( error )
         });
     }
-  }, [dispatch, user]); // Only fetch if `user` is not already set
+  }, [dispatch, user]);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

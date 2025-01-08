@@ -1,5 +1,4 @@
 import {
-  CircleX,
   Home,
   Settings,
   ThumbsUp,
@@ -23,7 +22,8 @@ import {
 } from "./ui/sidebar";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { Button } from "./index.js"
+import { Button, Logo } from "./index.js"
+import { useNavigate } from "react-router-dom";
 
 const items = [
   {
@@ -65,9 +65,13 @@ const items = [
 export function AppSidebar(props) {
   const user = useSelector((state) => state.auth.userData);
   const { toggleSidebar } = useSidebar()
+  const navigate = useNavigate()
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
+        <div className="w-10 shrink-0 cursor-pointer" title='Logo' aria-label='Logo' onClick={() => navigate("/")}>
+          <Logo />
+        </div>
       </SidebarHeader>
 
       <SidebarGroupAction title="Close" className="[&>svg]:size-6 sm:[&>svg]:size-5 z-30" onClick={toggleSidebar} type="button">
@@ -81,8 +85,8 @@ export function AppSidebar(props) {
       <SidebarFooter>
         {user ? <NavUser /> :
           <>
-            <Button><NavLink className="sm:hidden" to="/login">Login</NavLink></Button>
-            <Button><NavLink className="sm:hidden" to="/signup">Signup</NavLink></Button>
+            <Button className="md:hidden"><NavLink className="text-primary-foreground" to="/login">Login</NavLink></Button>
+            <Button className="md:hidden"><NavLink className="text-primary-foreground" to="/signup">Signup</NavLink></Button>
           </>
         }
       </SidebarFooter>

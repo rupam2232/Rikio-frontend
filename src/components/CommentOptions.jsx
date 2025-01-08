@@ -25,7 +25,7 @@ import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
 import toast from "react-hot-toast"
 
-const CommentOptions = ({ className, textarea, setAllComment, videoId, currentComment, setComment, isEditing, editingComment }) => {
+const CommentOptions = ({ className, textarea, setAllComment, parentContentId, currentComment, setComment, isEditing, editingComment }) => {
   const dispatch = useDispatch()
 
   const editComment = () => {
@@ -38,7 +38,7 @@ const CommentOptions = ({ className, textarea, setAllComment, videoId, currentCo
   const deleteComment = () => {
     axios.delete(`/comment/c/${currentComment._id}`)
       .then((_) => {
-        axios.get(`/comment/v/${videoId}`)
+        axios.get(`/comment/v/${parentContentId}`)
           .then((value) => {
             setAllComment(value.data.data);
           })
@@ -75,10 +75,10 @@ const CommentOptions = ({ className, textarea, setAllComment, videoId, currentCo
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <AlertDialog>
-          <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors">
-            <Button className="bg-transparent w-max text-red-600 shadow-none hover:bg-transparent hover:text-red-600" >
+          <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
+            <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
               <Trash2 />Delete
-            </Button>
+            </div>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>

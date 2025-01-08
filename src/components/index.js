@@ -49,6 +49,7 @@ import VideoNotFound from "./VideoNotFound.jsx"
 import Loading from "./Loading.jsx"
 import CommentOptions from "./CommentOptions.jsx"
 import AccountHover from "./AccountHover.jsx"
+import Comments from "./Comments.jsx"
 
 export {
     Logo,
@@ -97,5 +98,6 @@ export {
     VideoNotFound,
     Loading,
     CommentOptions,
-    AccountHover
+    AccountHover,
+    Comments
 }

@@ -2,21 +2,24 @@ import { Logo, Input, Button, ModeToggle, SidebarTrigger } from './index'
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from "react-redux";
+import { useIsMobile } from "../hooks/use-mobile.jsx"
 
 const Header = () => {
     const user = useSelector((state) => state.auth.userData);
     const navigate = useNavigate();
     const signUpPage = () => navigate("/signup");
     const loginPage = () => navigate("/login");
+    const isMobile = useIsMobile()
 
     return (
         <header className="sticky inset-x-0 top-0 z-50 w-full border-b px-4 bg-background/85 border-grid backdrop-blur-[12px] supports-[backdrop-filter]:bg-background/60">
             <nav className="mx-auto flex  justify-between  max-w-7xl  items-center py-2">
                 <div className="flex items-center gap-4">
                     <SidebarTrigger />
-                    <div className="mr-4 w-12 shrink-0 sm:w-16 cursor-pointer" title='Logo' aria-label='Logo' onClick={() => navigate("/")}>
+                    {isMobile && <div className="mr-4 w-12 shrink-0 sm:w-16 cursor-pointer" title='Logo' aria-label='Logo' onClick={() => navigate("/")}>
                         <Logo />
-                    </div>
+                    </div>}
+                    
                 </div>
                 <div className="md:absolute left-1/2 md:-translate-x-1/2 gap-1 flex items-center md:w-1/3">
 
