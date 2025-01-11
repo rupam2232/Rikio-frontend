@@ -1,5 +1,5 @@
 import React, { useId } from 'react'
-import { OpenEye, CloseEye } from "./index.js"
+import { Eye as OpenEye, EyeClosed as CloseEye } from 'lucide-react'
 
 const FormInput = React.forwardRef(function Input({
     type = "text",
@@ -42,9 +42,9 @@ const FormInput = React.forwardRef(function Input({
             />}
 
             {type === "password" && label === "Password: " && (see ? <button type='button' className='w-[10%] h-9 hover:bg-primary/10  cursor-pointer bg-primary/5 z-30 group transition-colors flex items-center justify-center' onClick={changeSee}>
-                <OpenEye classname="" />
+                <OpenEye />
             </button> : <button type='button' className='w-[10%] h-9 hover:bg-primary/10  cursor-pointer bg-primary/5 z-30 group transition-colors flex items-center justify-center' onClick={changeSee}>
-                <CloseEye classname="" />
+                <CloseEye />
             </button>)}
             </div>
         </>

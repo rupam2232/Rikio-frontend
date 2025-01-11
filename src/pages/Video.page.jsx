@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
-import { Like, PlaylistBtn, Tick, Button, AccountHover, Comments, ParseContents } from "../components/index.js"
+import { Like, Button, AccountHover, Comments, ParseContents } from "../components/index.js"
 import { useNavigate } from 'react-router-dom'
 import formatNumbers from '../utils/formatNumber.js'
 import axios from '../utils/axiosInstance.js'

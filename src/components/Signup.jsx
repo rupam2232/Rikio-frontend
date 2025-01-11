@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import axios from "../utils/axiosInstance.js"
 import errorMessage from "../utils/errorMessage.js"
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { Button, FormInput as Input, Logo, ArrowBack, Refresh } from './index.js'
+import { Button, FormInput as Input, Logo, ArrowBack } from './index.js'
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from 'react-redux'
 import { logout, login } from '../store/authSlice.js'
+import { RotateCw as Refresh } from 'lucide-react'
 
 function Signup() {
     const [fullName, setFullName] = useState("");
@@ -454,7 +455,7 @@ function Signup() {
                                 </div>
                                 <div className="w-ful flex justify-end">
                                     <Button className={`flex justify-center gap-2 w-max text-primary hover:bg-transparent shadow-none bg-transparent`} onClick={handleSendOtp} disabled={sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp"}>
-                                        <Refresh height="24px" width="24px" className={`${handleRefreshAnimation && "animate-spin"} fill-primary relative left-1`} />
+                                        <Refresh height="24px" width="24px" className={`${handleRefreshAnimation && "animate-spin"} relative left-1`} />
                                         {sendOtpBtn}
                                     </Button>
                                 </div>

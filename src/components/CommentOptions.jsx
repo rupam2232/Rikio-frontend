@@ -1,8 +1,8 @@
+import { useEffect } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -25,14 +25,16 @@ import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
 import toast from "react-hot-toast"
 
-const CommentOptions = ({ className, textarea, setAllComment, parentContentId, currentComment, setComment, isEditing, editingComment }) => {
+const CommentOptions = ({ className, textarea, setAllComment, parentContentId, currentComment, setPostComment, setIsEditing, setEditingComment }) => {
   const dispatch = useDispatch()
 
   const editComment = () => {
-    editingComment(currentComment)
-    isEditing(true)
-    setComment(currentComment.content)
-    textarea.current.focus()
+    setEditingComment(currentComment)
+    setIsEditing(true)
+    setPostComment(currentComment.content)
+    setTimeout(() => {
+      if (textarea.current) textarea.current.focus();
+    }, 0);
   }
 
   const deleteComment = () => {

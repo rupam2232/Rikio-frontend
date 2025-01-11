@@ -11,17 +11,6 @@ import { useIsMobile } from "../hooks/use-mobile.jsx"
 import toast from "react-hot-toast"
 import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
-// import {
-//     Drawer,
-//     DrawerClose,
-//     DrawerContent,
-//     DrawerOverlay,
-//     DrawerDescription,
-//     DrawerFooter,
-//     DrawerHeader,
-//     DrawerTitle,
-//     DrawerTrigger,
-// } from "@/components/ui/drawer"
 
 const Comments = ({
     parentContentId,
@@ -126,7 +115,7 @@ const Comments = ({
                 return;
             }
             setCommentLoader(true)
-            console.log(allComment, page, allComment?.totalPages)
+            
             isFetching.current = true;
             axios.get(`/comment/v/${parentContentId}?page=${page}&sortType=desc`)
                 .then((res) => {
@@ -156,8 +145,6 @@ const Comments = ({
 
     }, [page])
 
-    // console.log(allComment, page)
-
     if (isMobile) {
         return (
             <div
@@ -168,6 +155,7 @@ const Comments = ({
                 </div>
                 <div className='relative'>
                     <textarea
+                        aria-hidden="false"
                         type="text"
                         className="w-full resize-none h-28 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
                         placeholder="Add a Comment"
@@ -230,7 +218,7 @@ const Comments = ({
                                             </p>
                                         </div>
 
-                                        {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} editingComment={setEditingComment} isEditing={setIsEditing} setComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                        {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                     </div>
                                     <hr className="my-4 border-primary" />
@@ -272,7 +260,7 @@ const Comments = ({
                                             </p>
                                         </div>
 
-                                        {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} editingComment={setEditingComment} isEditing={setIsEditing} setComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                        {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                     </div>
                                     <hr className="my-4 border-primary" />
@@ -297,6 +285,7 @@ const Comments = ({
                         <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
                         <div className='relative'>
                             <textarea
+                                aria-hidden="false"
                                 type="text"
                                 className="w-full resize-none h-auto max-h-20 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
                                 placeholder="Add a Comment"
@@ -360,7 +349,7 @@ const Comments = ({
                                                 </p>
                                             </div>
 
-                                            {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} editingComment={setEditingComment} isEditing={setIsEditing} setComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                            {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                         </div>
                                         <hr className="my-4 border-primary" />
@@ -402,7 +391,7 @@ const Comments = ({
                                                 </p>
                                             </div>
 
-                                            {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} editingComment={setEditingComment} isEditing={setIsEditing} setComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                            {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                         </div>
                                         <hr className="my-4 border-primary" />

@@ -5,7 +5,6 @@ import Header from "./components/Header.jsx"
 import { useDispatch, useSelector } from 'react-redux'
 import { login, logout } from './store/authSlice.js'
 import axios from './utils/axiosInstance'
-
 import { ThemeProvider } from "./components/ThemeProvider"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "./components/ui/separator"
