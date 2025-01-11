@@ -22,7 +22,7 @@ import {
 } from "./ui/sidebar";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { Button, Logo } from "./index.js"
+import { Button, Logo, ModeToggle } from "./index.js"
 import { useNavigate } from "react-router-dom";
 
 const items = [
@@ -66,6 +66,7 @@ export function AppSidebar(props) {
   const user = useSelector((state) => state.auth.userData);
   const { toggleSidebar } = useSidebar()
   const navigate = useNavigate()
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -83,10 +84,11 @@ export function AppSidebar(props) {
         <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter>
+        <ModeToggle className="border-zinc-500 md:hidden" title="toggle theme"/>
         {user ? <NavUser /> :
           <>
-            <Button className="md:hidden"><NavLink className="text-primary-foreground" to="/login">Login</NavLink></Button>
-            <Button className="md:hidden"><NavLink className="text-primary-foreground" to="/signup">Signup</NavLink></Button>
+            <Button onClick={toggleSidebar} className="md:hidden"><NavLink className="text-primary-foreground w-full" to="/login">Login</NavLink></Button>
+            <Button onClick={toggleSidebar} className="md:hidden"><NavLink className="text-primary-foreground w-full" to="/signup">Signup</NavLink></Button>
           </>
         }
       </SidebarFooter>

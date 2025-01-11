@@ -33,10 +33,10 @@ const Header = () => {
                     </Button>
                 </div>
 
-                <div className=" flex w-max gap-3 sm:items-center sm:px-0 justify-center">
+                <div className=" flex w-max md:gap-3 gap-1 sm:items-center sm:px-0 justify-center">
                     <ModeToggle className="border-zinc-500 hidden md:inline-flex" title="toggle theme" />
-                    {!user && <Button title='Login' className="md:block hidden" onClick={loginPage}>Log in</Button>}
-                    {!user && <Button title='Signup' className="md:block hidden" onClick={signUpPage}>Sign up</Button>}
+                    {!user && <Button title='Login' className="md:block " onClick={loginPage}>Log in</Button>}
+                    {!user && <Button title='Signup' className="md:block " onClick={signUpPage}>Sign up</Button>}
                 </div>
             </nav>
         </header>

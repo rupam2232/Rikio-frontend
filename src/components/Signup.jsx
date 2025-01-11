@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react'
 import axios from "../utils/axiosInstance.js"
 import errorMessage from "../utils/errorMessage.js"
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { Button, Input, Logo, ArrowBack, Refresh } from './index.js'
+import { Button, FormInput as Input, Logo, ArrowBack, Refresh } from './index.js'
 import toast from "react-hot-toast"
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { logout, login } from '../store/authSlice.js'
 
 function Signup() {
@@ -32,6 +32,7 @@ function Signup() {
     const [step1, setStep1] = useState(false);
     const [step2, setStep2] = useState(false);
     const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.userData);
 
     useEffect(() => {
         if (step !== "1" && step !== "2" && step !== "3") {
@@ -179,12 +180,12 @@ function Signup() {
         }
     };
 
-    const counter = (message)=>{
+    const counter = (message) => {
         let counter = 30
         let clear = setInterval(() => {
             setSendOtpBtn(`${counter}s`);
             counter -= 1;
-            if(counter === 0){
+            if (counter === 0) {
                 setSendOtpBtn(message)
                 clearInterval(clear)
             }
@@ -325,153 +326,169 @@ function Signup() {
         navigator.clipboard.writeText("");
     }
 
-    return (
-        <div className="flex items-center justify-center w-full py-8">
-            <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
-                <Button type="button" title="back" bgcolor="transparent" px="px-1" py='py-1' rounded='rounded-full'  classname={`border-white text-2xl border-2 flex justify-center items-center font-bold absolute h-max w-max ${step === "1" ? "brightness-50" : ""}`} onClick={() => navigate(`/signup?step=${parseInt(step) - 1}`)} disabled={step === "1" ? true : false}>
-                    <ArrowBack height="24px" width="24px" fill="white" className={`relative left-1`}/>
-                </Button>
-                <div className="mb-2 flex justify-center">
-                    <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Logo' onClick={() => navigate("/")}>
-                        <Logo width="100%" />
-                    </span>
-                </div>
-                <h2 className="text-center text-2xl font-bold leading-tight">Sign up to create account</h2>
-                <p className="mt-2 text-center text-base text-secondary">
-                    Already have an account?&nbsp;
-                    <Link
-                        to="/login"
-                        className="font-medium text-primary transition-all duration-200 underline text-text"
-                    >
-                        Log In
-                    </Link>
-                </p>
-
-                <form onSubmit={SingUpForm}>
-                    <div className={`space-y-5 `}>
-                        <div className={`w-full ${step === "1" ? "" : "hidden"}`}>
-                            <Input
-                                label="Full Name: "
-                                placeholder="Enter your full name"
-                                name="fullName"
-                                value={fullName}
-                                onChange={handleFullNameChange}
-                                aria-invalid={errors.fullName ? "true" : "false"}
-                            />
-                            {isFullNameChecked && errors.fullName && <p role='alert' className="text-red-500 text-sm italic">{errors.fullName.message}</p>}
-                        </div>
-                        <div className={`w-full ${step === "1" ? "" : "hidden"}`} >
-                            <Input
-                                label="Email: "
-                                placeholder="Enter your email"
-                                type="email"
-                                name="email"
-                                value={email}
-                                onChange={handleEmailChange}
-                                aria-invalid={errors.email ? "true" : "false"}
-                            />
-                            {isEmailChecked && errors.email && <p role='alert' className="text-red-500 text-sm italic">{errors.email.message}</p>}
-                        </div>
-
-                        <div className={`w-full relative ${step === "1" ? "" : "hidden"}`}>
-                            <Input label="Username: "
-                                className="lowercase"
-                                autoComplete="username"
-                                placeholder="Create your unique username"
-                                name="username"
-                                value={username}
-                                onChange={handleUsernameChange}
-                                aria-invalid={(errors.username || !isUsernameValid) ? "true" : "false"}
-                            />
-                            {errors.username && <p role='alert' className="text-red-500 text-sm italic">{errors.username.message}</p>}
-                            {!errors.username && isUsernameChecked && (isUsernameValid ? <p className='text-sm text-green-600'>Username is available</p> : <p className='text-sm text-red-600'>Username is not available</p>)}
-                        </div>
-
-                        <div className={`w-full ${step === "2" ? "" : "hidden"}`}>
-                            <Input
-                                label="Password: "
-                                type="password"
-                                autoComplete="new-password"
-                                placeholder="Enter your password"
-                                name="password"
-                                value={password}
-                                onChange={handlePasswordChange}
-                                onCopy={copyFunction}
-                                aria-invalid={errors.password ? "true" : "false"}
-                            />
-                            {isPasswordChecked && errors.password && <p role='alert' className="text-red-500 text-sm italic">{errors.password.message}</p>}
-                        </div>
-                        <div className={`w-full ${step === "2" ? "" : "hidden"}`}>
-                            <Input
-                                label="Confirm Password: "
-                                type="password"
-                                autoComplete="new-password"
-                                placeholder="Confirm your password"
-                                name="confirmPassword"
-                                value={confirmPassword}
-                                onChange={handleConfirmPasswordChange}
-                                onCopy={copyFunction}
-                                aria-invalid={errors.confirmPassword ? "true" : "false"}
-                            />
-                            {isConfirmPasswordChecked && errors.confirmPassword && <p role='alert' className="text-red-500 text-sm italic">{errors.confirmPassword.message}</p>}
-                        </div>
-                        <div className={`w-full mb-10 ${step === "3" ? "" : "hidden"}`}>
-                            <h2 className='text-lg font-bold mb-3 text-center bg-gradient-to-r from-white to-slate-300 text-transparent bg-clip-text'>
-                                Verify Your Email <span className="underline">{`${email}`}</span>
-                            </h2>
-                            <p className='text-center text-gray-300 mb-6'>Enter the 6-digit code sent to your email address.</p>
-                            <div className='flex justify-between mb-4'>
-                                {otp.map((digit, index) => (
-                                    <input
-                                        key={index}
-                                        ref={(el) => (inputRefs.current[index] = el)}
-                                        type='number'
-                                        maxLength='6'
-                                        value={digit}
-                                        disabled={!isOtpSent}
-                                        onChange={(e) => handleOtpChange(index, e.target.value)}
-                                        onKeyDown={(e) => handleKeyDown(index, e)}
-                                        className='w-12 h-12 text-center text-2xl font-bold bg-gray-700 text-white border-2 border-gray-600 rounded-lg focus:border-white focus:outline-none'
-                                    />
-                                ))}
-                            </div>
-                            <div className="w-ful flex justify-end">
-                                <Button classname={`flex justify-center gap-2 w-max ${(sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp") ? "brightness-50" : ""}`} px="0" py='0' bgcolor='transparent'  onClick={handleSendOtp} disabled={sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp"}>
-                                    <Refresh height="24px" width="24px" fill="white" className={`${handleRefreshAnimation && "animate-spin"} relative left-1`}/>
-                                    {sendOtpBtn}
-                                </Button>
-                            </div>
-                        </div>
-
-                        <div className={`w-full justify-between flex ${step === "3" && "mb-10"}`}>
-
-
-                            {step === "1" && (
-                                <Button type="button" classname={`w-full ${(errors.fullName || errors.email || errors.username || !isUsernameValid || !fullName || !username || !email) ? "brightness-75" : ""}`} onClick={handleStep1} disabled={(errors.fullName || errors.email || errors.username || !isUsernameValid || !fullName || !username || !email)}>
-                                    Next
-                                </Button>
-                            )
-                            }
-
-                            {step === "2" && (
-                                <Button type="button" classname={`w-full ${(errors.password || errors.confirmPassword || !password || !confirmPassword) ? "brightness-75" : ""}`} onClick={handleStep2} disabled={(errors.password || errors.confirmPassword || !password || !confirmPassword)}>
-                                    Next
-                                </Button>
-                            )}
-
-                            {step === "3" && (
-                                <Button type="submit" classname={`w-full ${(errors.otp || isSubmitting || otp.some((field) => field?.trim() === "")) ? "brightness-75" : ""}`} disabled={errors.otp || isSubmitting || otp.some((field) => field?.trim() === "")}>
-                                    {isSubmitting ? "Creating account..." : "Verify & Create Account"}
-                                </Button>
-                            )}
-                        </div>
+    if (user) {
+        return (
+            <div className="flex h-full items-center justify-center w-full py-8">
+                <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
+                    <div className="mb-2 flex flex-col items-center space-y-4">
+                        <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Logo' onClick={() => navigate("/")}>
+                            <Logo width="100%" />
+                        </span>
+                    <p className='text-center'>You are already logged In.Please logout first to use this page.</p>
+                    <Button onClick={()=> navigate("/")}>Go back home</Button>
                     </div>
-                </form>
-                {step === "3" && <p className='text-sm font-light text-slate-400 absolute bottom-2'>If the OTP is not found in your inbox, then check in your spam folder.</p>}
+                </div>
             </div>
-        </div>
-    )
+        )
 
+    } else {
+        return (
+            <div className="flex h-full items-center justify-center w-full py-8">
+                <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
+                    <Button type="button" title="back" className={`text-2xl shadow-slate-500 bg-transparent hover:bg-transparent flex justify-center items-center font-bold absolute h-max w-max`} onClick={() => navigate(`/signup?step=${parseInt(step) - 1}`)} disabled={step === "1" ? true : false}>
+                        <ArrowBack height="24px" width="24px" className={`relative left-1 fill-primary`} />
+                    </Button>
+                    <div className="mb-2 flex justify-center">
+                        <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Logo' onClick={() => navigate("/")}>
+                            <Logo width="100%" />
+                        </span>
+                    </div>
+                    <h2 className="text-center text-2xl font-bold leading-tight">Sign up to create account</h2>
+                    <p className="mt-2 mb-2 text-center text-base text-primary/70">
+                        Already have an account?&nbsp;
+                        <Link
+                            to="/login"
+                            className="font-medium text-primary transition-all duration-200 underline text-text"
+                        >
+                            Log In
+                        </Link>
+                    </p>
+
+                    <form onSubmit={SingUpForm}>
+                        <div className={`space-y-5 `}>
+                            <div className={`w-full ${step === "1" ? "" : "hidden"}`}>
+                                <Input
+                                    label="Full Name: "
+                                    placeholder="Enter your full name"
+                                    name="fullName"
+                                    value={fullName}
+                                    onChange={handleFullNameChange}
+                                    aria-invalid={errors.fullName ? "true" : "false"}
+                                />
+                                {isFullNameChecked && errors.fullName && <p role='alert' className="text-red-500 text-sm italic">{errors.fullName.message}</p>}
+                            </div>
+                            <div className={`w-full ${step === "1" ? "" : "hidden"}`} >
+                                <Input
+                                    label="Email: "
+                                    placeholder="Enter your email"
+                                    type="email"
+                                    name="email"
+                                    value={email}
+                                    onChange={handleEmailChange}
+                                    aria-invalid={errors.email ? "true" : "false"}
+                                />
+                                {isEmailChecked && errors.email && <p role='alert' className="text-red-500 text-sm italic">{errors.email.message}</p>}
+                            </div>
+
+                            <div className={`w-full relative ${step === "1" ? "" : "hidden"}`}>
+                                <Input label="Username: "
+                                    className="lowercase"
+                                    autoComplete="username"
+                                    placeholder="Create your unique username"
+                                    name="username"
+                                    value={username}
+                                    onChange={handleUsernameChange}
+                                    aria-invalid={(errors.username || !isUsernameValid) ? "true" : "false"}
+                                />
+                                {errors.username && <p role='alert' className="text-red-500 text-sm italic">{errors.username.message}</p>}
+                                {!errors.username && isUsernameChecked && (isUsernameValid ? <p className='text-sm text-green-600'>Username is available</p> : <p className='text-sm text-red-600'>Username is not available</p>)}
+                            </div>
+
+                            <div className={`w-full ${step === "2" ? "" : "hidden"}`}>
+                                <Input
+                                    label="Password: "
+                                    type="password"
+                                    autoComplete="new-password"
+                                    placeholder="Enter your password"
+                                    name="password"
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    onCopy={copyFunction}
+                                    aria-invalid={errors.password ? "true" : "false"}
+                                />
+                                {isPasswordChecked && errors.password && <p role='alert' className="text-red-500 text-sm italic">{errors.password.message}</p>}
+                            </div>
+                            <div className={`w-full ${step === "2" ? "" : "hidden"}`}>
+                                <Input
+                                    label="Confirm Password: "
+                                    type="password"
+                                    autoComplete="new-password"
+                                    placeholder="Confirm your password"
+                                    name="confirmPassword"
+                                    value={confirmPassword}
+                                    onChange={handleConfirmPasswordChange}
+                                    onCopy={copyFunction}
+                                    aria-invalid={errors.confirmPassword ? "true" : "false"}
+                                />
+                                {isConfirmPasswordChecked && errors.confirmPassword && <p role='alert' className="text-red-500 text-sm italic">{errors.confirmPassword.message}</p>}
+                            </div>
+                            <div className={`w-full mb-10 ${step === "3" ? "" : "hidden"}`}>
+                                <h2 className='text-lg font-bold mb-3 text-center bg-gradient-to-r from-primary/70 to-primary text-transparent bg-clip-text'>
+                                    Verify Your Email <span className="underline">{`${email}`}</span>
+                                </h2>
+                                <p className='text-center text-primary/80 mb-6'>Enter the 6-digit code sent to your email address.</p>
+                                <div className='flex justify-between mb-4'>
+                                    {otp.map((digit, index) => (
+                                        <input
+                                            key={index}
+                                            ref={(el) => (inputRefs.current[index] = el)}
+                                            type='number'
+                                            maxLength='6'
+                                            value={digit}
+                                            disabled={!isOtpSent}
+                                            onChange={(e) => handleOtpChange(index, e.target.value)}
+                                            onKeyDown={(e) => handleKeyDown(index, e)}
+                                            className='w-12 h-12 text-center text-2xl font-bold bg-background/80 text-primary border-2 border-primary/30 rounded-lg focus:border-primary focus:outline-none'
+                                        />
+                                    ))}
+                                </div>
+                                <div className="w-ful flex justify-end">
+                                    <Button className={`flex justify-center gap-2 w-max text-primary hover:bg-transparent shadow-none bg-transparent`} onClick={handleSendOtp} disabled={sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp"}>
+                                        <Refresh height="24px" width="24px" className={`${handleRefreshAnimation && "animate-spin"} fill-primary relative left-1`} />
+                                        {sendOtpBtn}
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div className={`w-full justify-between flex ${step === "3" && "!mb-5"}`}>
+
+
+                                {step === "1" && (
+                                    <Button type="button" className={`w-full`} onClick={handleStep1} disabled={(errors.fullName || errors.email || errors.username || !isUsernameValid || !fullName || !username || !email)}>
+                                        Next
+                                    </Button>
+                                )
+                                }
+
+                                {step === "2" && (
+                                    <Button type="button" className={`w-full`} onClick={handleStep2} disabled={(errors.password || errors.confirmPassword || !password || !confirmPassword)}>
+                                        Next
+                                    </Button>
+                                )}
+
+                                {step === "3" && (
+                                    <Button type="submit" className={`w-full`} disabled={errors.otp || isSubmitting || otp.some((field) => field?.trim() === "")}>
+                                        {isSubmitting ? "Creating account..." : "Verify & Create Account"}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </form>
+                    {step === "3" && <p className='text-sm font-light text-primary/70 absolute bottom-2'>If the OTP is not found in your inbox, then check in your spam folder.</p>}
+                </div>
+            </div>
+        )
+    }
 
 }
 

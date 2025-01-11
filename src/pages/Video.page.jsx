@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
-import { Like, PlaylistBtn, Tick, Button, AccountHover, Comments } from "../components/index.js"
+import { Like, PlaylistBtn, Tick, Button, AccountHover, Comments, ParseContents } from "../components/index.js"
 import { useNavigate } from 'react-router-dom'
 import formatNumbers from '../utils/formatNumber.js'
 import axios from '../utils/axiosInstance.js'
@@ -307,12 +307,12 @@ const Video = () => {
                             </div>
                             <hr className="my-4 border-primary" />
                             <div className={`relative`} role="button" tabIndex="0" onClick={() => setFullDesc(!fullDesc)}>
-                                <p className={`relative text-sm cursor-pointer ${fullDesc ? "h-auto" : " line-clamp-3 "}`}>
-                                    {video.description}
+                                <p className={`relative text-sm cursor-pointer break-words break-all whitespace-pre-wrap transition-all ${fullDesc ? "h-auto" : " line-clamp-3 "}`}>
+                                    <ParseContents content={video.description} />
                                 </p>
                             </div>
                         </div>
-                        < Comments parentContentId={videoId} toggleSubscribe={toggleSubscribe} allComment={allComment} setAllComment={setAllComment}/>
+                        < Comments parentContentId={videoId} toggleSubscribe={toggleSubscribe} allComment={allComment} setAllComment={setAllComment} />
                     </div>
                 </div>
             </section>

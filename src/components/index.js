@@ -50,6 +50,8 @@ import Loading from "./Loading.jsx"
 import CommentOptions from "./CommentOptions.jsx"
 import AccountHover from "./AccountHover.jsx"
 import Comments from "./Comments.jsx"
+import FormInput from "./FormInput.jsx"
+import ParseContents from "./ParseContents.jsx"
 
 export {
     Logo,
@@ -99,5 +101,7 @@ export {
     Loading,
     CommentOptions,
     AccountHover,
-    Comments
+    Comments,
+    FormInput,
+    ParseContents
 }

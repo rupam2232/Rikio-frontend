@@ -28,14 +28,14 @@ const router = createBrowserRouter([
       }, {
         path: '/video/:videoId',
         element: <Video />,
+      }, {
+        path: '/signup',
+        element: <Signup />,
+      }, {
+        path: '/login',
+        element: <Login />,
       }
     ]
-  }, {
-    path: '/signup',
-    element: <Signup />,
-  }, {
-    path: '/login',
-    element: <Login />,
   },{
     path: '*',
     element: <NotFound />

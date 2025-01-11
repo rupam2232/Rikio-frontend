@@ -29,10 +29,10 @@ const CommentOptions = ({ className, textarea, setAllComment, parentContentId, c
   const dispatch = useDispatch()
 
   const editComment = () => {
-    textarea.current.focus()
     editingComment(currentComment)
     isEditing(true)
     setComment(currentComment.content)
+    textarea.current.focus()
   }
 
   const deleteComment = () => {

@@ -15,7 +15,7 @@ import { Button } from './index.js'
 const AccountHover = ({user, toggleSubscribe, children}) => {
     return (
         <HoverCard>
-            <HoverCardTrigger>
+            <HoverCardTrigger className='w-max inline-block'>
                 {children}
             </HoverCardTrigger>
             <HoverCardContent>
