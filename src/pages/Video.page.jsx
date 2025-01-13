@@ -12,6 +12,17 @@ import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const Video = () => {
     const [fullDesc, setFullDesc] = useState(false)
@@ -289,20 +300,39 @@ const Video = () => {
                                     </div>
                                 </AccountHover>
                                 <div className="block">
-                                    <Button
-                                        className="gap-0 py-0 px-0 xs:py-2 xs:px-4 group flex w-auto items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary" onClick={() => toggleSubscribe(video.owner._id)}>
-                                        {subscribed ? <>
-                                            <span className=" w-5 hidden xs:inline-block group-hover:text-red-600">
-                                                <UserRoundCheck />
+
+                                    {subscribed ?
+                                        <AlertDialog>
+                                            <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
+                                                <div role='button' className="gap-0 rounded-md py-2 px-4 group flex w-auto items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                                                    <span className=" w-5 hidden xs:inline-block group-hover:text-red-600">
+                                                        <UserRoundCheck />
+                                                    </span>
+                                                    <span data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className='w-20 after:text-sm group-hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)] group-hover:text-red-600'></span>
+                                                </div>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Unsubscribe {video.owner.fullName}?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently remove you from {video.owner.fullName}'s subscribers list.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => toggleSubscribe(video.owner._id)}>Unsubscribe</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog> :
+                                        <Button
+                                            className="gap-0 py-0 px-0 xs:py-2 xs:px-4 group flex w-auto items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary" onClick={() => toggleSubscribe(video.owner._id)}>
+                                            <span className="hidden xs:inline-block w-5">
+                                                <UserRoundPlus />
                                             </span>
-                                            <span data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className='w-20 after:text-xs after:xs:text-sm group-hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)] group-hover:text-red-600'></span></> :
-                                            <>
-                                                <span className="hidden xs:inline-block w-5">
-                                                    <UserRoundPlus />
-                                                </span>
-                                                <span className='w-20 text-xs xs:text-sm'>Subscribe</span>
-                                            </>}
-                                    </Button>
+                                            <span className='w-20 text-xs xs:text-sm'>Subscribe</span>
+                                        </Button>
+                                    }
+
                                 </div>
                             </div>
                             <hr className="my-4 border-primary" />

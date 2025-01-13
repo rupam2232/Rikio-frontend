@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +24,7 @@ import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
 import toast from "react-hot-toast"
 
-const CommentOptions = ({ className, textarea, setAllComment, parentContentId, currentComment, setPostComment, setIsEditing, setEditingComment }) => {
+const CommentOptions = ({ className, textarea, setAllComment, parentContentId, currentComment, setPostComment, setIsEditing, setEditingComment, setShowSingleComment }) => {
   const dispatch = useDispatch()
 
   const editComment = () => {
@@ -58,6 +57,9 @@ const CommentOptions = ({ className, textarea, setAllComment, parentContentId, c
           navigate("/login")
         }
         console.error(errorMessage(error));
+      })
+      .finally(()=>{
+        setShowSingleComment(null)
       })
   }
   return (

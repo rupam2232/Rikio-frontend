@@ -5,14 +5,25 @@ import {
     HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { NavLink } from 'react-router-dom'
-import { BadgeCheck, Calendar} from 'lucide-react'
+import { BadgeCheck, Calendar } from 'lucide-react'
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 import formatNumbers from '../utils/formatNumber.js'
 import joinedAt from '../utils/joinedAt.js'
 import setAvatar from '../utils/setAvatar.js'
 import { Button } from './index.js'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
-const AccountHover = ({user, toggleSubscribe, children}) => {
+const AccountHover = ({ user, toggleSubscribe, children }) => {
     return (
         <HoverCard>
             <HoverCardTrigger className='w-max inline-block'>
@@ -27,7 +38,26 @@ const AccountHover = ({user, toggleSubscribe, children}) => {
                                     alt={`@${user.username}`} className="object-cover" />
                             </Avatar>
                         </NavLink>
-                        {user.isSubscribed ? <Button onClick={() => toggleSubscribe(user._id)} data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className={`w-28 hover:bg-[#b689ff] bg-[#ae7aff] transition-colors text-primary hover:text-red-600 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)]`} /> : <Button onClick={() => toggleSubscribe(user._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
+
+                        {user.isSubscribed ?
+                            <AlertDialog>
+                                <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
+                                    <div role='button' data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className="gap-0 w-28 rounded-md py-2 px-4 group flex items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)] hover:text-red-600" />
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Unsubscribe {user.fullName}?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently remove you from {user.fullName}'s subscribers list.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => toggleSubscribe(user._id)}>Unsubscribe</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            : <Button onClick={() => toggleSubscribe(user._id)} className='w-28 hover:bg-[#b689ff] bg-[#ae7aff] text-primary'>Subscribe</Button>}
                     </div>
                     <div>
                         <h3 className='font-bold'>

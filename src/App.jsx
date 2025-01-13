@@ -50,32 +50,3 @@ export default function App() {
     </ThemeProvider>
   )
 }
-
-
-
-
-
-
-
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-//       <SidebarProvider defaultOpen={false} >
-//         <AppSidebar />
-//         <main className='w-full'>
-//           <Header />
-//           <div className='mx-auto max-w-[85rem]'>
-//             <div className="flex min-h-[calc(100vh-66px)] sm:min-h-[calc(100vh-82px)]">
-//               <Outlet />
-//             </div>
-//           </div>
-//         </main>
-//       </SidebarProvider>
-//     </ThemeProvider>
-//   )
-// }
-
-// export default App

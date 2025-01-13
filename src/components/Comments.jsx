@@ -5,7 +5,7 @@ import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import { timeAgo } from '../utils/timeAgo.js'
 import { BadgeCheck, SendHorizonal, Loader } from 'lucide-react'
-import { Button, CommentOptions, AccountHover, ParseContents } from "./index.js"
+import { Button, CommentOptions, AccountHover, ParseContents, ArrowBack } from "./index.js"
 import { useNavigate } from 'react-router-dom'
 import { useIsMobile } from "../hooks/use-mobile.jsx"
 import toast from "react-hot-toast"
@@ -24,9 +24,11 @@ const Comments = ({
     const [isEditing, setIsEditing] = useState(false)
     const [editingComment, setEditingComment] = useState({})
     const [page, setPage] = useState(1)
+    const [showSingleComment, setShowSingleComment] = useState(null)
     const observer = useRef()
     const textArea = useRef()
     const isFetching = useRef(false);
+    const singleComment = useRef();
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -61,15 +63,18 @@ const Comments = ({
         } else {
             axios.patch(`/comment/c/${editingComment._id}`, { content: postComment })
                 .then((_) => {
-                    setPostComment("")
                     setIsEditing(false)
-                    axios.get(`/comment/v/${parentContentId}`)
-                        .then((value) => {
-                            setAllComment(value.data.data);
-                        })
-                        .catch((error) => {
-                            console.error(error.message);
-                        })
+                    if (!showSingleComment) {
+                        axios.get(`/comment/v/${parentContentId}`)
+                            .then((value) => {
+                                setAllComment(value.data.data);
+                            })
+                            .catch((error) => {
+                                console.error(error.message);
+                            })
+                    } else {
+                        setShowSingleComment({...showSingleComment, content: postComment})
+                    }
                 })
                 .catch((error) => {
                     if (error.status === 401) {
@@ -82,11 +87,24 @@ const Comments = ({
                     }
                     console.error(errorMessage(error));
                 })
-                .finally(() => setIsCommentSubmitting(false))
+                .finally(() => {
+                    setIsCommentSubmitting(false)
+                    setPostComment("")
+                })
         }
     }
 
     const handleCancelEdit = () => {
+        setIsEditing(false)
+        setPostComment("")
+    }
+
+    const showFullComment = (comment) => {
+        setShowSingleComment(comment)
+    }
+
+    const closeFullComment = () => {
+        setShowSingleComment(null)
         setIsEditing(false)
         setPostComment("")
     }
@@ -115,7 +133,7 @@ const Comments = ({
                 return;
             }
             setCommentLoader(true)
-            
+
             isFetching.current = true;
             axios.get(`/comment/v/${parentContentId}?page=${page}&sortType=desc`)
                 .then((res) => {
@@ -145,150 +163,27 @@ const Comments = ({
 
     }, [page])
 
-    if (isMobile) {
-        return (
-            <div
-                className="p-4 rounded-lg border border-primary/30">
-
-                <div className="block">
-                    <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
-                </div>
-                <div className='relative'>
-                    <textarea
-                        aria-hidden="false"
-                        type="text"
-                        className="w-full resize-none h-28 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
-                        placeholder="Add a Comment"
-                        value={postComment}
-                        autoComplete="off"
-                        onChange={(e) => setPostComment(e.target.value)}
-                        maxLength="900"
-                        ref={textArea}
-                    />
-                    <div className='flex items-center gap-3'>
-                        <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
-
-                            {isCommentSubmitting ? <Loader height="24px" width="24px" className=
-                                "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
-
-                        </Button>
-                        {isEditing && <Button title="cancel" onClick={handleCancelEdit}>
-                            cancel
-                        </Button>}
-                    </div>
-                </div>
-                <hr className="my-4 border-primary" />
-                <div className=''>
-
-                    {allComment.comments ? allComment.comments.length !== 0 ? allComment.comments.map((comment, index) => {
-
-                        if (allComment.comments.length === index + 1) {
-                            return (
-                                <div key={comment._id} ref={lastBookElementRef} className="block">
-                                    <div className="flex xs:flex-row flex-col gap-x-4 relative">
-
-                                        <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="flex h-11 w-11 shrink-0 cursor-pointer">
-                                                <img
-                                                    src={setAvatar(comment.ownerInfo.avatar)}
-                                                    alt={`@${comment.ownerInfo.username}`}
-                                                    className="w-full h-full rounded-full object-cover" />
-                                            </div>
-                                        </AccountHover>
-                                        <div className="block">
-
-                                            <div className="flex items-center">
-                                                <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                    <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
-                                                        {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                            <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                        </span>}
-                                                    </div>
-                                                </AccountHover>
-
-                                                <span className="text-sm flex items-center before:content-['•'] before:px-1">{timeAgo(comment.createdAt)}</span>
-                                                {comment.isEdited && <span className='text-sm ml-2'>(Edited)</span>}
-                                            </div>
-                                            <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
-                                            </AccountHover>
-
-                                            <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5">
-                                                <ParseContents content={comment.content} />
-                                            </p>
-                                        </div>
-
-                                        {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
-
-                                    </div>
-                                    <hr className="my-4 border-primary" />
-                                </div>
-                            )
-                        } else {
-                            return (
-                                <div key={comment._id} className="block">
-                                    <div className="flex xs:flex-row flex-col gap-x-4 relative">
-
-                                        <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="flex h-11 w-11 shrink-0 cursor-pointer">
-                                                <img
-                                                    src={setAvatar(comment.ownerInfo.avatar)}
-                                                    alt={`@${comment.ownerInfo.username}`}
-                                                    className="w-full h-full rounded-full object-cover" />
-                                            </div>
-                                        </AccountHover>
-                                        <div className="block">
-
-                                            <div className="flex items-center">
-                                                <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                    <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
-                                                        {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                            <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                        </span>}
-                                                    </div>
-                                                </AccountHover>
-
-                                                <span className="text-sm flex items-center before:content-['•'] before:px-1">{timeAgo(comment.createdAt)}</span>
-                                                {comment.isEdited && <span className='text-sm ml-2'>(Edited)</span>}
-                                            </div>
-                                            <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
-                                            </AccountHover>
-
-                                            <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5">
-                                                <ParseContents content={comment.content} />
-                                            </p>
-                                        </div>
-
-                                        {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
-
-                                    </div>
-                                    <hr className="my-4 border-primary" />
-                                </div>
-                            )
-                        }
-                    }) : <h1>No comments available</h1> : <p className='w-full mb-3 flex justify-center'>Something went wrong please try to refresh the page</p>}
-                    {commentLoader && <p className='w-full flex justify-center'> <Loader height="24px" width="24px" className="animate-spin fill-primary" /> </p>
-                    }
-
-                </div>
-            </div>
-
-        )
-    } else {
+    if (showSingleComment) {
         return (
             <>
-                <button type='button' className="w-full border-primary/30 rounded-lg border p-4 text-left text-primary duration-200 hidden"><h6 className="font-semibold">{formatNumbers(allComment.totalComments)} Comments ...</h6></button>
+
                 <div
                     className="bg-background border-primary/30 rounded-lg border p-4 duration-200">
                     <div className="block">
-                        <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
+                        <div className='flex gap-4 items-center mb-4 '>
+                            <button type='button' className="border-primary/30 rounded-lg px-4 py-2 border text-primary" onClick={()=>{
+                                singleComment?.current.click()
+                            }}>
+                                <ArrowBack height="20px" width="20px" className={`relative left-1 fill-primary`} />
+                            </button>
+                            <h6 className="font-semibold">{formatNumbers(showSingleComment.repliesCount)} Replies</h6>
+                        </div>
                         <div className='relative'>
                             <textarea
                                 aria-hidden="false"
                                 type="text"
-                                className="w-full resize-none h-auto max-h-20 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
-                                placeholder="Add a Comment"
+                                className="w-full resize-none md:h-auto h-28 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
+                                placeholder={`Add a Reply on ${showSingleComment.ownerInfo.fullName}'s comment`}
                                 value={postComment}
                                 autoComplete="off"
                                 onChange={(e) => setPostComment(e.target.value)}
@@ -310,12 +205,91 @@ const Comments = ({
                     </div>
                     <hr className="my-4 border-primary" />
                     <div>
+                        <div className="block">
+                            <div className="flex xs:flex-row flex-col gap-x-4 relative">
+
+                                <AccountHover user={{ ...showSingleComment.ownerInfo, isSubscribed: showSingleComment.isSubscribed, subscribers: showSingleComment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                    <div onClick={() => navigate(`/@${showSingleComment.ownerInfo.username}`)} className="flex h-11 w-11 shrink-0 cursor-pointer">
+                                        <img
+                                            src={setAvatar(showSingleComment.ownerInfo.avatar)}
+                                            alt={`@${showSingleComment.ownerInfo.username}`}
+                                            className="w-full h-full rounded-full object-cover" />
+                                    </div>
+                                </AccountHover>
+                                <div className="block w-full">
+
+                                    <div className="flex items-center">
+                                        <AccountHover user={{ ...showSingleComment.ownerInfo, isSubscribed: showSingleComment.isSubscribed, subscribers: showSingleComment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                            <div onClick={() => navigate(`/@${showSingleComment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${showSingleComment.isVideoOwner ? "font-bold" : ""}`}>
+                                                {showSingleComment.ownerInfo.fullName} {showSingleComment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                </span>}
+                                            </div>
+                                        </AccountHover>
+
+                                        <span className="text-sm flex items-center before:content-['•'] before:px-1">{timeAgo(showSingleComment.createdAt)}</span>
+                                        {showSingleComment.isEdited && <span className='text-sm ml-2'>(Edited)</span>}
+                                    </div>
+                                    <AccountHover user={{ ...showSingleComment.ownerInfo, isSubscribed: showSingleComment.isSubscribed, subscribers: showSingleComment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                        <div onClick={() => navigate(`/@${showSingleComment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{showSingleComment.ownerInfo.username}</div>
+                                    </AccountHover>
+
+                                    <p ref={singleComment} className="mt-3 text-sm break-words break-all whitespace-pre-wrap w-full cursor-pointer" onClick={closeFullComment}>
+                                        <ParseContents content={showSingleComment.content} />
+                                    </p>
+                                </div>
+
+                                {showSingleComment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={showSingleComment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} setShowSingleComment={setShowSingleComment} />}
+
+                            </div>
+                            <hr className="my-4 border-primary" />
+                        </div>
+                    </div>
+                </div>
+            </>
+        )
+    } else {
+
+        if (isMobile) {
+            return (
+                <div
+                    className="p-4 rounded-lg border border-primary/30">
+
+                    <div className="block">
+                        <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
+                    </div>
+                    <div className='relative'>
+                        <textarea
+                            aria-hidden="false"
+                            type="text"
+                            className="w-full resize-none h-28 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
+                            placeholder="Add a Comment"
+                            value={postComment}
+                            autoComplete="off"
+                            onChange={(e) => setPostComment(e.target.value)}
+                            maxLength="900"
+                            ref={textArea}
+                        />
+                        <div className='flex items-center gap-3'>
+                            <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
+
+                                {isCommentSubmitting ? <Loader height="24px" width="24px" className=
+                                    "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
+
+                            </Button>
+                            {isEditing && <Button title="cancel" onClick={handleCancelEdit}>
+                                cancel
+                            </Button>}
+                        </div>
+                    </div>
+                    <hr className="my-4 border-primary" />
+                    <div className=''>
 
                         {allComment.comments ? allComment.comments.length !== 0 ? allComment.comments.map((comment, index) => {
 
                             if (allComment.comments.length === index + 1) {
                                 return (
-                                    <div key={comment._id} ref={lastBookElementRef} className="block">
+                                    <div key={comment._id} ref={lastBookElementRef} className="block" id={comment._id}>
                                         <div className="flex xs:flex-row flex-col gap-x-4 relative">
 
                                             <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
@@ -326,7 +300,7 @@ const Comments = ({
                                                         className="w-full h-full rounded-full object-cover" />
                                                 </div>
                                             </AccountHover>
-                                            <div className="block">
+                                            <div className="block w-full">
 
                                                 <div className="flex items-center">
                                                     <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
@@ -344,7 +318,7 @@ const Comments = ({
                                                     <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
                                                 </AccountHover>
 
-                                                <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5">
+                                                <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5 w-full cursor-pointer" onClick={() => showFullComment(comment)}>
                                                     <ParseContents content={comment.content} />
                                                 </p>
                                             </div>
@@ -357,7 +331,7 @@ const Comments = ({
                                 )
                             } else {
                                 return (
-                                    <div key={comment._id} className="block">
+                                    <div key={comment._id} className="block" id={comment._id}>
                                         <div className="flex xs:flex-row flex-col gap-x-4 relative">
 
                                             <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
@@ -368,7 +342,7 @@ const Comments = ({
                                                         className="w-full h-full rounded-full object-cover" />
                                                 </div>
                                             </AccountHover>
-                                            <div className="block">
+                                            <div className="block w-full">
 
                                                 <div className="flex items-center">
                                                     <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
@@ -386,7 +360,7 @@ const Comments = ({
                                                     <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
                                                 </AccountHover>
 
-                                                <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5">
+                                                <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5 w-full cursor-pointer" onClick={() => showFullComment(comment)}>
                                                     <ParseContents content={comment.content} />
                                                 </p>
                                             </div>
@@ -404,8 +378,141 @@ const Comments = ({
 
                     </div>
                 </div>
-            </>
-        )
+
+            )
+        } else {
+            return (
+                <>
+                    <button type='button' className="w-full border-primary/30 rounded-lg border p-4 text-left text-primary duration-200 hidden"><h6 className="font-semibold">{formatNumbers(allComment.totalComments)} Comments ...</h6></button>
+                    <div
+                        className="bg-background border-primary/30 rounded-lg border p-4 duration-200">
+                        <div className="block">
+                            <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
+                            <div className='relative'>
+                                <textarea
+                                    aria-hidden="false"
+                                    type="text"
+                                    className="w-full resize-none h-auto max-h-20 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
+                                    placeholder="Add a Comment"
+                                    value={postComment}
+                                    autoComplete="off"
+                                    onChange={(e) => setPostComment(e.target.value)}
+                                    maxLength="900"
+                                    ref={textArea}
+                                />
+                                <div className='flex items-center gap-3'>
+                                    <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
+
+                                        {isCommentSubmitting ? <Loader height="24px" width="24px" className=
+                                            "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
+
+                                    </Button>
+                                    {isEditing && <Button title="cancel" onClick={handleCancelEdit}>
+                                        cancel
+                                    </Button>}
+                                </div>
+                            </div>
+                        </div>
+                        <hr className="my-4 border-primary" />
+                        <div>
+
+                            {allComment.comments ? allComment.comments.length !== 0 ? allComment.comments.map((comment, index) => {
+
+                                if (allComment.comments.length === index + 1) {
+                                    return (
+                                        <div key={comment._id} ref={lastBookElementRef} className="block" id={comment._id}>
+                                            <div className="flex xs:flex-row flex-col gap-x-4 relative">
+
+                                                <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                                    <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="flex h-11 w-11 shrink-0 cursor-pointer">
+                                                        <img
+                                                            src={setAvatar(comment.ownerInfo.avatar)}
+                                                            alt={`@${comment.ownerInfo.username}`}
+                                                            className="w-full h-full rounded-full object-cover" />
+                                                    </div>
+                                                </AccountHover>
+                                                <div className="block w-full">
+
+                                                    <div className="flex items-center">
+                                                        <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
+                                                                {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                                </span>}
+                                                            </div>
+                                                        </AccountHover>
+
+                                                        <span className="text-sm flex items-center before:content-['•'] before:px-1">{timeAgo(comment.createdAt)}</span>
+                                                        {comment.isEdited && <span className='text-sm ml-2'>(Edited)</span>}
+                                                    </div>
+                                                    <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
+                                                    </AccountHover>
+
+                                                    <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5 w-full cursor-pointer" onClick={() => showFullComment(comment)}>
+                                                        <ParseContents content={comment.content} />
+                                                    </p>
+                                                </div>
+
+                                                {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+
+                                            </div>
+                                            <hr className="my-4 border-primary" />
+                                        </div>
+                                    )
+                                } else {
+                                    return (
+                                        <div key={comment._id} className="block" id={comment._id}>
+                                            <div className="flex xs:flex-row flex-col gap-x-4 relative">
+
+                                                <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                                    <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="flex h-11 w-11 shrink-0 cursor-pointer">
+                                                        <img
+                                                            src={setAvatar(comment.ownerInfo.avatar)}
+                                                            alt={`@${comment.ownerInfo.username}`}
+                                                            className="w-full h-full rounded-full object-cover" />
+                                                    </div>
+                                                </AccountHover>
+                                                <div className="w-full block">
+
+                                                    <div className="flex items-center">
+                                                        <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
+                                                                {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                                </span>}
+                                                            </div>
+                                                        </AccountHover>
+
+                                                        <span className="text-sm flex items-center before:content-['•'] before:px-1">{timeAgo(comment.createdAt)}</span>
+                                                        {comment.isEdited && <span className='text-sm ml-2'>(Edited)</span>}
+                                                    </div>
+                                                    <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
+                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
+                                                    </AccountHover>
+
+                                                    <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5 cursor-pointer w-full" onClick={() => showFullComment(comment)}>
+                                                        <ParseContents content={comment.content} />
+                                                    </p>
+                                                </div>
+
+                                                {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+
+                                            </div>
+                                            <hr className="my-4 border-primary" />
+                                        </div>
+                                    )
+                                }
+                            }) : <h1>No comments available</h1> : <p className='w-full mb-3 flex justify-center'>Something went wrong please try to refresh the page</p>}
+                            {commentLoader && <p className='w-full flex justify-center'> <Loader height="24px" width="24px" className="animate-spin fill-primary" /> </p>
+                            }
+
+                        </div>
+                    </div>
+                </>
+            )
+        }
+
     }
 
 }
