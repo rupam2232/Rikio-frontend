@@ -8,10 +8,11 @@ import { Provider } from 'react-redux'
 import store from './store/store.js'
 import Authlayout from './components/AuthLayout.jsx'
 
-import  Home  from './pages/Home.page.jsx'
+import Home from './pages/Home.page.jsx'
 import Signup from './pages/Signup.page.jsx'
 import Login from './pages/Login.page.jsx'
 import Video from './pages/Video.page.jsx'
+import UploadVideo from './pages/UploadVideo.page.jsx'
 import NotFound from './pages/NotFound.page'
 
 // limo
@@ -20,14 +21,39 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: <NotFound/>,
+    errorElement: <NotFound />,
     children: [
       {
         path: '/',
         element: <Home />
       }, {
+        path: '/liked-videos',
+        element: <NotFound />
+      }, {
+        path: '/watch-history',
+        element: <NotFound />
+      }, {
+        path: '/my-content',
+        element: <NotFound />
+      }, {
+        path: '/collections',
+        element: <NotFound />
+      }, {
+        path: '/subscribed',
+        element: <NotFound />
+      }, {
+        path: '/settings',
+        element: <NotFound />
+      }, {
         path: '/video/:videoId',
         element: <Video />,
+      }, {
+        path: '/upload',
+        element: (
+          <Authlayout >
+            <UploadVideo />
+          </Authlayout>
+        )
       }, {
         path: '/signup',
         element: <Signup />,
@@ -36,7 +62,7 @@ const router = createBrowserRouter([
         element: <Login />,
       }
     ]
-  },{
+  }, {
     path: '*',
     element: <NotFound />
   }

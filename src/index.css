@@ -2,18 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
-    font-family: Roboto, Arial, sans-serif;
+* {
+  font-family: Roboto, Arial, sans-serif;
+}
+
+img {
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+
 }
 
 ::-webkit-scrollbar {
   width: 10px;
-  height: 10px; 
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f100; 
-  border-radius: 10px; 
+  background: #f1f1f100;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -27,47 +37,50 @@
 
 @supports (scrollbar-color: auto) {
   html {
-    scrollbar-width: calc(10px); 
-    scrollbar-color: rgb(53, 40, 73) #f1f1f100; 
-    }
+    scrollbar-width: calc(10px);
+    scrollbar-color: rgb(53, 40, 73) #f1f1f100;
+  }
 }
-  
+
 
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
-    display: none;
+  display: none;
 }
 
 input[type="search"]::-webkit-search-cancel-button {
-    -webkit-appearance: none;
-    appearance: none;
-    display: none;
-  }
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
 
-  input[type="number"] {
-    /* Hides the arrows in most browsers */
-    -moz-appearance: textfield; /* Firefox */
-    -webkit-appearance: none; /* Chrome, Safari, Edge */
-    appearance: none;
-  }
-  
-  /* For Chrome and Safari to completely hide the up/down controls */
-  input[type="number"]::-webkit-inner-spin-button, 
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    appearance: none;
-    margin: 0;
-  }
- 
-  .active{
-    color: hsl(var(--background));
-    background-color: hsl(var(--primary));
-  }
-  .active:hover{
-    color: hsl(var(--background)) !important;
-    background-color: hsl(var(--primary)) !important;
-  }
-  
+input[type="number"] {
+  /* Hides the arrows in most browsers */
+  -moz-appearance: textfield;
+  /* Firefox */
+  -webkit-appearance: none;
+  /* Chrome, Safari, Edge */
+  appearance: none;
+}
+
+/* For Chrome and Safari to completely hide the up/down controls */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.active {
+  color: hsl(var(--background));
+  background-color: hsl(var(--primary));
+}
+
+.active:hover {
+  color: hsl(var(--background)) !important;
+  background-color: hsl(var(--primary)) !important;
+}
+
 
 @layer base {
   :root {
@@ -146,8 +159,9 @@ input[type="search"]::-webkit-search-cancel-button {
 @layer base {
   * {
     @apply border-border;
-    }
+  }
+
   body {
     @apply bg-background text-foreground;
-    }
+  }
 }

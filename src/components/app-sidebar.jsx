@@ -47,8 +47,8 @@ const items = [
     icon: Video,
   },
   {
-    title: "Collection",
-    url: "/collection",
+    title: "Collections",
+    url: "/collections",
     icon: FolderClosed
   }, {
     title: "Subscribed",
