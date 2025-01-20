@@ -181,17 +181,19 @@ const Comments = ({
                         <div className='relative'>
                             <textarea
                                 aria-hidden="false"
+                                rows="4"
+                                name="reply"
                                 type="text"
-                                className="w-full resize-none md:h-auto h-28 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
+                                className="w-full resize-none border bg-transparent p-2 scroll-smooth scroll-m-0 text-sm border-zinc-500 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
                                 placeholder={`Add a Reply on ${showSingleComment.ownerInfo.fullName}'s comment`}
                                 value={postComment}
                                 autoComplete="off"
                                 onChange={(e) => setPostComment(e.target.value)}
                                 maxLength="900"
                                 ref={textArea}
-                            />
+                            ></textarea>
                             <div className='flex items-center gap-3'>
-                                <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
+                                <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={""}>
 
                                     {isCommentSubmitting ? <Loader height="24px" width="24px" className=
                                         "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
@@ -261,15 +263,17 @@ const Comments = ({
                     <div className='relative'>
                         <textarea
                             aria-hidden="false"
+                            rows="4"
+                            name="comment"
                             type="text"
-                            className="w-full resize-none h-28 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
+                            className="w-full resize-none border bg-transparent p-2 scroll-smooth scroll-m-0 text-sm border-zinc-500 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
                             placeholder="Add a Comment"
                             value={postComment}
                             autoComplete="off"
                             onChange={(e) => setPostComment(e.target.value)}
                             maxLength="900"
                             ref={textArea}
-                        />
+                        ></textarea>
                         <div className='flex items-center gap-3'>
                             <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
 
@@ -391,15 +395,17 @@ const Comments = ({
                             <div className='relative'>
                                 <textarea
                                     aria-hidden="false"
+                                    rows="4"
+                                    name="comment"
                                     type="text"
-                                    className="w-full resize-none h-auto max-h-20 rounded-lg border bg-transparent border-primary/90 p-2 scroll-smooth scroll-m-0 placeholder-primary"
+                                    className="w-full resize-none border bg-transparent p-2 scroll-smooth scroll-m-0 text-sm border-zinc-500 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
                                     placeholder="Add a Comment"
                                     value={postComment}
                                     autoComplete="off"
                                     onChange={(e) => setPostComment(e.target.value)}
                                     maxLength="900"
                                     ref={textArea}
-                                />
+                                ></textarea>
                                 <div className='flex items-center gap-3'>
                                     <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
 
@@ -449,7 +455,7 @@ const Comments = ({
                                                         <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
                                                     </AccountHover>
 
-                                                    <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5 w-full cursor-pointer" onClick={() => showFullComment(comment)}>
+                                                    <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap pr-10 line-clamp-5 w-full cursor-pointer" onClick={() => showFullComment(comment)}>
                                                         <ParseContents content={comment.content} />
                                                     </p>
                                                 </div>
@@ -491,7 +497,7 @@ const Comments = ({
                                                         <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className="text-sm w-min text-sidebar-foreground/85 cursor-pointer">@{comment.ownerInfo.username}</div>
                                                     </AccountHover>
 
-                                                    <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap line-clamp-5 cursor-pointer w-full" onClick={() => showFullComment(comment)}>
+                                                    <p className="mt-3 text-sm break-words break-all whitespace-pre-wrap pr-10 line-clamp-5 cursor-pointer w-full" onClick={() => showFullComment(comment)}>
                                                         <ParseContents content={comment.content} />
                                                     </p>
                                                 </div>

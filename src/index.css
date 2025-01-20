@@ -16,6 +16,38 @@ img {
 
 }
 
+.video-js{
+  background-color: transparent !important;
+}
+
+.vjs-poster img{
+  object-fit: cover !important;
+}
+ 
+.vjs-control-bar, .vjs-error-display, video, .vjs-poster img{
+  border-radius: var(--radius);
+}
+
+#vjs-playback-rate-value-label-vjs_video_744_component_1012{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vjs-playback-rate{
+  display: block !important;
+}
+
+.vjs-theme-fantasy .vjs-play-progress, .vjs-theme-fantasy .vjs-play-progress:before{
+  background-color: #ae7aff !important;
+}
+
+@media (max-width: 768px) {
+    .vjs-volume-panel{
+      display: none !important;
+    }
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
-import { Like, Button, AccountHover, Comments, ParseContents } from "../components/index.js"
+import { Like, Button, AccountHover, Comments, ParseContents,Video as VideoPlayer } from "../components/index.js"
 import { useNavigate } from 'react-router-dom'
 import formatNumbers from '../utils/formatNumber.js'
 import axios from '../utils/axiosInstance.js'
@@ -198,17 +198,11 @@ const Video = () => {
                     <div className="col-span-12 w-full">
                         <div className="relative aspect-video mb-4 w-full rounded-lg border border-primary/30">
                             <div className="absolute inset-0">
-                                <video
-                                    className="h-full w-full rounded-lg"
-                                    controls
-                                    autoPlay
-                                    controlsList='nodownload'
+                                <VideoPlayer
+                                    autoplay={true}
                                     poster={video.thumbnail}
-                                >
-                                    <source
-                                        src={video.videoFile}
-                                        type="video/mp4" />
-                                </video>
+                                    src={video.videoFile}
+                                />
                             </div>
                         </div>
                         <div className="mb-4 w-full rounded-lg border border-primary/30 p-4 duration-200">
@@ -224,7 +218,7 @@ const Video = () => {
                                     <div className="flex items-center justify-between gap-x-4">
                                         <div className="flex">
                                             <Button
-                                                className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-lg"
+                                                className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base"
                                                 data-like={formatNumbers(like.totalLikes)} onClick={toggleLike}>
                                                 <span className="inline-block">
                                                     {like.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}
@@ -338,7 +332,7 @@ const Video = () => {
                             <hr className="my-4 border-primary" />
                             <div className={`relative`} role="button" tabIndex="0" onClick={() => setFullDesc(!fullDesc)}>
                                 <p className={`relative text-sm cursor-pointer break-words break-all whitespace-pre-wrap transition-all ${fullDesc ? "h-auto" : " line-clamp-3 "}`}>
-                                    <ParseContents content={video.description} />
+                                    {video.description && <ParseContents content={video.description} />}
                                 </p>
                             </div>
                         </div>

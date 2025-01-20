@@ -36,6 +36,8 @@ import AccountHover from "./AccountHover.jsx"
 import Comments from "./Comments.jsx"
 import FormInput from "./FormInput.jsx"
 import ParseContents from "./ParseContents.jsx"
+import VideoPlayer from "./VideoPlayer.jsx"
+import Video from "./Video.jsx"
 
 export {
     Logo,
@@ -71,5 +73,7 @@ export {
     AccountHover,
     Comments,
     FormInput,
-    ParseContents
+    ParseContents,
+    VideoPlayer,
+    Video
 }
