@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
-import { Like, Button, AccountHover, Comments, ParseContents,Video as VideoPlayer } from "../components/index.js"
+import { Like, Button, AccountHover, Comments, ParseContents, Video as VideoPlayer } from "../components/index.js"
 import { useNavigate } from 'react-router-dom'
 import formatNumbers from '../utils/formatNumber.js'
 import axios from '../utils/axiosInstance.js'
@@ -38,6 +38,15 @@ const Video = () => {
     const dispatch = useDispatch()
 
 
+    const videoUrl = useMemo(() => {
+        console.log("video.videoFile")
+        return video.videoFile ? video.videoFile : null
+    }, [video.videoFile])
+    // console.log(videoUrl)
+    const videoThumbnail = useMemo(() => (
+        video.thumbnail ? video.thumbnail : null
+    ), [video.thumbnail])
+    // console.log(videoThumbnail)
     const toggleSubscribe = (ownerId) => {
 
         axios.post(`/subscription/c/${ownerId}`)
@@ -196,12 +205,12 @@ const Video = () => {
             <section className="w-full ">
                 <div className="flex w-full flex-wrap gap-4 p-4 lg:flex-nowrap">
                     <div className="col-span-12 w-full">
-                        <div className="relative aspect-video mb-4 w-full rounded-lg border border-primary/30">
-                            <div className="absolute inset-0">
+                        <div className="mb-4 w-full flex justify-center items-center rounded-lg border border-primary/30">
+                            <div className="aspect-video w-full lg:w-3/4 2xl:w-2/4 h-full rounded-lg">
                                 <VideoPlayer
                                     autoplay={true}
-                                    poster={video.thumbnail}
-                                    src={video.videoFile}
+                                    poster={videoThumbnail && (videoThumbnail)}
+                                    src={videoUrl && (videoUrl)}
                                 />
                             </div>
                         </div>
@@ -309,7 +318,7 @@ const Video = () => {
                                                 <AlertDialogHeader>
                                                     <AlertDialogTitle>Unsubscribe {video.owner.fullName}?</AlertDialogTitle>
                                                     <AlertDialogDescription>
-                                                    This action cannot be undone. This will permanently remove you from {video.owner.fullName}'s subscribers list.
+                                                        This action cannot be undone. This will permanently remove you from {video.owner.fullName}'s subscribers list.
                                                     </AlertDialogDescription>
                                                 </AlertDialogHeader>
                                                 <AlertDialogFooter>

@@ -332,7 +332,7 @@ function Signup() {
             <div className="flex h-full items-center justify-center w-full py-8">
                 <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
                     <div className="mb-2 flex flex-col items-center space-y-4">
-                        <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Logo' onClick={() => navigate("/")}>
+                        <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Limo' onClick={() => navigate("/")}>
                             <Logo width="100%" />
                         </span>
                     <p className='text-center'>You are already logged In.Please logout first to use this page.</p>
@@ -350,7 +350,7 @@ function Signup() {
                         <ArrowBack height="24px" width="24px" className={`relative left-1 fill-primary`} />
                     </Button>
                     <div className="mb-2 flex justify-center">
-                        <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Logo' onClick={() => navigate("/")}>
+                        <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Limo' onClick={() => navigate("/")}>
                             <Logo width="100%" />
                         </span>
                     </div>

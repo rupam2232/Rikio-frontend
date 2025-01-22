@@ -16,7 +16,7 @@ const Header = () => {
             <nav className="mx-auto flex  justify-between  max-w-7xl  items-center py-2">
                 <div className="flex items-center gap-4">
                     <SidebarTrigger />
-                    {isMobile && <div className="mr-4 w-12 shrink-0 sm:w-16 cursor-pointer" title='Logo' aria-label='Logo' onClick={() => navigate("/")}>
+                    {isMobile && <div className="mr-4 w-12 shrink-0 sm:w-16 cursor-pointer" title='Limo' aria-label='Logo' onClick={() => navigate("/")}>
                         <Logo />
                     </div>}
                     

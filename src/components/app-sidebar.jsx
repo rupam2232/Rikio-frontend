@@ -70,7 +70,7 @@ export function AppSidebar(props) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <div className="w-10 shrink-0 cursor-pointer" title='Logo' aria-label='Logo' onClick={() => navigate("/")}>
+        <div className="w-10 shrink-0 cursor-pointer" title='Limo' aria-label='Limo' onClick={() => navigate("/")}>
           <Logo />
         </div>
       </SidebarHeader>

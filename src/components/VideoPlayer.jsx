@@ -45,7 +45,7 @@ const VideoPlayer = ({ options, onReady }) => {
 
   return (
     <div data-vjs-player className="w-full h-full">
-      <div ref={videoRef} className="w-full h-full rounded-lg video-js vjs-theme-fantasy" />
+      <div ref={videoRef} className="w-full h-full object-cover rounded-lg video-js vjs-theme-fantasy" />
     </div>
   );
 };

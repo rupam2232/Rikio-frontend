@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Button, Input, Video } from "../components/index.js"
 import { useDropzone } from 'react-dropzone';
-import { Trash2 } from 'lucide-react';
+import { Trash2, CircleCheck } from 'lucide-react';
 import {
     Select,
     SelectContent,
@@ -9,6 +9,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import axios from '../utils/axiosInstance.js'
 import toast from "react-hot-toast"
 import showErrorMessage from '../utils/errorMessage.js'
@@ -25,9 +36,26 @@ const UploadVideo = () => {
     const [description, setDescription] = useState("");
     const [isPublished, setIsPublished] = useState(true);
     const [tags, setTags] = useState("");
+    const [openPopup, setOpenPopup] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [videoUrl, setVideoUrl] = useState('');
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     const dispatch = useDispatch();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const videoPreviewUrl = useMemo(() => (videoFile ? URL.createObjectURL(videoFile) : null), [videoFile]);
+
+    useEffect(() => {
+        return () => {
+          if (videoPreviewUrl) {
+            URL.revokeObjectURL(videoPreviewUrl);
+          }
+        };
+      }, [videoPreviewUrl]);
+
+    const MAX_VIDEO_SIZE = 70 * 1024 * 1024;
+    const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
     const onDrop = (acceptedFiles, rejectedFiles) => {
         if (rejectedFiles.length > 0 || (acceptedFiles.length > 0 && acceptedFiles[0].type !== 'video/mp4')) {
@@ -37,6 +65,11 @@ const UploadVideo = () => {
 
         if (acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
+            if (file.size > MAX_VIDEO_SIZE) {
+                setErrorMessage('Video file size exceeds 70MB.');
+                return;
+            }
+
             setVideoFile(file);
             setErrorMessage('');
         }
@@ -52,6 +85,11 @@ const UploadVideo = () => {
         }
         if (acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
+            if (file.size > MAX_IMAGE_SIZE) {
+                setThumbnailErrorMessage('Thumbnail file size exceeds 2MB.');
+                return;
+            }
+
             setThumbnailFile(file);
             setThumbnailErrorMessage('');
         }
@@ -102,38 +140,52 @@ const UploadVideo = () => {
         console.log(isPublished)
     }
 
-    const handleSubmit = async(e) => {
-        e.preventDefault();
-        const finalTags = tags.split(',').map(tag => tag.trim()); 
-        console.log({ videoFile }, { thumbnailFile }, { title }, { description }, { isPublished }, {finalTags})
+    const handleSubmit = async () => {
+        const finalTags = tags.trim() ? tags.split(',').map(tag => tag.trim()) : [];
+        console.log("ic")
 
         try {
-            let res = await axios.post("/videos",{
+            setOpenPopup(true);
+            setIsUploading(true);
+            const res = await axios.post("/videos", {
                 video: videoFile,
                 thumbnail: thumbnailFile,
                 title,
                 description,
                 isPublished,
                 tags: finalTags
-            },{
+            }, {
                 headers: {
-                  'Content-Type': 'multipart/form-data',
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: (progressEvent) => {
+                    const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+                    setUploadProgress(progress);
+                },
             })
-            if(res.status === 200){
-                toast.success(res.data.message, {
-                    style: { color: "#ffffff", backgroundColor: "#333333" },
-                    position: "top-center"
-                })
+            if (res.status === 200) {
+                if (isPublished === true) {
+                    setVideoUrl(`/video/${res.data.data._id}`)
+                }
+                setIsUploading(false);
+                setThumbnailFile(null);
+                setVideoFile(null);
+                setTitle("");
+                setDescription("");
+                setTags("");
+                setIsPublished(true);
 
-                navigate(`/video/${res.data.data._id}`)
-            }else{
+            } else {
                 toast.error("something went wrong please try again", {
                     style: { color: "#ffffff", backgroundColor: "#333333" },
                     position: "top-center"
                 })
+                setIsUploading(false);
+                setOpenPopup(false);
             }
         } catch (error) {
+            setIsUploading(false);
+            setOpenPopup(false);
             toast.error(showErrorMessage(error), {
                 style: { color: "#ffffff", backgroundColor: "#333333" },
                 position: "top-center"
@@ -144,12 +196,12 @@ const UploadVideo = () => {
             }
             console.error(showErrorMessage(error));
         }
-        
+
     }
 
 
     return (
-        <section className="w-full p-4">
+        <section className="w-full p-4 mb-10">
             <div className="w-full px-4 flex items-center justify-between">
                 <h1 className="font-medium text-2xl">Upload Video</h1>
             </div>
@@ -165,17 +217,17 @@ const UploadVideo = () => {
                     >
                         <input {...getInputProps()} name="video" />
                         <p className="mb-2">
-                            {isDragReject ? 'Unsupported file type' : 'Drag and drop video files here to upload'}
+                            {isDragReject ? 'Unsupported file type' : 'Drag and drop video file here to upload'}
                         </p>
                         <p className="text-sm text-primary/50">Your videos will be private until you publish them.</p>
                         <Button
                             type="button"
                             className="mt-4"
                         >
-                            Select Files
+                            Select Video
                         </Button>
                     </div>
-                    {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+                    {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 
                     {videoFile && (
                         <div className='!mt-0'>
@@ -184,7 +236,7 @@ const UploadVideo = () => {
                                 <h3 className='text-wrap max-w-3/4'>{videoFile.name}</h3>
                                 <div className='relative h-full'>
                                     <video
-                                        src={URL.createObjectURL(videoFile)}
+                                        src={videoPreviewUrl}
                                         className="h-full aspect-square border border-gray-700 rounded-md"
                                     />
                                     <Button
@@ -239,7 +291,7 @@ const UploadVideo = () => {
                         </div>
                     )}
 
-                    {thumnailErrorMessage && <p className="text-red-500 text-sm mt-2">{thumnailErrorMessage}</p>}
+                    {thumnailErrorMessage && <p className="text-red-500 text-sm">{thumnailErrorMessage}</p>}
 
                     <div>
                         <label className="block text-sm font-medium mb-2" htmlFor="title">
@@ -283,7 +335,7 @@ const UploadVideo = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="true">Public</SelectItem>
-                                <SelectItem value="false">Private</SelectItem>
+                                {/* <SelectItem value="false">Private</SelectItem> */}
                             </SelectContent>
                         </Select>
                     </div>
@@ -294,22 +346,78 @@ const UploadVideo = () => {
                             id="tags"
                             type="text"
                             value={tags}
-                            onChange={(e)=> setTags(e.target.value)}
+                            onChange={(e) => setTags(e.target.value)}
                             maxLength="50"
                             className="text-sm border-zinc-500 focus:ring-primary"
                             placeholder="Enter tags separated by commas (e.g., funny, video)"
                         />
                     </div>
 
-                    <Button type="submit" disabled={!videoFile || !thumbnailFile || !title}>
-                        Upload
-                    </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger className='disabled:opacity-50 disabled:pointer-events-none' disabled={!videoFile || !thumbnailFile || !title.trim()}>
+                            <div role="button" className='px-3 py-2 bg-primary text-sm font-medium hover:bg-primary/90 text-background rounded-lg' disabled={!videoFile || !thumbnailFile || !title.trim()}>
+                                Upload
+                            </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="rounded-lg">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure you want to upload this video?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    <span className='block'>Please make sure:</span>
+                                    <span className='ml-4 block mt-2'>
+                                        <span className='block'>1. You've selected the correct video file.</span>
+                                        <span className='block'>2. You've chosen the correct thumbnail image.</span>
+                                        <span className='block'>3. The title and description are accurate.</span>
+                                    </span>
+                                    <span className='block mt-2'>Click 'Upload' to start uploading or 'Cancel' to review your inputs.</span>
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={()=> handleSubmit()}>Upload</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+
                 </form>
+                {openPopup && (
+                    <div className="fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="bg-background p-6  rounded ring-1 ring-primary/30 text-center">
+                            <h2 className='text-xl font-semibold'>{isUploading ? "Uploading Files..." : "Video uploaded successfully"}</h2>
+
+                            {isUploading ?
+                                <>
+                                    <p className="text-sm text-left w-full mt-2">Please Don't close this window until the upload is complete.</p>
+
+                                    <div className="w-full bg-gray-200 rounded-full h-1 mt-4">
+                                        <div
+                                            className="bg-[#ae7aff] h-full rounded-full"
+                                            style={{ width: `${uploadProgress}%` }}
+                                        ></div>
+                                    </div>
+                                </> :
+                                <div className='w-full flex items-center justify-center mt-4'>
+                                <CircleCheck className='text-green-500 size-1/5'/>
+                                </div>
+                            }
+
+                            <p className="text-sm text-zinc-500 mt-2">{uploadProgress}% uploaded</p>
+
+                            {!isUploading && (
+                                <div className='flex gap-16 justify-center mt-4'>
+                                    <Button type="button" onClick={() => setOpenPopup(false)}>Close</Button>
+
+                                    {isPublished === true ? <Button type="button" onClick={() => navigate(videoUrl)}>View Video</Button> : <Button type="button" onClick={() => navigate("/my-content")}>Go to My Content</Button>}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
                 <div className='md:w-1/3'>
                     <div className="relative  mb-4">
                         <div className="aspect-video w-full border border-primary/30 rounded-lg">
-                            {videoFile && thumbnailFile ? <Video src={videoFile && (URL.createObjectURL(videoFile))} poster={thumbnailFile ? (URL.createObjectURL(thumbnailFile)) : ""} />
-                                : <p className='text-center flex items-center h-full px-2 text-sm'>Upload a video file and thumbnail file to watch the preview here</p>}
+                            {videoFile && thumbnailFile ? <Video src={videoFile && (videoPreviewUrl)} poster={thumbnailFile ? (URL.createObjectURL(thumbnailFile)) : ""} />
+                                : <p className='text-center flex items-center justify-center h-full w-full px-2 text-sm'>Upload a video file and thumbnail file to watch the preview here</p>}
                         </div>
                     </div>
                 </div>

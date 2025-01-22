@@ -19,21 +19,20 @@ export default function App() {
   const user = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
-    if (!user) {
-      axios.get('/users/current-user')
-        .then((res) => {
-          if( res.data.data ) {
-            dispatch(login({userData: res.data.data}))
-          }else{
-            dispatch(logout());
-          }
-        })
-        .catch((error) => {
+    axios.get('/users/current-user')
+      .then((res) => {
+        if (res.data.data) {
+          dispatch(login({ userData: res.data.data }))
+        } else {
           dispatch(logout());
-          console.error( error )
-        });
-    }
-  }, [dispatch, user]);
+        }
+      })
+      .catch((error) => {
+        dispatch(logout());
+        console.error(error)
+      });
+
+  }, []);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
