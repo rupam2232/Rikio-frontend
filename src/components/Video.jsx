@@ -1,11 +1,11 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import VideoPlayer from "./VideoPlayer.jsx";
 
 const Video = ({poster, src, autoplay=false}) => {
     const playerRef = useRef(null);
 
-    const videoJsOptions = {
-        autoplay: autoplay,
+    const videoJsOptions = useMemo(() => (
+        {autoplay: autoplay,
         controls: true,
         responsive: true,
         fluid: false,
@@ -16,8 +16,8 @@ const Video = ({poster, src, autoplay=false}) => {
                 src: src,
                 type: "video/mp4",
             },
-        ],
-    };
+        ],}
+    ), [src, poster, autoplay]);
 
     const handlePlayerReady = (player) => {
         playerRef.current = player;

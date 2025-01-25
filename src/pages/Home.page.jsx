@@ -236,20 +236,20 @@ const Home = () => {
                         <div className='relative mb-2 w-full pt-[56%]' aria-label='Thubmnail'>
                             <NavLink to={`/video/${video._id}`}>
                                 <div className="absolute inset-0">
-                                    <img src={video.thumbnail} alt={`${video.title} uploaded by @${video.owner.username}`} className='w-full h-full object-cover rounded-md' />
+                                    <img src={video.thumbnail} alt={`${video.title} uploaded by @${video.owner.username}`} className='w-full h-full object-cover rounded-md pointer-events-none' />
                                 </div>
                                 <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
                             </NavLink>
                         </div>
                         <div className="flex gap-x-2 cursor-pointer">
-                           
-                            <AccountHover user={{ ...video.owner, isSubscribed: video.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                <div onClick={() => navigate(`/@${video.owner.username}`)} className="cursor-pointer">
-                                    <Avatar className='h-10 w-10 shrink-0'>
-                                        <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                    </Avatar>
-                                </div>
-                            </AccountHover>
+
+                                <AccountHover user={{ ...video.owner, isSubscribed: video.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                    <div onClick={() => navigate(`/@${video.owner.username}`)} className="cursor-pointer">
+                                        <Avatar className='h-10 w-10 shrink-0'>
+                                            <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
+                                        </Avatar>
+                                    </div>
+                                </AccountHover>
 
                             <div className="w-full">
                                 <NavLink to={`/video/${video._id}`} >

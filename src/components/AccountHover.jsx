@@ -26,7 +26,7 @@ import {
 const AccountHover = ({ user, toggleSubscribe, children }) => {
     return (
         <HoverCard>
-            <HoverCardTrigger className='w-max inline-block'>
+            <HoverCardTrigger className='w-max h-max inline-block'>
                 {children}
             </HoverCardTrigger>
             <HoverCardContent>

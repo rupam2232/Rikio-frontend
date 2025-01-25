@@ -27,7 +27,7 @@ img {
   border-radius: var(--radius);
 }
 
-#vjs-playback-rate-value-label-vjs_video_744_component_1012{
+.vjs-playback-rate-value{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -110,6 +110,16 @@ input[type="number"]::-webkit-outer-spin-button {
 .active:hover {
   color: hsl(var(--background)) !important;
   background-color: hsl(var(--primary)) !important;
+}
+
+.deactive {
+  color: hsl(var(--primary));
+  background-color: hsl(var(--background));
+}
+
+.deactive:hover {
+  color: hsl(var(--primary)) !important;
+  background-color: hsl(var(--accent)) !important;
 }
 
 

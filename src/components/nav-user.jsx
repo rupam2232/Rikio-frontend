@@ -5,6 +5,7 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
+  Upload,
 } from "lucide-react";
 
 import {
@@ -28,6 +29,7 @@ import {
 } from "./ui/sidebar";
 import { useSelector } from "react-redux";
 import setAvatar from '../utils/setAvatar.js'
+import { NavLink } from "react-router-dom";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -84,8 +86,7 @@ export function NavUser() {
                 Account
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <CreditCard />
-                Billing
+                <NavLink to={"/upload"} className={`w-full relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><Upload /> Upload</NavLink>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />

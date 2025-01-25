@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
 import { Like, Button, AccountHover, Comments, ParseContents, Video as VideoPlayer } from "../components/index.js"
@@ -37,16 +37,6 @@ const Video = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
-
-    const videoUrl = useMemo(() => {
-        console.log("video.videoFile")
-        return video.videoFile ? video.videoFile : null
-    }, [video.videoFile])
-    // console.log(videoUrl)
-    const videoThumbnail = useMemo(() => (
-        video.thumbnail ? video.thumbnail : null
-    ), [video.thumbnail])
-    // console.log(videoThumbnail)
     const toggleSubscribe = (ownerId) => {
 
         axios.post(`/subscription/c/${ownerId}`)
@@ -158,7 +148,6 @@ const Video = () => {
             })
     }
 
-
     useEffect(() => {
         setError("")
         axios.get(`/videos/${videoId}`)
@@ -209,8 +198,8 @@ const Video = () => {
                             <div className="aspect-video w-full lg:w-3/4 2xl:w-2/4 h-full rounded-lg">
                                 <VideoPlayer
                                     autoplay={true}
-                                    poster={videoThumbnail && (videoThumbnail)}
-                                    src={videoUrl && (videoUrl)}
+                                    poster={video.thumbnail}
+                                    src={video.videoFile}
                                 />
                             </div>
                         </div>
@@ -343,6 +332,12 @@ const Video = () => {
                                 <p className={`relative text-sm cursor-pointer break-words break-all whitespace-pre-wrap transition-all ${fullDesc ? "h-auto" : " line-clamp-3 "}`}>
                                     {video.description && <ParseContents content={video.description} />}
                                 </p>
+
+                                {/* <span className={`absolute bottom-0 right-0 p-2 bg-gradient-to-t from-background to-transparent w-full h-4 ${fullDesc && "hidden"}`}></span> */}
+
+                                <div className={`${video.description && video?.tags && "mt-3"} ${fullDesc ? 'block' : 'hidden'}`}>
+                                    {video?.tags && video.tags.map((tag, index) => ( <span key={index} className="inline-block px-2 py-1 bg-primary/20 text-primary text-xs rounded-md mr-2">{tag}</span>))}
+                                </div>
                             </div>
                         </div>
                         < Comments parentContentId={videoId} toggleSubscribe={toggleSubscribe} allComment={allComment} setAllComment={setAllComment} />

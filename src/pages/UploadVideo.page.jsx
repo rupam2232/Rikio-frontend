@@ -25,7 +25,7 @@ import toast from "react-hot-toast"
 import showErrorMessage from '../utils/errorMessage.js'
 import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 const UploadVideo = () => {
     const [videoFile, setVideoFile] = useState(null);
@@ -48,11 +48,11 @@ const UploadVideo = () => {
 
     useEffect(() => {
         return () => {
-          if (videoPreviewUrl) {
-            URL.revokeObjectURL(videoPreviewUrl);
-          }
+            if (videoPreviewUrl) {
+                URL.revokeObjectURL(videoPreviewUrl);
+            }
         };
-      }, [videoPreviewUrl]);
+    }, [videoPreviewUrl]);
 
     const MAX_VIDEO_SIZE = 70 * 1024 * 1024;
     const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
@@ -142,7 +142,6 @@ const UploadVideo = () => {
 
     const handleSubmit = async () => {
         const finalTags = tags.trim() ? tags.split(',').map(tag => tag.trim()) : [];
-        console.log("ic")
 
         try {
             setOpenPopup(true);
@@ -160,12 +159,13 @@ const UploadVideo = () => {
                 },
                 onUploadProgress: (progressEvent) => {
                     const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-                    setUploadProgress(progress);
+                    setUploadProgress(progress - 10);
                 },
             })
             if (res.status === 200) {
                 if (isPublished === true) {
-                    setVideoUrl(`/video/${res.data.data._id}`)
+                    setUploadProgress(100);
+                    setVideoUrl(`/video/${res.data.data._id}`);
                 }
                 setIsUploading(false);
                 setThumbnailFile(null);
@@ -374,7 +374,7 @@ const UploadVideo = () => {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={()=> handleSubmit()}>Upload</AlertDialogAction>
+                                <AlertDialogAction onClick={() => handleSubmit()}>Upload</AlertDialogAction>
                             </AlertDialogFooter>
                         </AlertDialogContent>
                     </AlertDialog>
@@ -392,22 +392,29 @@ const UploadVideo = () => {
                                     <div className="w-full bg-gray-200 rounded-full h-1 mt-4">
                                         <div
                                             className="bg-[#ae7aff] h-full rounded-full"
-                                            style={{ width: `${uploadProgress}%` }}
+                                            style={{ width: `${uploadProgress < 0 ? 0 : uploadProgress}%` }}
                                         ></div>
                                     </div>
                                 </> :
                                 <div className='w-full flex items-center justify-center mt-4'>
-                                <CircleCheck className='text-green-500 size-1/5'/>
+                                    <CircleCheck className='text-green-500 size-10' />
                                 </div>
                             }
 
-                            <p className="text-sm text-zinc-500 mt-2">{uploadProgress}% uploaded</p>
+                            <p className="text-sm text-zinc-500 mt-2">{uploadProgress < 0 ? 0 : uploadProgress}% uploaded</p>
 
                             {!isUploading && (
-                                <div className='flex gap-16 justify-center mt-4'>
+                                <div className='flex gap-32 justify-center mt-4'>
                                     <Button type="button" onClick={() => setOpenPopup(false)}>Close</Button>
 
-                                    {isPublished === true ? <Button type="button" onClick={() => navigate(videoUrl)}>View Video</Button> : <Button type="button" onClick={() => navigate("/my-content")}>Go to My Content</Button>}
+                                    {isPublished === true ?
+                                        <Button type="button">
+                                            <NavLink to={videoUrl}>View Video</NavLink>
+                                        </Button>
+                                        :
+                                        <Button type="button">
+                                            <NavLink to={"/my-content"}>Go to My Content</NavLink>
+                                        </Button>}
                                 </div>
                             )}
                         </div>
@@ -416,7 +423,7 @@ const UploadVideo = () => {
                 <div className='md:w-1/3'>
                     <div className="relative  mb-4">
                         <div className="aspect-video w-full border border-primary/30 rounded-lg">
-                            {videoFile && thumbnailFile ? <Video src={videoFile && (videoPreviewUrl)} poster={thumbnailFile ? (URL.createObjectURL(thumbnailFile)) : ""} />
+                            {videoFile && thumbnailFile ? <Video src={videoPreviewUrl} poster={URL.createObjectURL(thumbnailFile)} />
                                 : <p className='text-center flex items-center justify-center h-full w-full px-2 text-sm'>Upload a video file and thumbnail file to watch the preview here</p>}
                         </div>
                     </div>

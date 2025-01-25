@@ -15,8 +15,6 @@ import Video from './pages/Video.page.jsx'
 import UploadVideo from './pages/UploadVideo.page.jsx'
 import NotFound from './pages/NotFound.page'
 
-// limo
-
 const router = createBrowserRouter([
   {
     path: '/',
