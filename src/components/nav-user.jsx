@@ -1,11 +1,12 @@
+import { useState } from "react";
 import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
   Sparkles,
   Upload,
+  LoaderCircle
 } from "lucide-react";
 
 import {
@@ -27,13 +28,69 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "./ui/sidebar";
-import { useSelector } from "react-redux";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { useSelector, useDispatch } from "react-redux";
 import setAvatar from '../utils/setAvatar.js'
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { logout } from "../store/authSlice.js";
+import axios from "../utils/axiosInstance.js";
+import toast from "react-hot-toast"
+import errorMessage from "../utils/errorMessage.js";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const user = useSelector((state) => state.auth.userData);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [loader, setLoader] = useState(false);
+
+  const logoutUser = () => {
+    setLoader(true);
+
+    if (!user) {
+      toast.error("You are not logged in", {
+        style: { color: "#ffffff", backgroundColor: "#333333" },
+        position: "top-center"
+      });
+      return;
+    }
+
+    axios.post(`/users/logout`)
+      .then((res) => {
+        if(res.status === 200) {
+          dispatch(logout());
+          toast.success("Log out successfully", {
+            style: { color: "#ffffff", backgroundColor: "#333333" },
+            position: "top-center"
+          });
+        } else {
+          toast.error("Something went wrong please try again", {
+            style: { color: "#ffffff", backgroundColor: "#333333" },
+            position: "top-center"
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+        toast.error(errorMessage(error), {
+          style: { color: "#ffffff", backgroundColor: "#333333" },
+          position: "top-center"
+        });
+      })
+      .finally(() => {
+        setLoader(false);
+      });
+  }
 
   return (
     <SidebarMenu>
@@ -72,32 +129,46 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <NavLink to={"/upload"} className={`w-full relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><Upload /> Upload</NavLink>
+              <DropdownMenuItem className="px-0 py-0">
+                <button onClick={() => navigate("/upload")} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><Upload /> Upload</button>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <Bell />
                 Notifications
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+            <AlertDialog>
+              <AlertDialogTrigger className="w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive ">
+                <LogOut />
+                Log out
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Log out from current logged in account?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will log out your current device from your current logged in account.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" disabled={loader} onClick={logoutUser}>{loader ? <LoaderCircle className="w-16 h-16 animate-spin" /> : "Log Out"}</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

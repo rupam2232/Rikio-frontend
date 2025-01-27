@@ -10,7 +10,7 @@ import setAvatar from '../utils/setAvatar.js'
 import toast from "react-hot-toast"
 import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector} from 'react-redux';
 import { logout } from '../store/authSlice.js'
 import {
     AlertDialog,
@@ -36,6 +36,7 @@ const Video = () => {
     const { videoId } = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const loggedInUser = useSelector((state) => state.auth.userData);
 
     const toggleSubscribe = (ownerId) => {
 
@@ -293,7 +294,7 @@ const Video = () => {
                                 </AccountHover>
                                 <div className="block">
 
-                                    {subscribed ?
+                                    {loggedInUser && subscribed ?
                                         <AlertDialog>
                                             <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
                                                 <div role='button' className="gap-0 rounded-md py-2 px-4 group flex w-auto items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">

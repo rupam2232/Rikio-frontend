@@ -69,10 +69,14 @@ export function AppSidebar(props) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <div className="w-10 shrink-0 cursor-pointer" title='Limo' aria-label='Limo' onClick={() => navigate("/")}>
-          <Logo />
-        </div>
+      <SidebarHeader className="">
+        <NavLink to={"/"} className="!bg-transparent hover:!bg-transparent cursor-pointer flex items-center gap-0" title='Limo' aria-label='Limo'>
+          <Logo className="w-12"/>
+          <p className="group-data-[collapsible=icon]:hidden logo-font !font-bold text-2xl  from-[#c7b1ea] to-[#844cdd] bg-gradient-to-r bg-clip-text text-transparent">  
+          Limo
+          </p>
+        </NavLink>
+        {/* Limo */}
       </SidebarHeader>
 
       <SidebarGroupAction title="Close" className="[&>svg]:size-6 sm:[&>svg]:size-5 z-30" onClick={toggleSidebar} type="button">
@@ -84,7 +88,7 @@ export function AppSidebar(props) {
         <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter>
-        <ModeToggle className="border-zinc-500 md:hidden" title="toggle theme"/>
+        <ModeToggle className="border-zinc-500 md:hidden" title="toggle theme" />
         {user ? <NavUser /> :
           <>
             <Button onClick={toggleSidebar} className="md:hidden"><NavLink className="text-primary-foreground w-full" to="/login">Login</NavLink></Button>

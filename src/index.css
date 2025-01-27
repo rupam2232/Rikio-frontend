@@ -15,6 +15,13 @@ img {
   -ms-user-select: none;
 }
 
+.logo-font {
+  font-family: "Playwrite IN", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
 .video-js{
   background-color: transparent !important;
 }

@@ -11,6 +11,7 @@ import formatNumbers from '../utils/formatNumber.js'
 import joinedAt from '../utils/joinedAt.js'
 import setAvatar from '../utils/setAvatar.js'
 import { Button } from './index.js'
+import { useSelector } from 'react-redux'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -24,6 +25,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const AccountHover = ({ user, toggleSubscribe, children }) => {
+  const loggedInUser = useSelector((state) => state.auth.userData);
     return (
         <HoverCard>
             <HoverCardTrigger className='w-max h-max inline-block'>
@@ -39,7 +41,7 @@ const AccountHover = ({ user, toggleSubscribe, children }) => {
                             </Avatar>
                         </NavLink>
 
-                        {user.isSubscribed ?
+                        {loggedInUser && user.isSubscribed ?
                             <AlertDialog>
                                 <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
                                     <div role='button' data-subscribed="Subscribed" data-unsubscribe="Unsubscribe" className="gap-0 w-28 rounded-md py-2 px-4 group flex items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:after:content-[attr(data-unsubscribe)] after:content-[attr(data-subscribed)] hover:text-red-600" />

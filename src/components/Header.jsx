@@ -1,6 +1,6 @@
 import { Logo, Input, Button, ModeToggle, SidebarTrigger } from './index'
 import { Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, NavLink } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import { useIsMobile } from "../hooks/use-mobile.jsx"
 
@@ -16,9 +16,9 @@ const Header = () => {
             <nav className="mx-auto flex  justify-between  max-w-7xl  items-center py-2">
                 <div className="flex items-center gap-4">
                     <SidebarTrigger />
-                    {isMobile && <div className="mr-4 w-12 shrink-0 sm:w-16 cursor-pointer" title='Limo' aria-label='Logo' onClick={() => navigate("/")}>
+                    {isMobile && <NavLink to={"/"} className="mr-4 w-12 !bg-transparent hover:!bg-transparent shrink-0 sm:w-16 cursor-pointer" title='Limo' aria-label='Logo'>
                         <Logo />
-                    </div>}
+                    </NavLink>}
                     
                 </div>
                 <div className="md:absolute left-1/2 md:-translate-x-1/2 gap-1 flex items-center md:w-1/3">
