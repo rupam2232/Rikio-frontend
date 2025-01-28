@@ -15,7 +15,6 @@ export function NavMain({ items }) {
   const isMobile = useIsMobile()
 
   return (
-
     <SidebarGroup>
       <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>

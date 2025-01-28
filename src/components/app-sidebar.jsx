@@ -23,7 +23,7 @@ import {
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { Button, Logo, ModeToggle } from "./index.js"
-import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "../hooks/use-mobile.jsx"
 
 const items = [
   {
@@ -65,18 +65,17 @@ const items = [
 export function AppSidebar(props) {
   const user = useSelector((state) => state.auth.userData);
   const { toggleSidebar } = useSidebar()
-  const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="">
         <NavLink to={"/"} className="!bg-transparent hover:!bg-transparent cursor-pointer flex items-center gap-0" title='Limo' aria-label='Limo'>
-          <Logo className="w-12"/>
-          <p className="group-data-[collapsible=icon]:hidden logo-font !font-bold text-2xl  from-[#c7b1ea] to-[#844cdd] bg-gradient-to-r bg-clip-text text-transparent">  
-          Limo
+          <Logo className="w-12 size-11" />
+          <p className="group-data-[collapsible=icon]:hidden logo-font !font-bold text-2xl  from-[#c7b1ea] to-[#6356f4] bg-gradient-to-r bg-clip-text text-transparent relative right-1">
+            Limo
           </p>
         </NavLink>
-        {/* Limo */}
       </SidebarHeader>
 
       <SidebarGroupAction title="Close" className="[&>svg]:size-6 sm:[&>svg]:size-5 z-30" onClick={toggleSidebar} type="button">
@@ -88,8 +87,10 @@ export function AppSidebar(props) {
         <NavMain items={items} />
       </SidebarContent>
       <SidebarFooter>
-        <ModeToggle className="border-zinc-500 md:hidden" title="toggle theme" />
-        {user ? <NavUser /> :
+        <div className="mb-2">
+          <ModeToggle className="" title="toggle theme" />
+        </div>
+        {user ? !isMobile && <NavUser /> :
           <>
             <Button onClick={toggleSidebar} className="md:hidden"><NavLink className="text-primary-foreground w-full" to="/login">Login</NavLink></Button>
             <Button onClick={toggleSidebar} className="md:hidden"><NavLink className="text-primary-foreground w-full" to="/signup">Signup</NavLink></Button>

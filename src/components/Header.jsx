@@ -3,6 +3,7 @@ import { Search } from 'lucide-react';
 import { useNavigate, NavLink } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import { useIsMobile } from "../hooks/use-mobile.jsx"
+import { NavUser } from "./nav-user";
 
 const Header = () => {
     const user = useSelector((state) => state.auth.userData);
@@ -19,24 +20,25 @@ const Header = () => {
                     {isMobile && <NavLink to={"/"} className="mr-4 w-12 !bg-transparent hover:!bg-transparent shrink-0 sm:w-16 cursor-pointer" title='Limo' aria-label='Logo'>
                         <Logo />
                     </NavLink>}
-                    
+
                 </div>
-                <div className="md:absolute left-1/2 md:-translate-x-1/2 gap-1 flex items-center md:w-1/3">
+                <div className="md:absolute left-1/2 md:-translate-x-1/2 gap-1 flex items-center w-full md:w-1/3">
 
                     <Input type="search" placeholder="Search" className="border-zinc-500 pl-8 hidden md:block " />
 
                     <span className="hidden md:inline-block peer-focus:opacity-0 transition-opacity absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4">
                         <Search className='w-full h-full' />
                     </span>
-                    <Button title='search' className="ml-auto w-max block" type='button'>
+                    <Button title='search' className="ml-auto mr-2 md:mr-0 w-max block" type='button'>
                         <Search className="w-6 h-6" />
                     </Button>
                 </div>
 
                 <div className=" flex w-max md:gap-3 gap-1 sm:items-center sm:px-0 justify-center">
-                    <ModeToggle className="border-zinc-500 hidden md:inline-flex" title="toggle theme" />
-                    {!user && <Button title='Login' className="md:block " onClick={loginPage}>Log in</Button>}
-                    {!user && <Button title='Signup' className="md:block " onClick={signUpPage}>Sign up</Button>}
+                    {/* <ModeToggle className="border-zinc-500 hidden md:inline-flex" title="toggle theme" /> */}
+                    {!user && <Button title='Login' className="md:block px-2 py-1 md:px-4 md:py-2" onClick={loginPage}>Log in</Button>}
+                    {!user && <Button title='Signup' className="md:block px-2 py-1 md:px-4 md:py-2" onClick={signUpPage}>Sign up</Button>}
+                    {isMobile && user && <NavUser />}
                 </div>
             </nav>
         </header>

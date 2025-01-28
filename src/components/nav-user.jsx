@@ -41,7 +41,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useSelector, useDispatch } from "react-redux";
 import setAvatar from '../utils/setAvatar.js'
-import { NavLink, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { logout } from "../store/authSlice.js";
 import axios from "../utils/axiosInstance.js";
 import toast from "react-hot-toast"
@@ -67,7 +67,7 @@ export function NavUser() {
 
     axios.post(`/users/logout`)
       .then((res) => {
-        if(res.status === 200) {
+        if (res.status === 200) {
           dispatch(logout());
           toast.success("Log out successfully", {
             style: { color: "#ffffff", backgroundColor: "#333333" },
@@ -104,11 +104,15 @@ export function NavUser() {
               <Avatar className="h-8 w-8 rounded-full">
                 <AvatarImage src={setAvatar(user.avatar)} alt={`@${user.username}`} className="object-cover" />
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.fullName}</span>
-                <span className="truncate text-xs">{user.email}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              {!isMobile && (
+                <>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">{user.fullName}</span>
+                    <span className="truncate text-xs">{user.email}</span>
+                  </div>
+                  <ChevronsUpDown className="ml-auto size-4" />
+                </>
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
