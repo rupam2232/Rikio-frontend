@@ -354,8 +354,8 @@ const UploadVideo = () => {
                     </div>
 
                     <AlertDialog>
-                        <AlertDialogTrigger className='disabled:opacity-50 disabled:pointer-events-none' disabled={!videoFile || !thumbnailFile || !title.trim()}>
-                            <div role="button" className='px-3 py-2 bg-primary text-sm font-medium hover:bg-primary/90 text-background rounded-lg' disabled={!videoFile || !thumbnailFile || !title.trim()}>
+                        <AlertDialogTrigger className='disabled:opacity-50 disabled:pointer-events-none w-full sm:w-auto' disabled={!videoFile || !thumbnailFile || !title.trim()}>
+                            <div role="button" className='px-3 py-2 bg-primary text-sm font-medium hover:bg-primary/90 text-background rounded-lg'>
                                 Upload
                             </div>
                         </AlertDialogTrigger>

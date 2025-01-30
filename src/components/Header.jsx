@@ -1,4 +1,4 @@
-import { Logo, Input, Button, ModeToggle, SidebarTrigger } from './index'
+import { Logo, Input, Button, SidebarTrigger } from './index'
 import { Search } from 'lucide-react';
 import { useNavigate, NavLink } from 'react-router-dom'
 import { useSelector } from "react-redux";

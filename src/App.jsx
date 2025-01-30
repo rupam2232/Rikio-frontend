@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import './App.css'
 import { Outlet } from 'react-router-dom'
 import Header from "./components/Header.jsx"
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { login, logout } from './store/authSlice.js'
 import axios from './utils/axiosInstance'
 import { ThemeProvider } from "./components/ThemeProvider"
@@ -13,10 +13,9 @@ import {
   SidebarProvider,
 } from "./components/ui/sidebar"
 
-export default function App() {
+export default function App({ children }) {
 
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.auth.userData);
 
   useEffect(() => {
     axios.get('/users/current-user')
@@ -42,7 +41,7 @@ export default function App() {
           <Header />
           <Separator />
           <main className='w-full h-full'>
-            <Outlet />
+            {children ? children : <Outlet />}
           </main>
         </SidebarInset>
       </SidebarProvider>

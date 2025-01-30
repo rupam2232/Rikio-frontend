@@ -10,7 +10,7 @@ import setAvatar from '../utils/setAvatar.js'
 import toast from "react-hot-toast"
 import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
-import { useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/authSlice.js'
 import {
     AlertDialog,
@@ -178,7 +178,7 @@ const Video = () => {
                 match ? setError(match[0].slice(7)) : setError(error.message);
             })
             .finally(() => setLoader(false));
-    }, [])
+    }, [videoId])
 
     if (loader) {
         return (<div className='w-full h-full flex justify-center items-center'>
@@ -192,7 +192,7 @@ const Video = () => {
 
     return (
         <>
-            <section className="w-full ">
+            <section className="w-full">
                 <div className="flex w-full flex-wrap gap-4 p-4 lg:flex-nowrap">
                     <div className="col-span-12 w-full">
                         <div className="mb-4 w-full flex justify-center items-center rounded-lg border border-primary/30">
@@ -279,15 +279,14 @@ const Video = () => {
                             </div>
                             <div className="mt-4 flex flex-wrap gap-y-3 items-center justify-between">
                                 <AccountHover user={{ ...video.owner, isSubscribed: subscribed, subscribers: sub }} toggleSubscribe={toggleSubscribe}>
-                                    <div className="flex items-center gap-x-4 group cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
+                                    <div className="flex flex-wrap items-center gap-x-4 group cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
                                         <Avatar className='h-12 w-12'>
                                             <AvatarImage src={setAvatar(video.owner.avatar)} className="object-cover" />
                                         </Avatar>
                                         <div className="block">
-                                            <p className="font-bold relative">
-                                                {video.owner.fullName}{video.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                                </span>}</p>
+                                            <p className="font-bold relative">{video.owner.fullName}{video.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                            </span>}</p>
                                             <p className="text-sm text-sidebar-foreground/95">{formatNumbers(sub)} Subscribers</p>
                                         </div>
                                     </div>
@@ -337,7 +336,7 @@ const Video = () => {
                                 {/* <span className={`absolute bottom-0 right-0 p-2 bg-gradient-to-t from-background to-transparent w-full h-4 ${fullDesc && "hidden"}`}></span> */}
 
                                 <div className={`${video.description && video?.tags && "mt-3"} ${fullDesc ? 'block' : 'hidden'}`}>
-                                    {video?.tags && video.tags.map((tag, index) => ( <span key={index} className="inline-block px-2 py-1 bg-primary/20 text-primary text-xs rounded-md mr-2">{tag}</span>))}
+                                    {video?.tags && video.tags.map((tag, index) => (<span key={index} className="inline-block px-2 py-1 bg-primary/20 text-primary text-xs rounded-md mr-2">{tag}</span>))}
                                 </div>
                             </div>
                         </div>

@@ -6,7 +6,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { Provider } from 'react-redux'
 import store from './store/store.js'
-import Authlayout from './components/AuthLayout.jsx'
+import { AuthLayout, ChannelWrapper } from './components/index.js'
 
 import Home from './pages/Home.page.jsx'
 import Signup from './pages/Signup.page.jsx'
@@ -48,9 +48,9 @@ const router = createBrowserRouter([
       }, {
         path: '/upload',
         element: (
-          <Authlayout >
+          <AuthLayout >
             <UploadVideo />
-          </Authlayout>
+          </AuthLayout>
         )
       }, {
         path: '/signup',
@@ -58,11 +58,12 @@ const router = createBrowserRouter([
       }, {
         path: '/login',
         element: <Login />,
-      }
+      },
     ]
-  }, {
+  },
+  {
     path: '*',
-    element: <NotFound />
+    element: <ChannelWrapper /> //handled /@:username route here
   }
 ])
 

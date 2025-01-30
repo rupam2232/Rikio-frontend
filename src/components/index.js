@@ -38,6 +38,8 @@ import FormInput from "./FormInput.jsx"
 import ParseContents from "./ParseContents.jsx"
 import VideoPlayer from "./VideoPlayer.jsx"
 import Video from "./Video.jsx"
+import ChannelWrapper from "./ChannelWrapper.jsx"
+import AuthLayout from "./AuthLayout.jsx"
 
 export {
     Logo,
@@ -75,5 +77,7 @@ export {
     FormInput,
     ParseContents,
     VideoPlayer,
-    Video
+    Video,
+    ChannelWrapper,
+    AuthLayout
 }

@@ -56,9 +56,9 @@ function Login() {
             <div className='flex h-full items-center justify-center w-full py-8'>
                 <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-md overflow-hidden shadow-slate-500`}>
                     <div className="mb-2 flex justify-center">
-                        <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Limo' onClick={() => navigate("/")}>
+                        <NavLink className="inline-block relative left-2 w-full max-w-[100px] cursor-pointer" title='Limo' to="/">
                             <Logo className="w-full" />
-                        </span>
+                        </NavLink>
                     </div>
                     <h2 className="text-center text-2xl font-bold leading-tight">Login to your account</h2>
                     <p className="mt-2 text-center text-base text-primary/70">

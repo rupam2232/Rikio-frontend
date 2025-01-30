@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import axios from "../utils/axiosInstance.js"
 import errorMessage from "../utils/errorMessage.js"
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button, FormInput as Input, Logo, ArrowBack } from './index.js'
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from 'react-redux'
@@ -350,19 +350,19 @@ function Signup() {
                         <ArrowBack height="24px" width="24px" className={`relative left-1 fill-primary`} />
                     </Button>
                     <div className="mb-2 flex justify-center">
-                        <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Limo' onClick={() => navigate("/")}>
+                        <NavLink className="inline-block relative left-2 w-full max-w-[100px] cursor-pointer" title='Limo' to="/">
                             <Logo width="100%" />
-                        </span>
+                        </NavLink>
                     </div>
                     <h2 className="text-center text-2xl font-bold leading-tight">Sign up to create account</h2>
                     <p className="mt-2 mb-2 text-center text-base text-primary/70">
                         Already have an account?&nbsp;
-                        <Link
+                        <NavLink
                             to="/login"
                             className="font-medium text-primary transition-all duration-200 underline text-text"
                         >
                             Log In
-                        </Link>
+                        </NavLink>
                     </p>
 
                     <form onSubmit={SingUpForm}>
