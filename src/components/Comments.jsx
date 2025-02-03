@@ -104,9 +104,16 @@ const Comments = ({
     }
 
     const closeFullComment = () => {
+        let singleCommentId = showSingleComment._id
         setShowSingleComment(null)
         setIsEditing(false)
         setPostComment("")
+        setTimeout(() => {
+            const targetElement = document.getElementById(`${singleCommentId}`)
+            targetElement.scrollIntoView({ behavior: "smooth", block: "center" })
+        }, [100])
+        
+        
     }
 
     // const handleEnter = (e) => {
@@ -115,7 +122,7 @@ const Comments = ({
     //     }
     // };
 
-    const lastBookElementRef = useCallback(node => {
+    const lastCommentElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect()
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting) {
@@ -172,7 +179,7 @@ const Comments = ({
                     <div className="block">
                         <div className='flex gap-4 items-center mb-4 '>
                             <button type='button' className="border-primary/30 rounded-lg px-4 py-2 border text-primary" onClick={()=>{
-                                singleComment?.current.click()
+                                closeFullComment()
                             }}>
                                 <ArrowBack height="20px" width="20px" className={`relative left-1 fill-primary`} />
                             </button>
@@ -193,7 +200,7 @@ const Comments = ({
                                 ref={textArea}
                             ></textarea>
                             <div className='flex items-center gap-3'>
-                                <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={""}>
+                                <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} >
 
                                     {isCommentSubmitting ? <Loader height="24px" width="24px" className=
                                         "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
@@ -293,7 +300,7 @@ const Comments = ({
 
                             if (allComment.comments.length === index + 1) {
                                 return (
-                                    <div key={comment._id} ref={lastBookElementRef} className="block" id={comment._id}>
+                                    <div key={comment._id} ref={lastCommentElementRef} className="block" id={comment._id}>
                                         <div className="flex xs:flex-row flex-col gap-x-4 relative">
 
                                             <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
@@ -426,7 +433,7 @@ const Comments = ({
 
                                 if (allComment.comments.length === index + 1) {
                                     return (
-                                        <div key={comment._id} ref={lastBookElementRef} className="block" id={comment._id}>
+                                        <div key={comment._id} ref={lastCommentElementRef} className="block" id={comment._id}>
                                             <div className="flex xs:flex-row flex-col gap-x-4 relative">
 
                                                 <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>

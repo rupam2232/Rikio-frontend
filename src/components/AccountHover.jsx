@@ -24,11 +24,11 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-const AccountHover = ({ user, toggleSubscribe, children }) => {
+const AccountHover = ({ user, toggleSubscribe, children,className="" }) => {
   const loggedInUser = useSelector((state) => state.auth.userData);
     return (
         <HoverCard>
-            <HoverCardTrigger className='w-max h-max inline-block'>
+            <HoverCardTrigger className={`w-max h-max inline-block ${className}`}>
                 {children}
             </HoverCardTrigger>
             <HoverCardContent>

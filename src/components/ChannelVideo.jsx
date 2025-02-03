@@ -1,108 +1,38 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import axios from '../utils/axiosInstance.js'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import axios from '@/utils/axiosInstance';
 import { timeAgo } from '../utils/timeAgo.js'
 import { videoDuration } from '../utils/videoDuration.js'
 import formatNumbers from '../utils/formatNumber.js'
-import joinedAt from '../utils/joinedAt.js'
-import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
-import { AccountHover } from '../components/index.js'
-import { useNavigate, NavLink, useSearchParams } from 'react-router-dom'
-import { VideoNotFound } from '../components/index.js'
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
-import toast from "react-hot-toast"
+import { NavLink } from 'react-router-dom'
+import VideoNotFound from './VideoNotFound.jsx'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
-
-const Home = () => {
-    const [videos, setVideos] = useState([])
+const ChannelVideo = ({ username, isChannelOwner }) => {
+    const [videos, setVideos] = useState([]);
     const [totalVideo, setTotalVideo] = useState(0)
     const [page, setPage] = useState(1)
-    const [loader, setLoader] = useState(true)
-    const [searchParams] = useSearchParams()
-    const navigate = useNavigate()
-
-    const limit = searchParams.get("limit");
-    const channel = searchParams.get("channel");
-    const search = searchParams.get("search");
-    const sortBy = searchParams.get("sortBy");
-    const sortType = searchParams.get("sortType");
+    const [sortType, setSortType] = useState("desc")
+    const [loader, setLoader] = useState(true);
 
     useEffect(() => {
-        axios.get(`/videos/?page=${page}`)
-            .then((value) =>{ 
+        setLoader(true)
+        axios.get(`/videos/?channel=${username}&sortType=${sortType}&page=${page}`)
+            .then((value) => {
                 setTotalVideo(value.data.data.totalVideo)
-                setVideos(value.data.data.videos)
+                setVideos(value.data.data.channelsAllVideo)
             })
             .catch((error) => console.error(error))
             .finally(() => setLoader(false))
 
-    }, [])
-
-    const toggleSubscribe = (ownerId) => {
-        axios.post(`/subscription/c/${ownerId}`)
-            .then((value) => {
-                if (value.data.message.toLowerCase() === "subscribed") {
-                    let videoData = [...videos]
-                    let updatedVideo = videoData.map((video) => {
-                        if (video.owner._id === ownerId) {
-                            video.isSubscribed = true
-                        }
-                        return video
-                    })
-                    setVideos(updatedVideo)
-
-                    axios.get(`/subscription/u/${ownerId}`)
-                        .then((value) => {
-                            videoData = [...videos]
-                            updatedVideo = videoData.map((video) => {
-                                if (video.owner._id === ownerId) {
-                                    video.owner.subscribers = value.data.data.subscribers.length
-                                }
-                                return video
-                            })
-                            setVideos(updatedVideo)
-                        })
-                        .catch((error) => {
-                            console.error(error.message);
-                        });
-                } else if (value.data.message.toLowerCase() === "unsubscribed") {
-                    let videoData = [...videos]
-                    let updatedVideo = videoData.map((video) => {
-                        if (video.owner._id === ownerId) {
-                            video.isSubscribed = false
-                        }
-                        return video
-                    })
-                    setVideos(updatedVideo)
-
-                    axios.get(`/subscription/u/${ownerId}`)
-                        .then((value) => {
-                            videoData = [...videos]
-                            updatedVideo = videoData.map((video) => {
-                                if (video.owner._id === ownerId) {
-                                    video.owner.subscribers = value.data.data.subscribers.length
-                                }
-                                return video
-                            })
-                            setVideos(updatedVideo)
-                        })
-                        .catch((error) => {
-                            console.error(error.message);
-                        });
-                }
-            })
-            .catch((error) => {
-                if (error.status === 401) {
-                    toast.error("You need to login first", {
-                        style: { color: "#ffffff", backgroundColor: "#333333" },
-                        position: "top-center"
-                    })
-                    navigate("/login")
-                }
-                console.error(errorMessage(error));
-            })
-    }
-    console.log(videos)
+    }, [username, sortType])
 
     const lastVideoElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect()
@@ -237,55 +167,63 @@ const Home = () => {
 
     if (videos.length === 0) {
         return (
-            <VideoNotFound pText="There are no videos here available. Please upload a video first."/>
+            <div className='h-[80vh] flex items-center justify-center flex-col'>
+                <VideoNotFound className="!h-max !pb-0" pText="This channel has yet to upload a video. Search another channel in order to find more videos." />
+                {isChannelOwner && <NavLink to="/upload" className="flex justify-center mt-4 bg-[#ae7aff] px-4 py-2 rounded-md font-medium text-sm">Upload Video</NavLink>}
+            </div>
         )
     }
 
-
     return (
-        <section className="w-full">
-            <div className='grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-x-4 gap-y-8 p-4'>
+        <div className="grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-x-4 gap-y-8 p-2 relative pt-12 mt-2">
+            <div className='absolute top-0 right-0 z-20 bg-background'>
+                <Select onValueChange={(e)=>setSortType(e)} defaultValue={sortType}>
+                    <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Sort" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="desc">Latest</SelectItem>
+                        <SelectItem value="asc">Oldest</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
 
-                {videos ? videos.map((video) => (
-                    <div key={video._id} className="aspect-video rounded-xl">
-                        <div className='relative mb-2 w-full pt-[56%]' aria-label='Thubmnail'>
-                            <NavLink to={`/video/${video._id}`}>
-                                <div className="absolute inset-0">
-                                    <img src={video.thumbnail} alt={`${video.title} uploaded by @${video.owner.username}`} className='w-full h-full object-cover rounded-md pointer-events-none' />
-                                </div>
-                                <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
-                            </NavLink>
-                        </div>
-                        <div className="flex gap-x-2 cursor-pointer">
-
-                                <AccountHover user={{ ...video.owner, isSubscribed: video.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                    <div onClick={() => navigate(`/@${video.owner.username}`)} className="cursor-pointer">
-                                        <Avatar className='h-10 w-10 shrink-0'>
-                                            <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                        </Avatar>
-                                    </div>
-                                </AccountHover>
-
-                            <div className="w-full">
-                                <NavLink to={`/video/${video._id}`} >
-                                    <h6 className="mb-1 font-semibold max-h-16 line-clamp-2 text-lg whitespace-normal" title={video.title}>{video.title}</h6>
-                                    <p className="flex text-sm text-secondary-foreground" title={`${formatNumbers(video.views)} views | uploaded ${timeAgo(video.createdAt)}`}>
-                                        <span>{formatNumbers(video.views)} views </span>
-                                        <span className=" before:content-['•'] before:px-2">{timeAgo(video.createdAt)}</span>
-                                    </p>
-                                </NavLink>
-                                
-                                <AccountHover user={{ ...video.owner, isSubscribed: video.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                    <span onClick={() => navigate(`/@${video.owner.username}`)} className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
-                                </AccountHover>
-
+            {videos ? videos.map((video) => (
+                <div key={video._id} className="aspect-video rounded-xl">
+                    <div className='relative mb-2 w-full pt-[56%]' aria-label='Thubmnail'>
+                        <NavLink to={`/video/${video._id}`}>
+                            <div className="absolute inset-0">
+                                <img src={video.thumbnail} alt={`${video.title} uploaded by @${video.owner.username}`} className='w-full h-full object-cover rounded-md pointer-events-none' />
                             </div>
+                            <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
+                        </NavLink>
+                    </div>
+                    <div className="flex gap-x-2 cursor-pointer">
+
+                        <div className="cursor-pointer">
+                            <Avatar className='h-10 w-10 shrink-0'>
+                                <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
+                            </Avatar>
+                        </div>
+
+                        <div className="w-full">
+                            <NavLink to={`/video/${video._id}`} >
+                                <h6 className="mb-1 font-semibold max-h-16 line-clamp-2 text-lg whitespace-normal" title={video.title}>{video.title}</h6>
+                                <p className="flex text-sm text-secondary-foreground" title={`${formatNumbers(video.views)} views | uploaded ${timeAgo(video.createdAt)}`}>
+                                    <span>{formatNumbers(video.views)} views </span>
+                                    <span className=" before:content-['•'] before:px-2">{timeAgo(video.createdAt)}</span>
+                                </p>
+                            </NavLink>
+
+                            <span className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
+
                         </div>
                     </div>
-                )) : <h1>Some thing went wrong please refresh the page or else contact to the support</h1>}
-            </div>
-        </section>
+                </div>
+            )) : <h1>Some thing went wrong please refresh the page or else contact to the support</h1>}
+
+        </div>
     )
 }
 
-export default Home
+export default ChannelVideo

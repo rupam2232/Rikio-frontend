@@ -7,11 +7,13 @@ const ChannelWrapper = () => {
     const location = useLocation();
 
     if (location.pathname.startsWith("/@")) {
-        const username = location.pathname.substring(2); 
+        const pathName = location.pathname.substring(2);
+        const username = pathName.includes("/") ? pathName.split("/")[0] : pathName;
+        const pageName = pathName.includes("/") ? pathName.split("/")[1] : null; 
 
         return (
             <App>
-                <Channel username={username} />
+                <Channel username={username} pageName={pageName}/>
             </App>
         );
     }

@@ -40,6 +40,7 @@ import VideoPlayer from "./VideoPlayer.jsx"
 import Video from "./Video.jsx"
 import ChannelWrapper from "./ChannelWrapper.jsx"
 import AuthLayout from "./AuthLayout.jsx"
+import ChannelVideo from "./ChannelVideo.jsx"
 
 export {
     Logo,
@@ -79,5 +80,6 @@ export {
     VideoPlayer,
     Video,
     ChannelWrapper,
-    AuthLayout
+    AuthLayout,
+    ChannelVideo
 }
