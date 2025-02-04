@@ -11,6 +11,13 @@ import { useIsMobile } from "../hooks/use-mobile.jsx"
 import toast from "react-hot-toast"
 import { useDispatch } from 'react-redux'
 import { logout } from '../store/authSlice.js'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 const Comments = ({
     parentContentId,
@@ -25,6 +32,8 @@ const Comments = ({
     const [editingComment, setEditingComment] = useState({})
     const [page, setPage] = useState(1)
     const [showSingleComment, setShowSingleComment] = useState(null)
+    const [sortType, setSortType] = useState("desc")
+    const [showComment, setShowComment] = useState(true)
     const observer = useRef()
     const textArea = useRef()
     const isFetching = useRef(false);
@@ -45,7 +54,7 @@ const Comments = ({
                             setAllComment(value.data.data);
                         })
                         .catch((error) => {
-                            console.error(error.message);
+                            console.error(errorMessage(error));
                         })
                 })
                 .catch((error) => {
@@ -70,10 +79,10 @@ const Comments = ({
                                 setAllComment(value.data.data);
                             })
                             .catch((error) => {
-                                console.error(error.message);
+                                console.error(errorMessage(error));
                             })
                     } else {
-                        setShowSingleComment({...showSingleComment, content: postComment})
+                        setShowSingleComment({ ...showSingleComment, content: postComment })
                     }
                 })
                 .catch((error) => {
@@ -112,8 +121,8 @@ const Comments = ({
             const targetElement = document.getElementById(`${singleCommentId}`)
             targetElement.scrollIntoView({ behavior: "smooth", block: "center" })
         }, [100])
-        
-        
+
+
     }
 
     // const handleEnter = (e) => {
@@ -139,12 +148,12 @@ const Comments = ({
                 setCommentLoader(false)
                 return;
             }
-            setCommentLoader(true)
 
-            isFetching.current = true;
-            axios.get(`/comment/v/${parentContentId}?page=${page}&sortType=desc`)
-                .then((res) => {
-                    if (allComment.comments) {
+            if (allComment?.comments) {
+                setCommentLoader(true)
+                isFetching.current = true;
+                axios.get(`/comment/v/${parentContentId}?page=${page}&sortType=${sortType}`)
+                    .then((res) => {
                         setAllComment({
                             ...allComment, comments: [...allComment.comments,
                             ...res.data.data.comments.filter(
@@ -154,21 +163,41 @@ const Comments = ({
                                     )
                             ),]
                         })
-                    } else {
-                        setAllComment(res.data.data)
-                    }
-                })
-                .catch((error) => {
-                    console.error(error.message);
-                })
-                .finally(() => {
-                    isFetching.current = false;
-                    setCommentLoader(false)
-                })
+                    })
+                    .catch((error) => {
+                        console.error(errorMessage(error));
+                    })
+                    .finally(() => {
+                        isFetching.current = false;
+                        setCommentLoader(false)
+                    })
+            }
         }
         fetchComments();
 
     }, [page])
+
+    const fetchFirstCommentSet = useCallback(() => {
+        isFetching.current = true;
+        setCommentLoader(true)
+        setShowComment(false)
+        setPage(1)
+        axios.get(`/comment/v/${parentContentId}?sortType=${sortType}`)
+            .then((res) => {
+                setAllComment(res.data.data)
+            })
+            .catch((error) => console.error(errorMessage(error)))
+            .finally(() => {
+                isFetching.current = false;
+                setCommentLoader(false)
+                setShowComment(true)
+            })
+    }, [sortType])
+
+    useEffect(() => {
+        fetchFirstCommentSet()
+    }, [sortType])
+
 
     if (showSingleComment) {
         return (
@@ -178,7 +207,7 @@ const Comments = ({
                     className="bg-background border-primary/30 rounded-lg border p-4 duration-200">
                     <div className="block">
                         <div className='flex gap-4 items-center mb-4 '>
-                            <button type='button' className="border-primary/30 rounded-lg px-4 py-2 border text-primary" onClick={()=>{
+                            <button type='button' className="border-primary/30 rounded-lg px-4 py-2 border text-primary" onClick={() => {
                                 closeFullComment()
                             }}>
                                 <ArrowBack height="20px" width="20px" className={`relative left-1 fill-primary`} />
@@ -261,8 +290,7 @@ const Comments = ({
 
         if (isMobile) {
             return (
-                <div
-                    className="p-4 rounded-lg border border-primary/30">
+                <div className="p-4 rounded-lg border border-primary/30">
 
                     <div className="block">
                         <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
@@ -293,8 +321,28 @@ const Comments = ({
                             </Button>}
                         </div>
                     </div>
-                    <hr className="my-4 border-primary" />
-                    <div className=''>
+                    <hr className="mt-4 mb-2 border-primary" />
+                    <div className={`relative ${(allComment.comments && allComment.comments.length !== 0)
+                        ? "pt-10" : "pt-2"}`}>
+                        <div className={`top-0 right-0 z-10 bg-background ${(allComment.comments && allComment.comments.length !== 0) ? "absolute" : "hidden"}`}>
+                            <Select onValueChange={(e) => setSortType(e)} defaultValue={sortType}>
+                                <SelectTrigger className="w-[180px]">
+                                    <SelectValue placeholder="Sort" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="desc">Latest</SelectItem>
+                                    <SelectItem value="asc">Oldest</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {!showComment && (
+                            <>
+                                <div className='absolute z-[15] inset-0 flex items-start justify-center bg-background/70 bg-opacity-50'>
+                                    <p className='w-full mt-10 flex justify-center'> <Loader height="24px" width="24px" className="animate-spin fill-primary" /> </p>
+                                </div>
+                            </>
+                        )}
 
                         {allComment.comments ? allComment.comments.length !== 0 ? allComment.comments.map((comment, index) => {
 
@@ -426,8 +474,28 @@ const Comments = ({
                                 </div>
                             </div>
                         </div>
-                        <hr className="my-4 border-primary" />
-                        <div>
+                        <hr className="mt-4 mb-2 border-primary" />
+                        <div className={`relative ${(allComment.comments && allComment.comments.length !== 0)
+                            ? "pt-10" : "pt-2"}`}>
+                            <div className={`top-0 right-0 z-10 bg-background ${(allComment.comments && allComment.comments.length !== 0) ? "absolute" : "hidden"}`}>
+                                <Select onValueChange={(e) => setSortType(e)} defaultValue={sortType}>
+                                    <SelectTrigger className="w-[180px]">
+                                        <SelectValue placeholder="Sort" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="desc">Latest</SelectItem>
+                                        <SelectItem value="asc">Oldest</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {!showComment && (
+                                <>
+                                    <div className='absolute z-[15] inset-0 flex items-start justify-center bg-background/70 bg-opacity-50'>
+                                        <p className='w-full mt-10 flex justify-center'> <Loader height="24px" width="24px" className="animate-spin fill-primary" /> </p>
+                                    </div>
+                                </>
+                            )}
 
                             {allComment.comments ? allComment.comments.length !== 0 ? allComment.comments.map((comment, index) => {
 
