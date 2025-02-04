@@ -55,8 +55,7 @@ img {
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -65,20 +64,20 @@ img {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(53, 40, 73);
-  border-radius: 10px;
+  background: hsl(var(--primary));
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(104, 71, 152);
+  background: hsl(var(--primary));
 }
 
-@supports (scrollbar-color: auto) {
+/* @supports (scrollbar-color: auto) {
   html {
-    scrollbar-width: calc(10px);
-    scrollbar-color: rgb(53, 40, 73) #f1f1f100;
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary)) #f1f1f100;
   }
-}
+} */
 
 
 input[type="password"]::-ms-reveal,

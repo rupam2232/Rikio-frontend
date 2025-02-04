@@ -19,7 +19,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Button, ChannelVideo } from '../components/index.js'
+import { Button, ChannelAbout, ChannelVideo } from '../components/index.js'
 import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -225,6 +225,12 @@ const Channel = ({ username, pageName }) => {
                 {
                     (pageName === 'videos' || !pageName) &&(
                         <ChannelVideo username={username} isChannelOwner={channelData.isChannelOwner}/>
+                    )
+                }
+
+                {
+                    (pageName === "about") && (
+                        <ChannelAbout channelData={channelData} />
                     )
                 }
             </div>
