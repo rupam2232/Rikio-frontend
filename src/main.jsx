@@ -13,7 +13,8 @@ import Signup from './pages/Signup.page.jsx'
 import Login from './pages/Login.page.jsx'
 import Video from './pages/Video.page.jsx'
 import UploadVideo from './pages/UploadVideo.page.jsx'
-import NotFound from './pages/NotFound.page'
+import Dashboard from './pages/Dashboard.page.jsx'
+import NotFound from './pages/NotFound.page.jsx'
 
 const router = createBrowserRouter([
   {
@@ -31,9 +32,6 @@ const router = createBrowserRouter([
         path: '/watch-history',
         element: <NotFound />
       }, {
-        path: '/my-content',
-        element: <NotFound />
-      }, {
         path: '/collections',
         element: <NotFound />
       }, {
@@ -42,6 +40,13 @@ const router = createBrowserRouter([
       }, {
         path: '/settings',
         element: <NotFound />
+      }, {
+        path: '/dashboard',
+        element: (
+          <AuthLayout >
+            <Dashboard />
+          </AuthLayout>
+        )
       }, {
         path: '/video/:videoId',
         element: <Video />,

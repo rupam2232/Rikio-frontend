@@ -6,7 +6,8 @@ import {
   LogOut,
   Sparkles,
   Upload,
-  LoaderCircle
+  LoaderCircle,
+  LayoutDashboard
 } from "lucide-react";
 
 import {
@@ -41,7 +42,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useSelector, useDispatch } from "react-redux";
 import setAvatar from '../utils/setAvatar.js'
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../store/authSlice.js";
 import axios from "../utils/axiosInstance.js";
 import toast from "react-hot-toast"
@@ -122,16 +123,18 @@ export function NavUser() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-full">
-                  <AvatarImage src={setAvatar(user.avatar)} alt={user.fullName} className="object-cover" />
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.fullName}{user.verified && <span title="verified" className=" ml-1 cursor-pointer"><BadgeCheck className="inline-block size-4 fill-blue-600 text-background" /></span>}
-                  </span>
-                  <span className="truncate text-xs">{user.email}</span>
+              <NavLink to={`/@${user.username}`}>
+                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                  <Avatar className="h-8 w-8 rounded-full">
+                    <AvatarImage src={setAvatar(user.avatar)} alt={user.fullName} className="object-cover" />
+                  </Avatar>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">{user.fullName}{user.verified && <span title="verified" className=" ml-1 cursor-pointer"><BadgeCheck className="inline-block size-4 fill-blue-600 text-background" /></span>}
+                    </span>
+                    <span className="truncate text-xs">{user.email}</span>
+                  </div>
                 </div>
-              </div>
+              </NavLink>
             </DropdownMenuLabel>
             {/* <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -142,10 +145,10 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+              <DropdownMenuItem className="px-0 py-0">
+                <button onClick={() => navigate(`/dashboard`)} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><LayoutDashboard />Dashboard</button>
               </DropdownMenuItem>
+
               <DropdownMenuItem className="px-0 py-0">
                 <button onClick={() => navigate("/upload")} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><Upload /> Upload</button>
               </DropdownMenuItem>

@@ -169,42 +169,6 @@ const ChannelVideo = ({ username, isChannelOwner }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-y-3" >
-                            <div className="aspect-video rounded-xl animate-pulse bg-muted/90" >
-                            </div>
-                            <div className="flex gap-x-2">
-                                <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
-                                </div>
-                                <div className="w-full h-16">
-                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
-                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-y-3" >
-                            <div className="aspect-video rounded-xl animate-pulse bg-muted/90" >
-                            </div>
-                            <div className="flex gap-x-2">
-                                <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
-                                </div>
-                                <div className="w-full h-16">
-                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
-                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-y-3" >
-                            <div className="aspect-video rounded-xl animate-pulse bg-muted/90" >
-                            </div>
-                            <div className="flex gap-x-2">
-                                <div className="w-12 h-10 rounded-full animate-pulse bg-muted/90">
-                                </div>
-                                <div className="w-full h-16">
-                                    <div className='w-full h-1/3 rounded-xl animate-pulse bg-muted/90'></div>
-                                    <div className='w-2/3 h-1/3 mt-2 rounded-xl animate-pulse bg-muted/90'></div>
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
                     <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/90" />
@@ -222,7 +186,7 @@ const ChannelVideo = ({ username, isChannelOwner }) => {
     }
 
     return (
-        <div className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-x-4 gap-y-8 p-2 relative pt-12 mt-2">
+        <div className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-x-4 gap-y-8 p-2 relative pt-12 mt-2 mb-5">
             <div className='absolute top-0 right-0 z-20 bg-background'>
                 <Select onValueChange={(e) => setSortType(e)} defaultValue={sortType}>
                     <SelectTrigger className="w-[180px]">

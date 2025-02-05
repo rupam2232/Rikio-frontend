@@ -42,9 +42,9 @@ function Login() {
                     <div className="flex h-full items-center justify-center w-full py-8">
                         <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
                             <div className="mb-2 flex flex-col items-center space-y-4">
-                                <span className="inline-block w-full max-w-[100px] cursor-pointer" title='Limo' onClick={() => navigate("/")}>
+                                <NavLink to="/" className="inline-block relative left-3 w-full max-w-[100px] cursor-pointer" title='Limo'>
                                     <Logo width="100%" />
-                                </span>
+                                </NavLink>
                             <p className='text-center'>You are already logged In.Please logout first to use this page.</p>
                             <Button onClick={()=> navigate("/")}>Go back home</Button>
                             </div>

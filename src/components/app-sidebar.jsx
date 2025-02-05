@@ -42,15 +42,11 @@ const items = [
     icon: History,
   },
   {
-    title: "My Content",
-    url: "/my-content",
-    icon: Video,
-  },
-  {
     title: "Collections",
     url: "/collections",
     icon: FolderClosed
-  }, {
+  }, 
+  {
     title: "Subscribed",
     url: "/subscribed",
     icon: UserRoundCheck

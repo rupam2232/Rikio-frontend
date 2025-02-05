@@ -159,21 +159,20 @@ const UploadVideo = () => {
                 },
                 onUploadProgress: (progressEvent) => {
                     const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-                    setUploadProgress(progress - 10);
+                    setUploadProgress(progress - 1);
                 },
             })
             if (res.status === 200) {
                 if (isPublished === true) {
-                    setUploadProgress(100);
                     setVideoUrl(`/video/${res.data.data._id}`);
                 }
+                setUploadProgress(100);
                 setIsUploading(false);
                 setThumbnailFile(null);
                 setVideoFile(null);
                 setTitle("");
                 setDescription("");
                 setTags("");
-                setIsPublished(true);
 
             } else {
                 toast.error("something went wrong please try again", {
@@ -335,7 +334,7 @@ const UploadVideo = () => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="true">Public</SelectItem>
-                                {/* <SelectItem value="false">Private</SelectItem> */}
+                                <SelectItem value="false">Private</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -409,11 +408,11 @@ const UploadVideo = () => {
 
                                     {isPublished === true ?
                                         <Button type="button">
-                                            <NavLink to={videoUrl}>View Video</NavLink>
+                                            <NavLink className="!bg-transparent hover:!bg-transparent" to={videoUrl}>View Video</NavLink>
                                         </Button>
                                         :
                                         <Button type="button">
-                                            <NavLink to={"/my-content"}>Go to My Content</NavLink>
+                                            <NavLink className="!bg-transparent hover:!bg-transparent" to={"/dashboard"}>Go to dashboard</NavLink>
                                         </Button>}
                                 </div>
                             )}

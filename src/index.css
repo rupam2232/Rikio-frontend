@@ -72,12 +72,12 @@ img {
   background: hsl(var(--primary));
 }
 
-/* @supports (scrollbar-color: auto) {
+@supports (scrollbar-color: auto) {
   html {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--primary)) #f1f1f100;
   }
-} */
+}
 
 
 input[type="password"]::-ms-reveal,

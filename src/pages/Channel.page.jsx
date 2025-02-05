@@ -169,7 +169,6 @@ const Channel = ({ username, pageName }) => {
                     <li className="w-full">
                         <NavLink to={`/@${channelData.username}/videos`} className={`${!pageName && "active"} w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5`}>Videos</NavLink>
                     </li>
-                    {/* border-[#ae7aff] bg-white text-[#ae7aff]*/}
                     <li className="w-full">
                         <NavLink to={`/@${channelData.username}/playlist`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5">Playlist</NavLink>
                     </li>
@@ -180,47 +179,6 @@ const Channel = ({ username, pageName }) => {
                         <NavLink to={`/@${channelData.username}/about`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5">About</NavLink>
                     </li>
                 </ul>
-                {/* <div className="grid grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))] gap-4 pt-2">
-                    <div className="w-full">
-                        <div className="relative mb-2 w-full pt-[56%]">
-                            <div className="absolute inset-0">
-                                <img src="https://images.pexels.com/photos/3561339/pexels-photo-3561339.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1260&amp;h=750&amp;dpr=1" alt="JavaScript Fundamentals: Variables and Data Types" className="h-full w-full" />
-                            </div>
-                            <span className="absolute bottom-1 right-1 inline-block rounded bg-black px-1.5 text-sm">20:45</span>
-                        </div>
-                        <h6 className="mb-1 font-semibold">JavaScript Fundamentals: Variables and Data Types</h6>
-                        <p className="flex text-sm text-gray-200">10.3k&nbsp;Views · 44 minutes ago</p>
-                    </div>
-                    <div className="w-full">
-                        <div className="relative mb-2 w-full pt-[56%]">
-                            <div className="absolute inset-0">
-                                <img src="https://images.pexels.com/photos/2519817/pexels-photo-2519817.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1260&amp;h=750&amp;dpr=1" alt="Getting Started with Express.js" className="h-full w-full" />
-                            </div>
-                            <span className="absolute bottom-1 right-1 inline-block rounded bg-black px-1.5 text-sm">22:18</span>
-                        </div>
-                        <h6 className="mb-1 font-semibold">Getting Started with Express.js</h6>
-                        <p className="flex text-sm text-gray-200">11.k&nbsp;Views · 5 hours ago</p>
-                    </div>
-                    <div className="w-full">
-                        <div className="relative mb-2 w-full pt-[56%]">
-                            <div className="absolute inset-0">
-                                <img src="https://images.pexels.com/photos/1739849/pexels-photo-1739849.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1260&amp;h=750&amp;dpr=1" alt="Building a RESTful API with Node.js and Express" className="h-full w-full" />
-                            </div>
-                            <span className="absolute bottom-1 right-1 inline-block rounded bg-black px-1.5 text-sm">24:33</span>
-                        </div>
-                        <h6 className="mb-1 font-semibold">Building a RESTful API with Node.js and Express</h6>
-                        <p className="flex text-sm text-gray-200">14.5k&nbsp;Views · 7 hours ago</p>
-                    </div>
-                    <div className="w-full">
-                        <div className="relative mb-2 w-full pt-[56%]"><div className="absolute inset-0">
-                            <img src="https://images.pexels.com/photos/1739854/pexels-photo-1739854.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1260&amp;h=750&amp;dpr=1" alt="Introduction to React Native" className="h-full w-full" />
-                        </div>
-                            <span className="absolute bottom-1 right-1 inline-block rounded bg-black px-1.5 text-sm">19:58</span>
-                        </div>
-                        <h6 className="mb-1 font-semibold">Introduction to React Native</h6>
-                        <p className="flex text-sm text-gray-200">10.9k&nbsp;Views · 8 hours ago</p>
-                    </div>
-                </div> */}
 
                 {
                     (pageName === 'videos' || !pageName) &&(

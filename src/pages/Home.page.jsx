@@ -3,7 +3,6 @@ import axios from '../utils/axiosInstance.js'
 import { timeAgo } from '../utils/timeAgo.js'
 import { videoDuration } from '../utils/videoDuration.js'
 import formatNumbers from '../utils/formatNumber.js'
-import joinedAt from '../utils/joinedAt.js'
 import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import { AccountHover } from '../components/index.js'
@@ -44,7 +43,7 @@ const Home = () => {
                     setTotalPages(value.data.data.totalPages)
                     setVideos(value.data.data.videos)
                 })
-                .catch((error) => console.error(error))
+                .catch((error) => console.error(errorMessage(error)))
                 .finally(() => setLoader(false))
 
         } else {
@@ -60,7 +59,7 @@ const Home = () => {
                             ))
                     ])
                 })
-                .catch((error) => console.error(error))
+                .catch((error) => console.error(errorMessage(error)))
                 .finally(() => setVideoLoader(false))
         }
         isFetching.current = false;
@@ -93,7 +92,7 @@ const Home = () => {
                             setVideos(updatedVideo)
                         })
                         .catch((error) => {
-                            console.error(error.message);
+                            console.error(errorMessage(error));
                         });
                 } else if (value.data.message.toLowerCase() === "unsubscribed") {
                     let videoData = [...videos]
@@ -117,7 +116,7 @@ const Home = () => {
                             setVideos(updatedVideo)
                         })
                         .catch((error) => {
-                            console.error(error.message);
+                            console.error(errorMessage(error));
                         });
                 }
             })
@@ -132,7 +131,6 @@ const Home = () => {
                 console.error(errorMessage(error));
             })
     }
-    console.log(videos)
 
     const lastVideoElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect()
@@ -274,7 +272,7 @@ const Home = () => {
 
     return (
         <section className="w-full">
-            <div className='grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-x-4 gap-y-8 p-4'>
+            <div className='grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-x-4 gap-y-8 p-4 mb-10'>
 
                 {videos ? videos.map((video, index) => {
                     if (videos.length === index + 1) {
