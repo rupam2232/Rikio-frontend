@@ -1,23 +1,47 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import axios from '../utils/axiosInstance.js'
 import { useDispatch, useSelector } from 'react-redux'
-import { login, logout } from '../store/authSlice.js'
+import { logout } from '../store/authSlice.js'
 import { NavLink } from 'react-router-dom'
 import { Loader, LoaderCircle } from 'lucide-react'
 import errorMessage from '../utils/errorMessage.js'
 import formatNumbers from '../utils/formatNumber.js'
 import NotFound from './NotFound.page.jsx'
+import { Button } from '../components/index.js'
+import toast from 'react-hot-toast'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Trash2, EditIcon } from 'lucide-react'
 
 const Dashboard = () => {
     const [statsData, setStatsData] = useState(null);
     const [loader, setLoader] = useState(true);
     const [error, setError] = useState(null)
+    const [toggleFetch, setToggleFetch] = useState(true)
     const [videoLoader, setVideoLoader] = useState(true)
+    const [optionLoader, setOptionLoader] = useState(null)
     const [videos, setVideos] = useState([])
     const [totalPages, setTotalPages] = useState(null)
     const [page, setPage] = useState(1)
     const isFetching = useRef(false);
     const observer = useRef();
+    const dispatch = useDispatch();
 
     const user = useSelector((state) => state.auth.userData);
 
@@ -33,45 +57,95 @@ const Dashboard = () => {
             .finally(() => {
                 setLoader(false)
             })
-    }, [])
+    }, [toggleFetch])
+
+   
 
     useEffect(() => {
-        if ((totalPages && page > totalPages) || isFetching.current === true) {
-            setVideoLoader(false)
+
+            if ((totalPages && page > totalPages) || isFetching.current === true) {
+                setVideoLoader(false)
+                return;
+            }
+            isFetching.current = true;
+            if (videos.length === 0) {
+                setVideoLoader(true)
+                axios.get(`/dashboard/videos/`)
+                    .then((value) => {
+                        console.log(value.data)
+                        setTotalPages(value.data.data.totalPages)
+                        setVideos(value.data.data.videos)
+                    })
+                    .catch((error) => console.error(errorMessage(error)))
+                    .finally(() => setVideoLoader(false))
+    
+            } else {
+                setVideoLoader(true)
+                axios.get(`/dashboard/videos/?page=${page}`)
+                    .then((value) => {
+                        setTotalPages(value.data.data.totalPages)
+                        setVideos([
+                            ...videos,
+                            ...value.data.data.videos.filter((video) =>
+                                !videos.some((v) =>
+                                    v._id === video._id
+                                ))
+                        ])
+                    })
+                    .catch((error) => console.error(errorMessage(error)))
+                    .finally(() => setVideoLoader(false))
+            }
+            isFetching.current = false;
+
+            
+    }, [page])
+
+    const deleteVideo = (videoId) => {
+        if (loader || optionLoader) {
+            toast.error("Please wait and try again later", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
             return;
         }
-        isFetching.current = true;
-        if (videos.length === 0) {
-            setVideoLoader(true)
-            axios.get(`/dashboard/videos/`)
-                .then((value) => {
-                    console.log(value.data)
-                    setTotalPages(value.data.data.totalPages)
-                    setVideos(value.data.data.videos)
-                })
-                .catch((error) => console.error(errorMessage(error)))
-                .finally(() => setVideoLoader(false))
 
-        } else {
-            setVideoLoader(true)
-            axios.get(`/dashboard/videos/?page=${page}`)
-                .then((value) => {
-                    setTotalPages(value.data.data.totalPages)
-                    setVideos([
-                        ...videos,
-                        ...value.data.data.videos.filter((video) =>
-                            !videos.some((v) =>
-                                v._id === video._id
-                            ))
-                    ])
-                })
-                .catch((error) => console.error(errorMessage(error)))
-                .finally(() => setVideoLoader(false))
-        }
-        isFetching.current = false;
-
-
-    }, [page])
+        setOptionLoader(true)
+        axios.delete(`/videos/${videoId}`)
+            .then((res) => {
+                if (res.data.data === true) {
+                    setToggleFetch(!toggleFetch)
+                    setVideos(videos.filter((video) => video._id !== videoId))
+                    toast.success("Video deleted successfully", {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                } else {
+                    toast.error("Something went wrong, please refresh the page", {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                }
+            })
+            .catch((error) => {
+                if (error.status === 401) {
+                    toast.error("You need to login first", {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    dispatch(logout())
+                    navigate("/login")
+                } else {
+                    toast.error(errorMessage(error), {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    console.error(errorMessage(error));
+                }
+            })
+            .finally(() => {
+                setOptionLoader(false)
+            })
+    }
 
     const lastVideoElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect()
@@ -124,25 +198,34 @@ const Dashboard = () => {
                     <p className="text-3xl font-semibold">{formatNumbers(statsData.totalVideos)}</p>
                 </div>
             </div>
-            <div className="w-full shadow-sm shadow-zinc-500 border border-zinc-500 rounded-md">
+            <div className="w-full no-scrollbar shadow-sm shadow-zinc-500 border border-zinc-500 rounded-md">
+
                 <table className="w-full  border-collapse my-1">
-                    <thead className='sticky top-16 sm:top-20 md:top-14 z-[30] bg-background'>
+                    <thead className='sticky top-16 sm:top-20 md:top-14 z-[31] bg-background'>
                         <tr>
                             <th className="p-4 border-b border-collapse border-zinc-500">Status</th>
                             <th className="p-4 border-b border-collapse border-zinc-500">Status</th>
                             <th className="p-4 border-b border-collapse border-zinc-500">Uploaded</th>
                             <th className="p-4 border-b border-collapse border-zinc-500">Rating</th>
                             <th className="p-4 border-b border-collapse border-zinc-500">Date uploaded</th>
-                            <th className="p-4 border-b border-collapse border-zinc-500"></th>
+                            <th className="p-4 border-b border-collapse border-zinc-500">Options</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody className='relative'>
+                        {optionLoader && (
+                            <>
+                                <div className='absolute z-[30] inset-0 flex items-start justify-center bg-background/70 bg-opacity-50'>
+                                    <p className='w-full mt-5 flex justify-center'> <Loader height="24px" width="24px" className="animate-spin fill-primary" /> </p>
+                                </div>
+                            </>
+                        )}
 
                         {videos.length !== 0 ? videos.map((video, index) => {
 
                             if (videos.length === index + 1) {
                                 return (
-                                    <tr key={video._id} ref={lastVideoElementRef} className="group border">
+
+                                    <tr key={video._id} ref={lastVideoElementRef} className="group ">
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                             <div className="flex justify-center">
                                                 <label htmlFor="vid-pub-1" className="relative inline-block w-12 cursor-pointer overflow-hidden">
@@ -159,7 +242,7 @@ const Dashboard = () => {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
-                                            <NavLink className="flex items-center gap-4" to={video.isPublished ? `/video/${video._id}` : `/private/video/${video._id}`}>
+                                            <NavLink className="flex items-center gap-4 max-w-xl" to={video.isPublished ? `/video/${video._id}` : `/prv/video/${video._id}`}>
                                                 <img className="w-10 rounded-sm aspect-square object-cover" src={video.thumbnail} alt={`${video.title} uploaded by @${user.username}`} />
                                                 <p className="font-semibold truncate">{video.title}</p>
                                             </NavLink>
@@ -172,17 +255,56 @@ const Dashboard = () => {
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${video.createdAt.split("T")[0].replaceAll("-", "/")}`}</td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
-                                            <div className="flex gap-4">
-                                                <button className="h-5 w-5 hover:text-[#ae7aff]">
-                                                </button>
-                                                <button className="h-5 w-5 hover:text-[#ae7aff]"></button>
-                                            </div>
+
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild title='options' className="mx-auto">
+                                                    <div className='flex cursor-pointer px-[15px] py-2 rounded-full transition-colors hover:bg-primary/30 flex-col gap-1 h-max w-max'>
+                                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                                    </div>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="min-w-min !z-30">
+                                                    <DropdownMenuItem className="py-0 px-1 w-full">
+                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={""}>
+                                                            <EditIcon />Edit
+                                                        </Button>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
+                                                            <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
+                                                                {optionLoader ? <Loader className="animate-spin fill-primary relative left-5" /> : <><Trash2 />Delete</>}
+                                                            </div>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    This action cannot be undone. This will permanently delete your video.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => deleteVideo(video._id)}>Delete</AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+
+                                            {/* <div className="flex gap-4">
+                                            <button className="h-5 w-5 hover:text-[#ae7aff]">
+                                            </button>
+                                            <button className="h-5 w-5 hover:text-[#ae7aff]"></button>
+                                        </div> */}
                                         </td>
                                     </tr>
                                 )
                             } else {
                                 return (
-                                    <tr key={video._id} className="group border">
+                                    <tr key={video._id} className="group ">
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                             <div className="flex justify-center">
                                                 <label htmlFor="vid-pub-1" className="relative inline-block w-12 cursor-pointer overflow-hidden">
@@ -199,7 +321,7 @@ const Dashboard = () => {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
-                                            <NavLink className="flex items-center gap-4" to={video.isPublished ? `/video/${video._id}` : `/prv/video/${video._id}`}>
+                                            <NavLink className="flex items-center gap-4 max-w-xl" to={video.isPublished ? `/video/${video._id}` : `/prv/video/${video._id}`}>
                                                 <img className="w-10 rounded-sm aspect-square object-cover" src={video.thumbnail} alt={`${video.title} uploaded by @${user.username}`} />
                                                 <p className="font-semibold truncate">{video.title}</p>
                                             </NavLink>
@@ -212,11 +334,50 @@ const Dashboard = () => {
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${video.createdAt.split("T")[0].replaceAll("-", "/")}`}</td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
-                                            <div className="flex gap-4">
+
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild title='options' className="mx-auto">
+                                                    <div className='flex cursor-pointer px-[15px] py-2 rounded-full transition-colors hover:bg-primary/30 flex-col gap-1 h-max w-max'>
+                                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                                        <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                                    </div>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="min-w-min !z-30">
+                                                    <DropdownMenuItem className="py-0 px-1 w-full">
+                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={""}>
+                                                            <EditIcon />Edit
+                                                        </Button>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuSeparator />
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
+                                                            <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
+                                                            {optionLoader ? <Loader className="animate-spin fill-primary relative left-5" /> : <><Trash2 />Delete</>}
+                                                            </div>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    This action cannot be undone. This will permanently delete your video.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => deleteVideo(video._id)}>Delete</AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+
+                                            {/* <div className="flex gap-4">
                                                 <button className="h-5 w-5 hover:text-[#ae7aff]">
                                                 </button>
                                                 <button className="h-5 w-5 hover:text-[#ae7aff]"></button>
-                                            </div>
+                                            </div> */}
                                         </td>
                                     </tr>
                                 )
@@ -231,7 +392,7 @@ const Dashboard = () => {
                         {videoLoader && (
                             <tr className="relative h-7">
                                 {/* <div className='w-full '> */}
-                                    <Loader className='animate-spin absolute top-1 right-1/2' />
+                                <Loader className='animate-spin absolute top-1 right-1/2' />
                                 {/* </div> */}
                             </tr>
                         )}
