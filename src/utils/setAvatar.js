@@ -1,5 +1,4 @@
-import conf from "../conf/conf";
 export default function setAvatar(avatar){
-    if(!avatar) return conf.defaultAvatarUrl;
+    if(!avatar) return "/defaultAvatar.jpg";
     return avatar;
 }

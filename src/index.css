@@ -77,8 +77,30 @@ img {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--primary)) #f1f1f100;
   }
+  .no-scrollbar{
+    scrollbar-color: transparent #f1f1f100;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    height: 0px !important ; /* Makes scrollbar very small */
+  }
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  height: 0px !important ; /* Makes scrollbar very small */
+}
+
+.no-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important; /* Keeps track invisible */
+}
+
+.no-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important; /* Light scrollbar thumb */
+  border-radius: 10px !important; /* Rounded edges */
+}
+
+.no-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4) !important; /* Slightly visible on hover */
+}
 
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
