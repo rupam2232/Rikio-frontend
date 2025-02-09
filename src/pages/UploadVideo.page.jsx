@@ -207,7 +207,7 @@ const UploadVideo = () => {
             <hr className="my-4 border-primary" />
 
             <div className='md:flex justify-between flex-wrap'>
-                <form action="/upload" method="POST" encType="multipart/form-data" className="space-y-6 md:w-3/5 mb-6 md:mb-0" onSubmit={handleSubmit}>
+                <form className="space-y-6 md:w-3/5 mb-6 md:mb-0" onSubmit={handleSubmit}>
 
                     <div
                         {...getRootProps()}

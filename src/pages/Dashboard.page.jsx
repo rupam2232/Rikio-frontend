@@ -7,7 +7,7 @@ import { Loader, LoaderCircle } from 'lucide-react'
 import errorMessage from '../utils/errorMessage.js'
 import formatNumbers from '../utils/formatNumber.js'
 import NotFound from './NotFound.page.jsx'
-import { Button } from '../components/index.js'
+import { Button, EditVideo } from '../components/index.js'
 import toast from 'react-hot-toast'
 import {
     DropdownMenu,
@@ -36,6 +36,8 @@ const Dashboard = () => {
     const [toggleFetch, setToggleFetch] = useState(true)
     const [videoLoader, setVideoLoader] = useState(true)
     const [optionLoader, setOptionLoader] = useState(null)
+    const [openEditPopup, setOpenEditPopup] = useState(false)
+    const [editVideo, setEditVideo] = useState(null)
     const [videos, setVideos] = useState([])
     const [totalPages, setTotalPages] = useState(null)
     const [page, setPage] = useState(1)
@@ -223,6 +225,7 @@ const Dashboard = () => {
 
     return (
         <section className="flex w-screen sm:w-[97vw] md:w-[90vw] lg:w-full flex-col gap-y-6 px-4 py-8">
+            {openEditPopup && <EditVideo setOpenEditPopup={setOpenEditPopup} videoDetails={editVideo} setVideoDetails={setEditVideo}/>}
             <div className="flex flex-wrap justify-between gap-4 bg-background">
                 <div className="block">
                     <h1 className="text-2xl font-bold flex flex-wrap gap-x-2">Welcome Back,<span>{user.fullName}</span></h1>
@@ -318,7 +321,10 @@ const Dashboard = () => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent className="min-w-min !z-30">
                                                     <DropdownMenuItem className="py-0 px-1 w-full">
-                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={""}>
+                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={()=>{ 
+                                                            setOpenEditPopup(true)
+                                                            setEditVideo(video)
+                                                            }}>
                                                             <EditIcon />Edit
                                                         </Button>
                                                     </DropdownMenuItem>
@@ -396,7 +402,10 @@ const Dashboard = () => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent className="min-w-min !z-30">
                                                     <DropdownMenuItem className="py-0 px-1 w-full">
-                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={""}>
+                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={()=>{ 
+                                                            setOpenEditPopup(true)
+                                                            setEditVideo(video)
+                                                            }}>
                                                             <EditIcon />Edit
                                                         </Button>
                                                     </DropdownMenuItem>

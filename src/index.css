@@ -79,6 +79,7 @@ img {
   }
   .no-scrollbar{
     scrollbar-color: transparent #f1f1f100;
+    scrollbar-width: none;
   }
   .no-scrollbar::-webkit-scrollbar {
     height: 0px !important ; /* Makes scrollbar very small */

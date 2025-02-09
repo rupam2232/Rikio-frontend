@@ -48,6 +48,7 @@ import ChannelWrapper from "./ChannelWrapper.jsx"
 import AuthLayout from "./AuthLayout.jsx"
 import ChannelVideo from "./ChannelVideo.jsx"
 import ChannelAbout from "./ChannelAbout.jsx"
+import EditVideo from "./EditVideo.jsx"
 
 export {
     Logo,
@@ -95,5 +96,6 @@ export {
     ChannelWrapper,
     AuthLayout,
     ChannelVideo,
-    ChannelAbout
+    ChannelAbout,
+    EditVideo
 }
