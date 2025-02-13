@@ -36,6 +36,7 @@ const UploadVideo = () => {
     const [description, setDescription] = useState("");
     const [isPublished, setIsPublished] = useState(true);
     const [tags, setTags] = useState("");
+    const [tagsError, setTagsError] = useState(false)
     const [openPopup, setOpenPopup] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [videoUrl, setVideoUrl] = useState('');
@@ -139,9 +140,21 @@ const UploadVideo = () => {
         }
         console.log(isPublished)
     }
-
+    useEffect(() => {
+        if(((tags.trim() ? tags.split(',').map(tag => tag.trim()) : []).some((field) => field?.trim() === ""))){
+            setTagsError(true)
+        } else{
+            setTagsError(false)
+        }
+    }, [tags])
+    
     const handleSubmit = async () => {
+        setTagsError(false)
         const finalTags = tags.trim() ? tags.split(',').map(tag => tag.trim()) : [];
+        if(((tags.trim() ? tags.split(',').map(tag => tag.trim()) : []).some((field) => field?.trim() === ""))){
+            setTagsError(true)
+            return;
+        }
 
         try {
             setOpenPopup(true);
@@ -350,10 +363,11 @@ const UploadVideo = () => {
                             className="text-sm border-zinc-500 focus:ring-primary"
                             placeholder="Enter tags separated by commas (e.g., funny, video)"
                         />
+                        {tagsError && <p className="text-xs text-red-500 ml-2">you can't leave empty spaces. please follow this pattern "your, tag".</p>}
                     </div>
 
                     <AlertDialog>
-                        <AlertDialogTrigger className='disabled:opacity-50 disabled:pointer-events-none w-full sm:w-auto' disabled={!videoFile || !thumbnailFile || !title.trim()}>
+                        <AlertDialogTrigger className='disabled:opacity-50 disabled:pointer-events-none w-full sm:w-auto' disabled={!videoFile || !thumbnailFile || !title.trim() || tagsError}>
                             <div role="button" className='px-3 py-2 bg-primary text-sm font-medium hover:bg-primary/90 text-background rounded-lg'>
                                 Upload
                             </div>

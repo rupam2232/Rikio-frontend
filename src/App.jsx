@@ -21,7 +21,7 @@ export default function App({ children }) {
   const [recheck, setRecheck] = useState(false)
 
   const refreshAccessToken = ()=>{
-    axios.get('/users/refresh-token')
+    axios.post('/users/refresh-token')
       .then((res)=>{
         if(res.data.message.toLowerCase().trim() === "access token refreshed"){
           setRecheck(!recheck)

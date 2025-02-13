@@ -3,7 +3,7 @@ import axios from '../utils/axiosInstance.js'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../store/authSlice.js'
 import { NavLink } from 'react-router-dom'
-import { Loader, LoaderCircle } from 'lucide-react'
+import { Loader, LoaderCircle, Upload } from 'lucide-react'
 import errorMessage from '../utils/errorMessage.js'
 import formatNumbers from '../utils/formatNumber.js'
 import NotFound from './NotFound.page.jsx'
@@ -232,7 +232,7 @@ const Dashboard = () => {
                     <p className="text-sm text-primary/70">Seamless Video Management, Elevated Results.</p>
                 </div>
                 <div className="block">
-                    <NavLink to="/upload" className="flex justify-center mt-4 bg-[#ae7aff] px-4 py-2 rounded-md font-medium text-sm">Upload Video</NavLink>
+                    <NavLink to="/upload" className="flex justify-center items-center gap-2 mt-4 bg-[#ae7aff] px-4 py-2 rounded-md font-medium text-sm [&>svg]:size-4 [&>svg]:shrink-0"><Upload /> Upload Video</NavLink>
                 </div>
             </div>
             <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-4">
@@ -350,13 +350,6 @@ const Dashboard = () => {
                                                     </AlertDialog>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
-
-
-                                            {/* <div className="flex gap-4">
-                                            <button className="h-5 w-5 hover:text-[#ae7aff]">
-                                            </button>
-                                            <button className="h-5 w-5 hover:text-[#ae7aff]"></button>
-                                        </div> */}
                                         </td>
                                     </tr>
                                 )
@@ -431,13 +424,6 @@ const Dashboard = () => {
                                                     </AlertDialog>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
-
-
-                                            {/* <div className="flex gap-4">
-                                                <button className="h-5 w-5 hover:text-[#ae7aff]">
-                                                </button>
-                                                <button className="h-5 w-5 hover:text-[#ae7aff]"></button>
-                                            </div> */}
                                         </td>
                                     </tr>
                                 )
@@ -446,14 +432,16 @@ const Dashboard = () => {
                         })
 
                             : (
-                                <p className='mx-5 my-5 w-full text-primary/60'>No videos available to show</p>
+                                <tr>
+
+                                <td colspan="3"> <p className='mx-5 my-5 w-full text-primary/60'>No videos available to show</p> </td>
+                            
+                              </tr>
                             )}
 
                         {videoLoader && (
                             <tr className="relative h-7">
-                                {/* <div className='w-full '> */}
                                 <Loader className='animate-spin absolute top-1 right-1/2' />
-                                {/* </div> */}
                             </tr>
                         )}
 

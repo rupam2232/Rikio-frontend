@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { X, Trash2, CircleCheck } from "lucide-react"
 import { Input, Button } from "./index.js"
 import { useDropzone } from 'react-dropzone';
@@ -24,12 +24,14 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
     const [title, setTitle] = useState(videoDetails.title)
     const [description, setDescription] = useState(videoDetails.description)
     const [tags, setTags] = useState(videoDetails?.tags.toString().replaceAll(",", ", "))
+    const [tagsError, setTagsError] = useState(false)
     const [thumbnailFile, setThumbnailFile] = useState(null)
     const [thumnailErrorMessage, setThumbnailErrorMessage] = useState('');
     const [prevThumbnail, setPrevThumbnail] = useState(true)
     const [openPopup, setOpenPopup] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [frmDisable, setFrmDisable] = useState(true)
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
@@ -86,7 +88,7 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
             title,
             description,
             thumbnail: thumbnailFile
-        }: {
+        } : {
             tags: finalTags,
             title,
             description
@@ -109,7 +111,7 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
                 videoDetails.description = res.data.data.description;
                 videoDetails.tags = res.data.data.tags;
                 videoDetails.thumbnail = res.data.data.thumbnail;
-                
+
                 setUploadProgress(100);
                 setIsUploading(false);
 
@@ -137,43 +139,74 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
 
     }
 
+    function arraysAreEqual(arr1, arr2) {
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i] && arr1[i] !== "" && !arr1.some((field) => field?.trim() === "")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    useEffect(() => {
+        setTagsError(false)
+        if (!title.trim()) {
+            setFrmDisable(true);
+        } else if(((tags.trim() ? tags.split(',').map(tag => tag.trim()) : []).some((field) => field?.trim() === ""))){
+            setTagsError(true)
+            setFrmDisable(true);
+        } else if (!thumbnailFile && prevThumbnail) {
+            if (title.trim() === videoDetails.title && description.trim() === videoDetails.description && arraysAreEqual(tags.trim() ? tags.split(',').map(tag => tag.trim()) : [], videoDetails.tags)) {
+                setFrmDisable(true);
+            } else {
+                setTagsError(false)
+                setFrmDisable(false);
+            }
+        } else if (!prevThumbnail && !thumbnailFile) {
+            setFrmDisable(true);
+        } else {
+            setTagsError(false)
+            setFrmDisable(false);
+        }
+    }, [title, description, tags, thumbnailFile, prevThumbnail])
+
     return (
-        <div className='fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-70'>
+        <div className='fixed z-[50] inset-0 flex items-center justify-center bg-black bg-opacity-70'>
             {openPopup && (
-                    <div className="fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                        <div className="bg-background p-6  rounded ring-1 ring-primary/30 text-center">
-                            <h2 className='text-xl font-semibold'>{isUploading ? "Editing changes..." : "Video edited successfully"}</h2>
+                <div className="fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-background p-6  rounded  text-center">
+                        <h2 className='text-xl font-semibold'>{isUploading ? "Editing changes..." : "Video edited successfully"}</h2>
 
-                            {isUploading ?
-                                <>
-                                    <p className="text-sm text-left w-full mt-2">Please Don't close this window until the upload is complete.</p>
+                        {isUploading ?
+                            <>
+                                <p className="text-sm text-left w-full mt-2">Please Don't close this window until the upload is complete.</p>
 
-                                    <div className="w-full bg-gray-200 rounded-full h-1 mt-4">
-                                        <div
-                                            className="bg-[#ae7aff] h-full rounded-full"
-                                            style={{ width: `${uploadProgress < 0 ? 0 : uploadProgress}%` }}
-                                        ></div>
-                                    </div>
-                                </> :
-                                <div className='w-full flex items-center justify-center mt-4'>
-                                    <CircleCheck className='text-green-500 size-10' />
+                                <div className="w-full bg-gray-200 rounded-full h-1 mt-4">
+                                    <div
+                                        className="bg-[#ae7aff] h-full rounded-full"
+                                        style={{ width: `${uploadProgress < 0 ? 0 : uploadProgress}%` }}
+                                    ></div>
                                 </div>
-                            }
+                            </> :
+                            <div className='w-full flex items-center justify-center mt-4'>
+                                <CircleCheck className='text-green-500 size-10' />
+                            </div>
+                        }
 
-                            <p className="text-sm text-zinc-500 mt-2">{uploadProgress < 0 ? 0 : uploadProgress}% uploaded</p>
+                        <p className="text-sm text-zinc-500 mt-2">{uploadProgress < 0 ? 0 : uploadProgress}% uploaded</p>
 
-                            {!isUploading && (
-                                <div className='flex gap-32 justify-center mt-4'>
-                                    <Button type="button" className="py-1 px-5" onClick={() => setOpenEditPopup(false)}>Close</Button>
+                        {!isUploading && (
+                            <div className='flex gap-32 justify-center mt-4'>
+                                <Button type="button" className="py-1 px-5" onClick={() => setOpenEditPopup(false)}>Close</Button>
 
-                                    {videoDetails.isPublished === true && <Button type="button">
-                                            <NavLink className="!bg-transparent hover:!bg-transparent" to={`/video/${videoDetails._id}`}>View Video</NavLink>
-                                        </Button>}
-                                </div>
-                            )}
-                        </div>
+                                {videoDetails.isPublished === true && <Button type="button">
+                                    <NavLink className="!bg-transparent hover:!bg-transparent" to={`/video/${videoDetails._id}`}>View Video</NavLink>
+                                </Button>}
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
+            )}
             <div className="w-full md:w-1/2 max-h-screen bg-background p-6  rounded ring-1 ring-primary/30 overflow-y-auto no-scrollbar">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold">Edit Video</h2>
@@ -200,9 +233,8 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
                     </div>}
 
                     {(prevThumbnail || thumbnailFile) && <div>
-                        <p className="text-sm font-medium mb-2">Thumbnail File:</p>
-                        <div className='h-20 w-max md:h-40 md:w-max cursor-pointer border border-primary/30 rounded-lg items-center px-3 flex gap-4 justify-between group'>
-                            {/* <h3 className='text-wrap max-w-3/4'>{thumbnailFile.name}</h3> */}
+                        <p className="text-sm font-medium mb-2 truncate">Thumbnail File: {!prevThumbnail && thumbnailFile.name }</p>
+                        <div className='w-full md:h-40 md:w-max cursor-pointer border border-primary/30 rounded-lg items-center px-3 flex gap-4 justify-between group'>
                             <div className='relative h-full mx-auto'>
                                 {prevThumbnail ? <img
                                     src={videoDetails.thumbnail}
@@ -211,17 +243,10 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
                                 /> :
                                     thumbnailFile && (<img
                                         src={URL.createObjectURL(thumbnailFile)}
-                                        // src={videoDetails.thumbnail}
                                         alt="Thumbnail Preview"
                                         className="h-full aspect-video object-cover border border-gray-700 rounded-md"
                                     />)
                                 }
-                                {/* <img
-                                    // src={URL.createObjectURL(thumbnailFile)}
-                                    src={videoDetails.thumbnail}
-                                    alt="Thumbnail Preview"
-                                    className="h-full aspect-video object-cover border border-gray-700 rounded-md"
-                                /> */}
                                 <Button
                                     type="button"
                                     className="group-hover:visible md:invisible h-full w-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary/40 px-3 py-5 transition-colors hover:bg-primary/50 text-red-600"
@@ -276,12 +301,10 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
                             className="text-sm border-zinc-500 focus:ring-primary"
                             placeholder="Enter tags separated by commas (e.g., funny, video)"
                         />
+                        {tagsError && <p className="text-xs text-red-500 ml-2">you can't leave empty spaces. please follow this pattern "your, tag".</p>}
                     </div>
                     <AlertDialog>
-                        <AlertDialogTrigger className='disabled:opacity-50 disabled:pointer-events-none w-full sm:w-auto' disabled={!title.trim()|| (!thumbnailFile && (title.trim() === videoDetails.title && description.trim() === videoDetails.description && tags.trim === videoDetails?.tags.toString().replaceAll(",", ", "))) || (!prevThumbnail && !thumbnailFile)}>
-
-
-                            {console.log(!title.trim()|| (!thumbnailFile && (title.trim() === videoDetails.title && description.trim() === videoDetails.description && tags.trim === videoDetails?.tags.toString().replaceAll(",", ", "))) || (!prevThumbnail && !thumbnailFile))}
+                        <AlertDialogTrigger className='disabled:opacity-50 disabled:pointer-events-none w-full sm:w-auto' disabled={frmDisable}>
                             <div role="button" className='px-3 py-2 bg-primary text-sm font-medium hover:bg-primary/90 text-background rounded-lg'>
                                 Confirm
                             </div>
@@ -293,7 +316,7 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
                                     <span className='block'>Please make sure:</span>
                                     <span className='ml-4 block mt-2 text-left'>
                                         <span className='block'>1. You've chosen the correct thumbnail image.</span>
-                                        <span className='block'>2. The title and description are accurate.</span>
+                                        <span className='block'>2. The title, description and tags are accurate.</span>
                                     </span>
                                     <span className='block mt-2'>Click 'Upload' to start uploading or 'Cancel' to review your inputs.</span>
                                 </AlertDialogDescription>
