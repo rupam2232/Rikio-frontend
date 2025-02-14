@@ -283,7 +283,7 @@ const Dashboard = () => {
                                     <tr key={video._id} ref={lastVideoElementRef} className="group ">
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                             <div className="flex justify-center">
-                                                <label htmlFor={`vid-pub-${video._id}`} className="relative inline-block w-12 cursor-pointer overflow-hidden">
+                                                <label title={video.isPublished ? "On" : "Off"} htmlFor={`vid-pub-${video._id}`} className="relative inline-block w-12 cursor-pointer overflow-hidden">
                                                     <input type="checkbox" id={`vid-pub-${video._id}`} className="peer sr-only" checked={video.isPublished} onChange={() => handleStatusChange(video._id, video.isPublished)} />
                                                     <span className="inline-block h-6 w-full rounded-2xl bg-primary duration-200 after:absolute after:bottom-1 after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-background after:duration-200 peer-checked:bg-[#ae7aff] peer-checked:after:left-7"></span>
                                                 </label>
@@ -291,24 +291,24 @@ const Dashboard = () => {
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                             <div className="flex justify-center">
-                                                {video.isPublished ? <span className="inline-block rounded-2xl border px-1.5 py-0.5 border-green-600 text-green-600">Public</span> :
-                                                    <span className="inline-block rounded-2xl border px-1.5 py-0.5 border-red-600 text-red-600">Private</span>}
+                                                {video.isPublished ? <span title="Public" className="inline-block rounded-2xl border px-1.5 py-0.5 border-green-600 text-green-600">Public</span> :
+                                                    <span title='Private' className="inline-block rounded-2xl border px-1.5 py-0.5 border-red-600 text-red-600">Private</span>}
 
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
-                                            <NavLink className="flex items-center gap-4 max-w-xl" to={video.isPublished ? `/video/${video._id}` : `/prv/video/${video._id}`}>
+                                            <NavLink title={video.title} className="flex items-center gap-4 max-w-xl" to={video.isPublished ? `/video/${video._id}` : `/prv/video/${video._id}`}>
                                                 <img className="w-10 rounded-sm aspect-square object-cover" src={video.thumbnail} alt={`${video.title} uploaded by @${user.username}`} />
                                                 <p className="font-semibold truncate">{video.title}</p>
                                             </NavLink>
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                             <div className="flex justify-center gap-4">
-                                                <span className="inline-block text-nowrap rounded-xl bg-green-200 px-1.5 py-0.5 text-green-700">{formatNumbers(video.likes)} likes</span>
+                                                <span title={`${formatNumbers(video.likes)}  Likes`} className="inline-block text-nowrap rounded-xl bg-green-200 px-1.5 py-0.5 text-green-700">{formatNumbers(video.likes)} Likes</span>
                                                 {/* <span className="inline-block rounded-xl bg-red-200 px-1.5 py-0.5 text-red-700">49 dislikes</span> */}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${video.createdAt.split("T")[0].replaceAll("-", "/")}`}</td>
+                                        <td title={`${new Date(video.createdAt).getDate()}th ${new Date(video.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(video.createdAt).getFullYear()}`} className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${("0"+new Date(video.createdAt).getDate()).slice(-2)}/${("0"+(new Date(video.createdAt).getMonth()+1)).slice(-2)}/${new Date(video.createdAt).getFullYear()}`}</td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
 
                                             <DropdownMenu>
@@ -358,7 +358,7 @@ const Dashboard = () => {
                                     <tr key={video._id} className="group ">
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                             <div className="flex justify-center">
-                                                <label htmlFor={`vid-pub-${video._id}`} className="relative inline-block w-12 cursor-pointer overflow-hidden">
+                                                <label title={video.isPublished ? "On" : "Off"} htmlFor={`vid-pub-${video._id}`} className="relative inline-block w-12 cursor-pointer overflow-hidden">
                                                     <input type="checkbox" id={`vid-pub-${video._id}`} className="peer sr-only" checked={video.isPublished} onChange={() => handleStatusChange(video._id, video.isPublished)} />
                                                     <span className="inline-block h-6 w-full rounded-2xl bg-primary duration-200 after:absolute after:bottom-1 after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-background after:duration-200 peer-checked:bg-[#ae7aff] peer-checked:after:left-7"></span>
                                                 </label>
@@ -366,23 +366,23 @@ const Dashboard = () => {
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                             <div className="flex justify-center">
-                                                {video.isPublished ? <span className="inline-block rounded-2xl border px-1.5 py-0.5 border-green-600 text-green-600">Public</span> :
-                                                    <span className="inline-block rounded-2xl border px-1.5 py-0.5 border-red-600 text-red-600">Private</span>}
+                                                {video.isPublished ? <span title="Public" className="inline-block rounded-2xl border px-1.5 py-0.5 border-green-600 text-green-600">Public</span> :
+                                                    <span title='Private' className="inline-block rounded-2xl border px-1.5 py-0.5 border-red-600 text-red-600">Private</span>}
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
-                                            <NavLink className="flex items-center gap-4 max-w-xl" to={video.isPublished ? `/video/${video._id}` : `/prv/video/${video._id}`}>
+                                            <NavLink title={video.title} className="flex items-center gap-4 max-w-xl" to={video.isPublished ? `/video/${video._id}` : `/prv/video/${video._id}`}>
                                                 <img className="w-10 rounded-sm aspect-square object-cover" src={video.thumbnail} alt={`${video.title} uploaded by @${user.username}`} />
                                                 <p className="font-semibold truncate">{video.title}</p>
                                             </NavLink>
                                         </td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                             <div className="flex justify-center gap-4">
-                                                <span className="inline-block text-nowrap rounded-xl bg-green-200 px-1.5 py-0.5 text-green-700">{formatNumbers(video.likes)} likes</span>
+                                                <span title={`${formatNumbers(video.likes)}  Likes`} className="inline-block text-nowrap rounded-xl bg-green-200 px-1.5 py-0.5 text-green-700">{formatNumbers(video.likes)} Likes</span>
                                                 {/* <span className="inline-block rounded-xl bg-red-200 px-1.5 py-0.5 text-red-700">49 dislikes</span> */}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${video.createdAt.split("T")[0].replaceAll("-", "/")}`}</td>
+                                        <td title={`${new Date(video.createdAt).getDate()}th ${new Date(video.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(video.createdAt).getFullYear()}`} className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${("0"+new Date(video.createdAt).getDate()).slice(-2)}/${("0"+(new Date(video.createdAt).getMonth()+1)).slice(-2)}/${new Date(video.createdAt).getFullYear()}`}</td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
 
                                             <DropdownMenu>
