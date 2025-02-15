@@ -48,6 +48,7 @@ import ChannelWrapper from "./ChannelWrapper.jsx"
 import AuthLayout from "./AuthLayout.jsx"
 import ChannelVideo from "./ChannelVideo.jsx"
 import ChannelAbout from "./ChannelAbout.jsx"
+import ChannelPlaylist from "./ChannelPlaylist.jsx"
 import EditVideo from "./EditVideo.jsx"
 
 export {
@@ -97,5 +98,6 @@ export {
     AuthLayout,
     ChannelVideo,
     ChannelAbout,
+    ChannelPlaylist,
     EditVideo
 }

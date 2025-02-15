@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import axios from '@/utils/axiosInstance';
+import axios from '../utils/axiosInstance.js';
 import { timeAgo } from '../utils/timeAgo.js'
 import { videoDuration } from '../utils/videoDuration.js'
 import formatNumbers from '../utils/formatNumber.js'

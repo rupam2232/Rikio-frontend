@@ -19,7 +19,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Button, ChannelAbout, ChannelVideo } from '../components/index.js'
+import { Button, ChannelAbout, ChannelPlaylist, ChannelVideo } from '../components/index.js'
 import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -165,7 +165,7 @@ const Channel = ({ username, pageName }) => {
                         </div>
                     </div>
                 </div>
-                <ul className="no-scrollbar sticky top-16 sm:top-20 md:top-14 z-[30] flex flex-row gap-x-0 md:gap-x-2 overflow-auto  border-b border-zinc-500 bg-background py-2 backdrop-blur-[12px] supports-[backdrop-filter]:bg-background/70">
+                <ul className="no-scrollbar overflow-x-scroll sticky top-16 sm:top-20 md:top-14 z-[30] flex flex-row gap-x-0 md:gap-x-2 border-b border-zinc-500 bg-background py-2 backdrop-blur-[12px] supports-[backdrop-filter]:bg-background/70">
                     <li className="w-full">
                         <NavLink to={`/@${channelData.username}/videos`} className={`${!pageName && "active"} w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5`}>Videos</NavLink>
                     </li>
@@ -183,6 +183,12 @@ const Channel = ({ username, pageName }) => {
                 {
                     (pageName === 'videos' || !pageName) &&(
                         <ChannelVideo username={username} isChannelOwner={channelData.isChannelOwner}/>
+                    )
+                }
+
+                {
+                    (pageName === 'playlist' ) &&(
+                        <ChannelPlaylist userId={channelData._id} isChannelOwner={channelData.isChannelOwner}/>
                     )
                 }
 
