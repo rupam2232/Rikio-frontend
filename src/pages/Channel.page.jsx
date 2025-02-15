@@ -188,7 +188,7 @@ const Channel = ({ username, pageName }) => {
 
                 {
                     (pageName === 'playlist' ) &&(
-                        <ChannelPlaylist userId={channelData._id} isChannelOwner={channelData.isChannelOwner}/>
+                        <ChannelPlaylist userId={channelData._id} username={username} isChannelOwner={channelData.isChannelOwner}/>
                     )
                 }
 
