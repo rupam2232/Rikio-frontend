@@ -14,6 +14,7 @@ import Login from './pages/Login.page.jsx'
 import Video from './pages/Video.page.jsx'
 import UploadVideo from './pages/UploadVideo.page.jsx'
 import Dashboard from './pages/Dashboard.page.jsx'
+import PlaylistVideo from './pages/PlaylistVideo.page'
 import NotFound from './pages/NotFound.page.jsx'
 
 const router = createBrowserRouter([
@@ -57,6 +58,9 @@ const router = createBrowserRouter([
             <UploadVideo />
           </AuthLayout>
         )
+      },{
+        path: '/playlist/:playlistId',
+        element: <PlaylistVideo />
       }, {
         path: '/signup',
         element: <Signup />,

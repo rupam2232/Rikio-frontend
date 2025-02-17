@@ -4,7 +4,7 @@ import errorMessage from '../utils/errorMessage.js';
 import formatNumbers from '../utils/formatNumber.js'
 import { timeAgo } from '../utils/timeAgo.js'
 import { NavLink } from 'react-router-dom'
-import { FolderClosed, Play } from 'lucide-react';
+import { FolderClosed, Play, LoaderCircle } from 'lucide-react';
 
 const ChannelPlaylist = ({ userId, username, isChannelOwner }) => {
     const [playlist, setPlaylist] = useState(null);
@@ -22,9 +22,14 @@ const ChannelPlaylist = ({ userId, username, isChannelOwner }) => {
                 console.error(errorMessage(error))
                 setError(true)
             })
-            .finally(() => setLoader(true))
+            .finally(() => setLoader(false))
     }, [userId])
-    console.log(playlist)
+
+    if(loader) return (
+        <div className='w-full h-[80vh] flex justify-center items-center'>
+            <LoaderCircle className="w-16 h-16 animate-spin" />
+        </div>
+    )
 
     if (error) {
         return (
@@ -61,7 +66,7 @@ const ChannelPlaylist = ({ userId, username, isChannelOwner }) => {
                                                 <span className="max-h-6 text-lg font-bold truncate whitespace-normal line-clamp-1">{elem.playlistName}</span>
                                                 <span className="inline-block">{formatNumbers(elem.totalVideos)}&nbsp;videos</span>
                                             </p>
-                                            <p className="text-sm text-gray-200">{formatNumbers(elem.totalViews)} Views&nbsp;·&nbsp;{timeAgo(elem.createdAt)}</p>
+                                            <p className="text-sm text-gray-200">{formatNumbers(elem.totalViews)} Views&nbsp;•&nbsp;{timeAgo(elem.createdAt)}</p>
                                         </div>
                                     </div>
                                 </div>

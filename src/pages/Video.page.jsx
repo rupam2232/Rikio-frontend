@@ -281,7 +281,7 @@ const Video = () => {
                                 <AccountHover user={{ ...video.owner, isSubscribed: subscribed, subscribers: sub }} toggleSubscribe={toggleSubscribe}>
                                     <div className="flex flex-wrap items-center gap-x-4 group cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
                                         <Avatar className='h-12 w-12'>
-                                            <AvatarImage src={setAvatar(video.owner.avatar)} className="object-cover" />
+                                            <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
                                         </Avatar>
                                         <div className="block">
                                             <p className="font-bold relative">{video.owner.fullName}{video.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>

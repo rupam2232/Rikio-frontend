@@ -280,8 +280,8 @@ const Home = () => {
                             <div key={video._id} ref={lastVideoElementRef} className="aspect-video rounded-xl">
                                 <div className='relative mb-2 w-full pt-[56%]' aria-label='Thubmnail'>
                                     <NavLink to={`/video/${video._id}`}>
-                                        <div className="absolute inset-0">
-                                            <img src={video.thumbnail} alt={`${video.title} uploaded by @${video.owner.username}`} className='w-full h-full object-cover rounded-md pointer-events-none' />
+                                        <div className="absolute inset-0" title={video.title}>
+                                            <img src={video.thumbnail} alt={`${video.title} | uploaded by @${video.owner.username}`} className='w-full h-full object-cover rounded-md pointer-events-none' />
                                         </div>
                                         <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
                                     </NavLink>
@@ -318,7 +318,7 @@ const Home = () => {
                             <div key={video._id} className="aspect-video rounded-xl">
                                 <div className='relative mb-2 w-full pt-[56%]' aria-label='Thubmnail'>
                                     <NavLink to={`/video/${video._id}`}>
-                                        <div className="absolute inset-0">
+                                        <div className="absolute inset-0" title={video.title}>
                                             <img src={video.thumbnail} alt={`${video.title} uploaded by @${video.owner.username}`} className='w-full h-full object-cover rounded-md pointer-events-none' />
                                         </div>
                                         <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>

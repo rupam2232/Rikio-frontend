@@ -102,7 +102,6 @@ const Channel = ({ username, pageName }) => {
             <p className='px-3 text-center'>{error}</p>
         </NotFound>
     )
-    // console.log(channelData)
 
     return (
         <section className="w-full">
@@ -118,7 +117,7 @@ const Channel = ({ username, pageName }) => {
             <div className="px-4 pb-4">
                 <div className="flex flex-col sm:flex-row flex-wrap gap-4 pb-4 pt-6 md:px-10">
                     <span className="relative mx-auto sm:mx-0 -mt-24 sm:-mt-12 inline-block h-28 w-28 shrink-0 overflow-hidden rounded-full border-2">
-                        <img src={setAvatar(channelData.avatar)} alt="Avatar" className="h-full object-cover w-full" />
+                        <img src={setAvatar(channelData.avatar)} alt={`@${channelData.username}`} className="h-full object-cover w-full" />
                     </span>
                     <div className='flex items-center justify-between flex-1'>
                         <div className="sm:mr-auto sm:inline-block">
