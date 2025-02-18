@@ -166,16 +166,16 @@ const Channel = ({ username, pageName }) => {
                 </div>
                 <ul className="no-scrollbar overflow-x-scroll sticky top-16 sm:top-20 md:top-14 z-[30] flex flex-row gap-x-0 md:gap-x-2 border-b border-zinc-500 bg-background py-2 backdrop-blur-[12px] supports-[backdrop-filter]:bg-background/70">
                     <li className="w-full">
-                        <NavLink to={`/@${channelData.username}/videos`} className={`${!pageName && "active"} w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5`}>Videos</NavLink>
+                        <NavLink to={`/@${channelData.username}/videos`} className={`${!pageName && "active"} w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary`}>Videos</NavLink>
                     </li>
                     <li className="w-full">
-                        <NavLink to={`/@${channelData.username}/playlist`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5">Playlist</NavLink>
+                        <NavLink to={`/@${channelData.username}/playlist`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary">Playlist</NavLink>
                     </li>
                     <li className="w-full">
-                        <NavLink to={`/@${channelData.username}/tweets`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5">Tweets</NavLink>
+                        <NavLink to={`/@${channelData.username}/tweets`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary">Tweets</NavLink>
                     </li>
                     <li className="w-full">
-                        <NavLink to={`/@${channelData.username}/about`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5">About</NavLink>
+                        <NavLink to={`/@${channelData.username}/about`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary">About</NavLink>
                     </li>
                 </ul>
 
