@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
 import { Like, Button, AccountHover, Comments, ParseContents, Video as VideoPlayer } from "../components/index.js"
 import { useNavigate } from 'react-router-dom'
@@ -8,7 +8,7 @@ import axios from '../utils/axiosInstance.js'
 import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import toast from "react-hot-toast"
-import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
+import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle, FolderClosed, Plus, X, Earth, LockKeyholeIcon, Check } from 'lucide-react'
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/authSlice.js'
@@ -33,6 +33,9 @@ const Video = () => {
     const [subscribed, setSubscribed] = useState(false)
     const [loader, setLoader] = useState(true)
     const [error, setError] = useState("")
+    const [openSavePopup, setOpenSavePopup] = useState(false)
+    const [savePopupLoader, setSavePopupLoader] = useState(false)
+    const [playlists, setPlaylists] = useState(null)
     const { videoId } = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -149,6 +152,91 @@ const Video = () => {
             })
     }
 
+    const handlePlaylistSave = (playlist) => {
+        if (playlist.videoIds.some((e) => e === videoId)) {
+            setSavePopupLoader(true)
+            axios.patch(`/playlist/remove/${videoId}/${playlist._id}`)
+                .then((res) => {
+                    let updatedPlaylists = playlists.map((elem) => {
+                        if (elem._id === playlist._id) {
+                          return {
+                            ...elem,
+                            videoIds: elem.videoIds.filter((e) => e !== videoId)
+                          };
+                        }
+                        return elem;
+                      });
+                      
+                      setPlaylists(updatedPlaylists);
+                })
+                .catch((error) => {
+                    if (error.status === 401) {
+                        toast.error("You need to login first", {
+                            style: { color: "#ffffff", backgroundColor: "#333333" },
+                            position: "top-center"
+                        })
+                        dispatch(logout())
+                        navigate("/login")
+                    } else {
+                        toast.error(errorMessage(error), {
+                            style: { color: "#ffffff", backgroundColor: "#333333" },
+                            position: "top-center"
+                        })
+                    }
+                    console.error(errorMessage(error));
+                })
+                .finally(() => {
+                    setSavePopupLoader(false)
+                })
+        } else {
+            setSavePopupLoader(true)
+            axios.patch(`/playlist/add/${videoId}/${playlist._id}`)
+                .then((res) => {
+                    let updatedPlaylists = playlists.map((elem) => {
+                        if (elem._id === playlist._id) {
+                            return {
+                                ...elem,
+                                videoIds: [...elem.videoIds, videoId]
+                              };
+                        }
+                        return elem
+                    })
+                    setPlaylists(updatedPlaylists)
+                })
+                .catch((error) => {
+                    if (error.status === 401) {
+                        toast.error("You need to login first", {
+                            style: { color: "#ffffff", backgroundColor: "#333333" },
+                            position: "top-center"
+                        })
+                        dispatch(logout())
+                        navigate("/login")
+                    } else {
+                        toast.error(errorMessage(error), {
+                            style: { color: "#ffffff", backgroundColor: "#333333" },
+                            position: "top-center"
+                        })
+                    }
+                    console.error(errorMessage(error));
+                })
+                .finally(() => {
+                    setSavePopupLoader(false)
+                })
+        }
+    }
+
+    useEffect(() => {
+        setSavePopupLoader(true);
+        axios.get(`/playlist/user`)
+            .then((res) => {
+                setPlaylists(res.data.data)
+            })
+            .catch((error) => {
+                console.error(errorMessage(error))
+            })
+            .finally(() => setSavePopupLoader(false))
+    }, [])
+
     useEffect(() => {
         setError("")
         axios.get(`/videos/${videoId}`)
@@ -161,7 +249,7 @@ const Video = () => {
                         setSub(value.data.data.subscribers.length);
                     })
                     .catch((error) => {
-                        console.error(error.message);
+                        console.error(errorMessage(error));
                     });
 
                 axios.get(`/subscription/i/${value.data.data.video.owner._id}`)
@@ -169,13 +257,11 @@ const Video = () => {
                         setSubscribed(value.data.data);
                     })
                     .catch((error) => {
-                        console.error(error.message);
+                        console.error(errorMessage(error));
                     });
             })
             .catch((error) => {
-                const htmlString = error?.response?.data;
-                const match = htmlString?.match(/Error:.*?(?=<br>)/);
-                match ? setError(match[0].slice(7)) : setError(error.message);
+                setError(errorMessage(error))
             })
             .finally(() => setLoader(false));
     }, [videoId])
@@ -233,47 +319,92 @@ const Video = () => {
                                         </button> */}
                                         </div>
                                         <div className="relative block">
-                                            {/* playlist btn */}
-
-                                            {/* <button className="peer flex items-center gap-x-2 rounded-lg bg-white px-4 py-1.5 text-black">
-                                            <span className="inline-block w-5">
-                                                <PlaylistBtn />
-                                            </span>
-                                            Save
-                                        </button>
-                                        <div className="absolute right-0 top-full z-10 hidden w-64 overflow-hidden rounded-lg bg-[#121212] p-4 shadow shadow-slate-50/30 hover:block peer-focus:block">
-                                            <h3 className="mb-4 text-center text-lg font-semibold">Save to playlist</h3>
-                                            <ul className="mb-4">
-                                                <li className="mb-2 last:mb-0">
+                                            <Button className="peer px-4 py-1.5" onClick={() => setOpenSavePopup(true)}>
+                                                <span className="inline-block w-5">
+                                                    <FolderClosed />
+                                                </span>
+                                                Save
+                                            </Button>
+                                            {/* <div className="absolute right-0 top-full z-10 hidden w-64 overflow-hidden rounded-lg bg-[#121212] p-4 shadow shadow-slate-50/30 hover:block peer-focus:block">
+                                                <h3 className="mb-4 text-center text-lg font-semibold">Save to playlist</h3>
+                                                <ul className="mb-4">
+                                                    <li className="mb-2 last:mb-0">
+                                                        <label
+                                                            className="group/label inline-flex cursor-pointer items-center gap-x-3"
+                                                            htmlFor="Collections-checkbox">
+                                                            <Input
+                                                                type="checkbox"
+                                                                className="peer hidden"
+                                                                id="Collections-checkbox" />
+                                                            <span
+                                                                className="inline-flex h-4 w-4 items-center justify-center rounded-[4px] border border-transparent bg-white text-white group-hover/label:border-[#ae7aff] peer-checked:border-[#ae7aff] peer-checked:text-[#ae7aff]">
+                                                                <Plus />
+                                                            </span>
+                                                            Collections
+                                                        </label>
+                                                    </li>
+                                                </ul>
+                                                <div className="flex flex-col">
                                                     <label
-                                                        className="group/label inline-flex cursor-pointer items-center gap-x-3"
-                                                        for="Collections-checkbox">
-                                                        <Input
-                                                            type="checkbox"
-                                                            className="peer hidden"
-                                                            id="Collections-checkbox" />
-                                                        <span
-                                                            className="inline-flex h-4 w-4 items-center justify-center rounded-[4px] border border-transparent bg-white text-white group-hover/label:border-[#ae7aff] peer-checked:border-[#ae7aff] peer-checked:text-[#ae7aff]">
-                                                            <Tick />
-                                                        </span>
-                                                        Collections
+                                                        htmlFor="playlist-name"
+                                                        className="mb-1 inline-block cursor-pointer">
+                                                        Name
                                                     </label>
-                                                </li>
-                                            </ul>
-                                            <div className="flex flex-col">
-                                                <label
-                                                    for="playlist-name"
-                                                    className="mb-1 inline-block cursor-pointer">
-                                                    Name
-                                                </label>
-                                                <Input
-                                                    className="w-full rounded-lg border border-transparent bg-white px-3 py-2 text-black outline-none focus:border-[#ae7aff]"
-                                                    id="playlist-name"
-                                                    placeholder="Enter playlist name" />
-                                                <button className="mx-auto mt-4 rounded-lg bg-[#ae7aff] px-4 py-2 text-black">Create new playlist</button>
-                                            </div>
-                                        </div> */}
+                                                    <Input
+                                                        className="w-full rounded-lg border border-transparent bg-white px-3 py-2 text-black outline-none focus:border-[#ae7aff]"
+                                                        id="playlist-name"
+                                                        placeholder="Enter playlist name" />
+                                                    <button className="mx-auto mt-4 rounded-lg bg-[#ae7aff] px-4 py-2 text-black">Create new playlist</button>
+                                                </div>
+                                            </div> */}
                                         </div>
+
+                                        {openSavePopup && <div className='fixed z-[50] inset-0 flex items-center justify-center bg-black bg-opacity-70 overflow-y-auto no-scrollbar max-h-screen'>
+                                            {savePopupLoader && (
+                                                <div className="fixed z-50 inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                                                    <div className="bg-background p-2  rounded  text-center">
+                                                        <LoaderCircle className="w-16 h-16 animate-spin" />
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <div className="w-full sm:w-1/2 lg:w-1/3 max-h-screen bg-background p-6  rounded ring-1 ring-primary/30 overflow-y-auto no-scrollbar">
+                                                <div className="flex items-center justify-between">
+                                                    <h2 className="text-md font-bold">Save to Playlist</h2>
+                                                    <button title='close' onClick={() => setOpenSavePopup(false)}><X /></button>
+                                                </div>
+                                                <hr className="my-4 border-primary" />
+                                                <NavLink to="/playlists/create" className="flex justify-center items-center gap-2 mt-4 bg-[#ae7aff] hover:bg-[#ae7aff] text-primary hover:text-primary px-4 py-2 rounded-md font-medium text-sm mb-4">Create new Playlist</NavLink>
+                                                {playlists && playlists.length > 0 ?
+                                                    playlists.map((playlist) => (
+                                                        <div key={playlist._id} className='flex items-center gap-x-2 mt-4'>
+                                                            <label
+                                                                className="group/label inline-flex cursor-pointer items-center gap-x-3 flex-1"
+                                                                htmlFor={playlist._id}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    onChange={()=> handlePlaylistSave(playlist)}
+                                                                    defaultChecked={playlist.videoIds.some((e) => e === videoId)}
+                                                                    className="peer hidden"
+                                                                    id={playlist._id} />
+                                                                {playlist.videoIds.some((e) => e === videoId) ?
+                                                                    <span
+                                                                        className="inline-flex h-4 w-4 items-center justify-center rounded-[4px] border border-transparent bg-primary text-white group-hover/label:border-[#ae7aff] peer-checked:border-[#ae7aff] peer-checked:bg-green-500">
+                                                                        <Check />
+                                                                    </span>
+                                                                    :
+                                                                    <span
+                                                                        className="inline-flex h-4 w-4 items-center justify-center rounded-[4px] border border-transparent bg-primary text-background group-hover/label:border-[#ae7aff] peer-checked:border-[#ae7aff]">
+                                                                        <Plus />
+                                                                    </span>
+                                                                }
+                                                                <p className='line-clamp-1'>{playlist.playlistName}</p>
+                                                            </label>
+                                                            <p title={playlist.isPublic ? "Public" : "Private"}>{playlist.isPublic ? <Earth className='size-4' /> : <LockKeyholeIcon className='size-4' />}</p>
+                                                        </div>
+                                                    ))
+                                                    : <p>You haven't created any playlist</p>}
+                                            </div>
+                                        </div>}
                                     </div>
                                 </div>
                             </div>

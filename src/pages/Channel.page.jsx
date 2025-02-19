@@ -49,7 +49,7 @@ const Channel = ({ username, pageName }) => {
             }
         }
         fetchChannelData()
-        
+
     }, [username])
 
     const toggleSubscribe = (ownerId) => {
@@ -180,14 +180,14 @@ const Channel = ({ username, pageName }) => {
                 </ul>
 
                 {
-                    (pageName === 'videos' || !pageName) &&(
-                        <ChannelVideo username={username} isChannelOwner={channelData.isChannelOwner}/>
+                    (pageName === 'videos' || !pageName) && (
+                        <ChannelVideo username={username} isChannelOwner={channelData.isChannelOwner} />
                     )
                 }
 
                 {
-                    (pageName === 'playlist' ) &&(
-                        <ChannelPlaylist userId={channelData._id} username={username} isChannelOwner={channelData.isChannelOwner}/>
+                    (pageName === 'playlist') && (
+                        <ChannelPlaylist userId={channelData._id} username={username} isChannelOwner={channelData.isChannelOwner} />
                     )
                 }
 
@@ -196,6 +196,15 @@ const Channel = ({ username, pageName }) => {
                         <ChannelAbout channelData={channelData} />
                     )
                 }
+
+                {
+                    (pageName !== "about" && pageName !== 'playlist' && (pageName !== 'videos' && pageName) && pageName !== "tweets") && (
+                        <div className='mb-5'>
+                            <NotFound />
+                        </div>
+                    )
+                }
+
             </div>
         </section>
     )

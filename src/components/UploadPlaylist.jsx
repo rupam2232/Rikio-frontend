@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, LoaderCircle } from 'lucide-react'
-import { Button } from './index.js'
+import { Button, Input } from './index.js'
 import axios from '../utils/axiosInstance.js'
 import errorMessage from '../utils/errorMessage.js'
 import { useDispatch } from 'react-redux';
@@ -23,7 +23,7 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
     const [isPublic, setIsPublic] = useState(playlistData ? playlistData.isPublic : true)
     const [loader, setLoader] = useState(false)
     const dispatch = useDispatch();
-    const navigate = useNavigate();    
+    const navigate = useNavigate();
     const location = useLocation();
     const pathname = location.pathname.substring(1);
     const isCreate = pathname.includes("/") ? pathname.split("/")[1] : pathname;
@@ -34,7 +34,7 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
         } else if (title?.trim() === playlistData?.playlistName?.trim() && description?.trim() === playlistData?.description?.trim() && isPublic === playlistData?.isPublic) {
             setFormDisable(true)
         } else if (description?.trim() !== playlistData?.description?.trim() && !description?.trim()) {
-            if(title?.trim() !== playlistData?.playlistName?.trim() || isPublic !== playlistData?.isPublic){
+            if (title?.trim() !== playlistData?.playlistName?.trim() || isPublic !== playlistData?.isPublic) {
                 setFormDisable(false)
             } else {
                 setFormDisable(true)
@@ -46,8 +46,12 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
 
 
     const closePopup = () => {
-        if(isCreate === "create"){
-            window.history.back();
+        if (isCreate === "create") {
+            if (window.history.length > 0) {
+                window.history.back()
+            } else {
+                navigate("/playlists")
+            }
         } else {
             setOpenEditPopup(false)
         }
@@ -95,7 +99,7 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
             })
     }
 
-    const handleCreate = ()=> {
+    const handleCreate = () => {
         setFormDisable(true)
         setLoader(true)
         axios.post(`/playlist`, { playlistName: title, description: description ? description : null, isPublic })
@@ -105,7 +109,7 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
                     position: "top-center"
                 })
                 closePopup()
-                if(setFetch) setFetch(e => !e)
+                if (setFetch) setFetch(e => !e)
             })
             .catch((error) => {
                 if (error.status === 401) {
@@ -141,16 +145,15 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
             <div className="w-full sm:w-1/2 max-h-screen bg-background p-6  rounded ring-1 ring-primary/30 overflow-y-auto no-scrollbar">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold">{playlistData ? "Edit Playlist" : "Create Playlist"}</h2>
-                    <button title='close' onClick={()=> closePopup()}><X /></button>
+                    <button title='close' onClick={() => closePopup()}><X /></button>
                 </div>
                 <hr className="my-4 border-primary" />
-                <form action="/upload" method="POST" encType="multipart/form-data" className="space-y-6 mb-6 md:mb-0 mt-6 w-full">
-
+                <form className="space-y-6 mb-6 md:mb-0 mt-6 w-full">
                     <div>
                         <label className="block text-sm font-medium mb-2" htmlFor="title">
                             Title*
                         </label>
-                        <textarea
+                        <Input
                             id="title"
                             name="title"
                             value={title}
@@ -158,7 +161,7 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
                             onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault() }}
                             maxLength="150"
                             placeholder="Write a title for your playlist"
-                            className="block w-full bg-transparent text-sm border border-zinc-500 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                            className="block w-full bg-transparent text-sm border border-zinc-500 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-primary resize-none shadow-none"
                         />
                     </div>
                     <div>

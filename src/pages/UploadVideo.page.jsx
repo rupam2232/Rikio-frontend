@@ -309,7 +309,7 @@ const UploadVideo = () => {
                         <label className="block text-sm font-medium mb-2" htmlFor="title">
                             Title*
                         </label>
-                        <textarea
+                        <Input
                             id="title"
                             name="title"
                             value={title}
@@ -317,7 +317,7 @@ const UploadVideo = () => {
                             onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault() }}
                             maxLength="150"
                             placeholder="Write a title for your video"
-                            className="block w-full bg-transparent text-sm border border-zinc-500 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                            className="block w-full bg-transparent text-sm border border-zinc-500 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-primary resize-none shadow-none"
                         />
                     </div>
 

@@ -152,7 +152,7 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
         setTagsError(false)
         if (!title.trim()) {
             setFrmDisable(true);
-        } else if(((tags.trim() ? tags.split(',').map(tag => tag.trim()) : []).some((field) => field?.trim() === ""))){
+        } else if (((tags.trim() ? tags.split(',').map(tag => tag.trim()) : []).some((field) => field?.trim() === ""))) {
             setTagsError(true)
             setFrmDisable(true);
         } else if (!thumbnailFile && prevThumbnail) {
@@ -233,7 +233,7 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
                     </div>}
 
                     {(prevThumbnail || thumbnailFile) && <div>
-                        <p className="text-sm font-medium mb-2 truncate">Thumbnail File: {!prevThumbnail && thumbnailFile.name }</p>
+                        <p className="text-sm font-medium mb-2 truncate">Thumbnail File: {!prevThumbnail && thumbnailFile.name}</p>
                         <div className='w-full md:h-40 md:w-max cursor-pointer border border-primary/30 rounded-lg items-center px-3 flex gap-4 justify-between group'>
                             <div className='relative h-full mx-auto'>
                                 {prevThumbnail ? <img
@@ -264,7 +264,7 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
                         <label className="block text-sm font-medium mb-2" htmlFor="title">
                             Title*
                         </label>
-                        <textarea
+                        <Input
                             id="title"
                             name="title"
                             value={title}
@@ -272,7 +272,7 @@ const EditVideo = ({ setOpenEditPopup, videoDetails, setVideoDetails }) => {
                             onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault() }}
                             maxLength="150"
                             placeholder="Write a title for your video"
-                            className="block w-full bg-transparent text-sm border border-zinc-500 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                            className="block w-full bg-transparent text-sm border border-zinc-500 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-primary resize-none shadow-none"
                         />
                     </div>
                     <div>

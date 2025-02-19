@@ -74,7 +74,7 @@ const Playlist = () => {
                                 <div className="absolute inset-0">
                                     {
                                         elem.thumbnail ?
-                                            <img src={elem.thumbnail} alt={`${elem.playlistName} by @${user.username}`} className="h-full w-full rounded-md" /> :
+                                            <img src={elem.thumbnail} alt={`${elem.playlistName} by @${user.username}`} className="h-full w-full rounded-md object-cover" /> :
                                             <div className='bg-gray-400 h-full w-full rounded-md flex items-center justify-center'> <Play className='group-hover:text-background' /> </div>
                                     }
                                     <div className="absolute inset-x-0 bottom-0">
