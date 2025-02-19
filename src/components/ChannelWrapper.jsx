@@ -1,4 +1,4 @@
-import { useLocation, Navigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import App from "../App.jsx";
 import Channel from "../pages/Channel.page.jsx";
 import NotFound from "../pages/NotFound.page.jsx";

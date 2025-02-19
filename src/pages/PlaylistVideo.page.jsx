@@ -152,7 +152,37 @@ const PlaylistVideo = () => {
             })
     }
 
-    console.log(playlistData)
+    const deletePlaylist = () => {
+        setLoader(true)
+        setError(null)
+        axios.delete(`/playlist/${playlistId}`)
+            .then((res) => {
+                toast.success(res.data.message, {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                window.history.back()
+                setPlaylistData(null)
+            })
+            .catch((error) => {
+                if (error.status === 401) {
+                    toast.error("You need to login first", {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    dispatch(logout())
+                    navigate("/login")
+                } else {
+                    toast.error(errorMessage(error), {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                }
+                console.error(errorMessage(error));
+            })
+            .finally(() => setLoader(false))
+    }
+
 
     if (loader) return (
         <div className='w-full h-[80vh] flex justify-center items-center'>
@@ -232,7 +262,7 @@ const PlaylistVideo = () => {
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => deleteVideo(video._id)}>Delete</AlertDialogAction>
+                                                        <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => deletePlaylist()}>Delete</AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
                                             </AlertDialog>
@@ -352,6 +382,10 @@ const PlaylistVideo = () => {
 
 
         </section>
+    )
+
+    return (
+        <NotFound />
     )
 }
 

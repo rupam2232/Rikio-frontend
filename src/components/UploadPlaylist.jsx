@@ -1,24 +1,12 @@
 import { useState, useEffect } from 'react'
 import { X, LoaderCircle } from 'lucide-react'
-import { Button, Input } from './index.js'
+import { Button } from './index.js'
 import axios from '../utils/axiosInstance.js'
 import errorMessage from '../utils/errorMessage.js'
 import { useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice.js'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
-
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
     Select,
     SelectContent,
@@ -28,22 +16,29 @@ import {
 } from "@/components/ui/select"
 
 
-const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData }) => {
+const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData, setFetch = null }) => {
     const [title, setTitle] = useState(playlistData?.playlistName ? playlistData.playlistName : "")
     const [formDisable, setFormDisable] = useState(false)
     const [description, setDescription] = useState(playlistData?.description ? playlistData.description : "")
     const [isPublic, setIsPublic] = useState(playlistData ? playlistData.isPublic : true)
     const [loader, setLoader] = useState(false)
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const navigate = useNavigate();    
+    const location = useLocation();
+    const pathname = location.pathname.substring(1);
+    const isCreate = pathname.includes("/") ? pathname.split("/")[1] : pathname;
 
     useEffect(() => {
         if (!title?.trim() || !(isPublic === true || isPublic === false)) {
             setFormDisable(true)
-        } else if (title?.trim() === playlistData?.playlistName?.trim() && (description?.trim() === playlistData?.description?.trim()) && isPublic === playlistData?.isPublic) {
+        } else if (title?.trim() === playlistData?.playlistName?.trim() && description?.trim() === playlistData?.description?.trim() && isPublic === playlistData?.isPublic) {
             setFormDisable(true)
         } else if (description?.trim() !== playlistData?.description?.trim() && !description?.trim()) {
-            setFormDisable(false)
+            if(title?.trim() !== playlistData?.playlistName?.trim() || isPublic !== playlistData?.isPublic){
+                setFormDisable(false)
+            } else {
+                setFormDisable(true)
+            }
         } else {
             setFormDisable(false)
         }
@@ -51,7 +46,11 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
 
 
     const closePopup = () => {
-        setOpenEditPopup(false)
+        if(isCreate === "create"){
+            window.history.back();
+        } else {
+            setOpenEditPopup(false)
+        }
     }
 
     const handleVisibility = (value) => {
@@ -97,7 +96,37 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
     }
 
     const handleCreate = ()=> {
-
+        setFormDisable(true)
+        setLoader(true)
+        axios.post(`/playlist`, { playlistName: title, description: description ? description : null, isPublic })
+            .then((res) => {
+                toast.success(res.data.message, {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                closePopup()
+                if(setFetch) setFetch(e => !e)
+            })
+            .catch((error) => {
+                if (error.status === 401) {
+                    toast.error("You need to login first", {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    dispatch(logout())
+                    navigate("/login")
+                } else {
+                    toast.error(errorMessage(error), {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                }
+                console.error(errorMessage(error));
+            })
+            .finally(() => {
+                setFormDisable(false)
+                setLoader(false)
+            })
     }
 
     return (
@@ -112,7 +141,7 @@ const UploadPlaylist = ({ setOpenEditPopup, playlistData = null, setPlaylistData
             <div className="w-full sm:w-1/2 max-h-screen bg-background p-6  rounded ring-1 ring-primary/30 overflow-y-auto no-scrollbar">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold">{playlistData ? "Edit Playlist" : "Create Playlist"}</h2>
-                    <button onClick={closePopup}><X /></button>
+                    <button title='close' onClick={()=> closePopup()}><X /></button>
                 </div>
                 <hr className="my-4 border-primary" />
                 <form action="/upload" method="POST" encType="multipart/form-data" className="space-y-6 mb-6 md:mb-0 mt-6 w-full">

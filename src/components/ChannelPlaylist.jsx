@@ -6,7 +6,7 @@ import { timeAgo } from '../utils/timeAgo.js'
 import { NavLink } from 'react-router-dom'
 import { FolderClosed, Play, LoaderCircle } from 'lucide-react';
 
-const ChannelPlaylist = ({ userId, username, isChannelOwner }) => {
+const ChannelPlaylist = ({ userId, username }) => {
     const [playlist, setPlaylist] = useState(null);
     const [error, setError] = useState(false);
     const [loader, setLoader] = useState(true)

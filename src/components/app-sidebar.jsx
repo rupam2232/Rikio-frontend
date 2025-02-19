@@ -42,8 +42,8 @@ const items = [
     icon: History,
   },
   {
-    title: "Collections",
-    url: "/collections",
+    title: "Playlists",
+    url: "/playlists",
     icon: FolderClosed
   }, 
   {
