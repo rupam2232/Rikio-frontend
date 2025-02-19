@@ -138,8 +138,8 @@ const UploadVideo = () => {
         } else if (value === "false") {
             setIsPublished(false)
         }
-        console.log(isPublished)
     }
+    
     useEffect(() => {
         if(((tags.trim() ? tags.split(',').map(tag => tag.trim()) : []).some((field) => field?.trim() === ""))){
             setTagsError(true)

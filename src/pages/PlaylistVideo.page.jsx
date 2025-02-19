@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from '../utils/axiosInstance.js'
 import errorMessage from '../utils/errorMessage.js'
@@ -6,7 +6,7 @@ import formatNumbers from '../utils/formatNumber.js'
 import setAvatar from '../utils/setAvatar.js'
 import { timeAgo } from '../utils/timeAgo.js'
 import { videoDuration } from '../utils/videoDuration.js'
-import { AccountHover, Button, ParseContents } from '../components/index.js'
+import { AccountHover, Button, ParseContents, UploadPlaylist } from '../components/index.js'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Play, LoaderCircle, LockKeyholeIcon, Earth, EditIcon, Trash2, Loader } from 'lucide-react'
 import { useDispatch } from 'react-redux';
@@ -34,6 +34,10 @@ import {
 
 const PlaylistVideo = () => {
     const [playlistData, setPlaylistData] = useState(null)
+    const [showFullDescription, setShowFullDescription] = useState(false)
+    const [isDescOverflowing, setIsDescOverflowing] = useState(false);
+    const [openEditPopup, setOpenEditPopup] = useState(false)
+    const descriptionRef = useRef(null);
     const [loader, setLoader] = useState(true)
     const [error, setError] = useState(null)
     const [optionLoader, setOptionLoader] = useState(false)
@@ -54,6 +58,14 @@ const PlaylistVideo = () => {
             })
             .finally(() => setLoader(false))
     }, [playlistId])
+
+    useEffect(() => {
+        if (descriptionRef.current) {
+            const lineHeight = parseFloat(getComputedStyle(descriptionRef.current).lineHeight);
+            const maxHeight = lineHeight * 2; // Two lines max
+            setIsDescOverflowing(descriptionRef.current.scrollHeight > maxHeight);
+        }
+    }, [playlistData?.description, showFullDescription]);
 
     const toggleSubscribe = (userId) => {
 
@@ -158,6 +170,7 @@ const PlaylistVideo = () => {
 
     if (playlistData) return (
         <section className="w-full">
+            {openEditPopup && <UploadPlaylist setOpenEditPopup={setOpenEditPopup} playlistData={playlistData} setPlaylistData={setPlaylistData} />}
             <div className="flex flex-wrap gap-x-4 gap-y-10 p-4 xl:flex-nowrap">
                 <div className="w-full shrink-0 sm:max-w-md xl:max-w-sm">
                     <div className="relative mb-2 w-full pt-[56%] group">
@@ -173,65 +186,62 @@ const PlaylistVideo = () => {
                                             <span className="inline-block">Playlist</span>
                                             <span className="inline-block">{`${formatNumbers(playlistData.videos.length)} videos`}</span>
                                         </p>
-                                        <p className="text-sm text-gray-200">{`${formatNumbers(playlistData.totalViews)} Views · ${timeAgo(playlistData.createdAt)}`}</p>
+                                        <p className="text-sm text-gray-200">{`${formatNumbers(playlistData.totalViews)} Views • ${timeAgo(playlistData.createdAt)}`}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className='flex justify-between items-start gap-x-2'>
-                        <div>
+                    <div>
+                        <div className='flex justify-between items-start gap-x-2'>
                             <h6 className="mb-1 font-semibold">{playlistData.playlistName}</h6>
-                            <p className="flex text-sm text-primary/60 break-words break-all whitespace-pre-wrap">{playlistData.description && <ParseContents content={playlistData.description} />}</p>
-                        </div>
-                        {playlistData.isPlaylistOwner && (
-                            <span className='flex gap-x-2 items-center'>
-                                <button className="relative group cursor-pointer h-min  sm:mr-2" title={playlistData.isPublic ? "Public" : "Private"}>{playlistData.isPublic ? <Earth className='size-4' /> : <LockKeyholeIcon className='size-4' />}
-                                    <span className='top-1/2 right-6 -translate-y-1/2 sm:right-auto sm:-translate-y-0 sm:-translate-x-1/2 sm:left-1/2 sm:top-6 z-[5] text-sm bg-primary text-background absolute text-nowrap hidden group-hover:block group-focus:block px-3 py-1 border border-zinc-600 rounded-md backdrop-blur-md'>{playlistData.isPublic ? "This playlist is public" : `This playlist is private`}</span>
-                                    <span className='w-3 h-3 sm:translate-y-1 sm:translate-x-1/2  z-[1] absolute -left-3 top-1/2 -translate-x-1/2 -translate-y-1/2 right-1/2 sm:left-auto  sm:top-auto sm:right-1/2 hidden group-hover:block group-focus:block rotate-45 bg-primary border border-zinc-600'></span>
-                                </button>
+                            {playlistData.isPlaylistOwner && (
+                                <span className='flex gap-x-2 items-center'>
+                                    <button className="relative group cursor-pointer h-min  sm:mr-2" title={playlistData.isPublic ? "Public" : "Private"}>{playlistData.isPublic ? <Earth className='size-4' /> : <LockKeyholeIcon className='size-4' />}
+                                        <span className='top-1/2 right-6 -translate-y-1/2 sm:right-auto sm:-translate-y-0 sm:-translate-x-1/2 sm:left-1/2 sm:top-6 z-[5] text-sm bg-primary text-background absolute text-nowrap hidden group-hover:block group-focus:block px-3 py-1 border border-zinc-600 rounded-md backdrop-blur-md'>{playlistData.isPublic ? "This playlist is public" : `This playlist is private`}</span>
+                                        <span className='w-3 h-3 sm:translate-y-1 sm:translate-x-1/2  z-[1] absolute -left-3 top-1/2 -translate-x-1/2 -translate-y-1/2 right-1/2 sm:left-auto  sm:top-auto sm:right-1/2 hidden group-hover:block group-focus:block rotate-45 bg-primary border border-zinc-600'></span>
+                                    </button>
 
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild title='options' className="mx-auto">
-                                        <div className='flex cursor-pointer px-[15px] py-2 rounded-full transition-colors hover:bg-primary/30 flex-col gap-1 h-max w-max'>
-                                            <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
-                                            <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
-                                            <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
-                                        </div>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className={`min-w-min !z-30 ${optionLoader ? "!pointer-events-none opacity-70" : "pointer-events-auto"}`}>
-                                        <DropdownMenuItem className="py-0 px-1 w-full">
-                                            <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={() => {
-                                                setOpenEditPopup(true)
-                                                setEditVideo(video)
-                                            }}>
-                                                <EditIcon />Edit
-                                            </Button>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <AlertDialog>
-                                            <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
-                                                <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
-                                                    <Trash2 />Delete
-                                                </div>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        This action cannot be undone. This will permanently delete your playlist.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => deleteVideo(video._id)}>Delete</AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </span>
-                        )}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild title='options' className="mx-auto">
+                                            <div className='flex cursor-pointer px-[15px] py-2 rounded-full transition-colors hover:bg-primary/30 flex-col gap-1 h-max w-max'>
+                                                <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                                <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                                <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                            </div>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className={`min-w-min !z-30 ${optionLoader ? "!pointer-events-none opacity-70" : "pointer-events-auto"}`}>
+                                            <DropdownMenuItem className="py-0 px-1 w-full">
+                                                <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={() => { setOpenEditPopup(true) }}>
+                                                    <EditIcon />Edit
+                                                </Button>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <AlertDialog>
+                                                <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
+                                                    <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
+                                                        <Trash2 />Delete
+                                                    </div>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This action cannot be undone. This will permanently delete your playlist.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => deleteVideo(video._id)}>Delete</AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </span>
+                            )}
+                        </div>
+                        {playlistData.description && <p ref={descriptionRef} className={`relative cursor-pointer pr-8 text-sm text-primary/60 break-words break-all whitespace-pre-wrap transition-all w-max ${showFullDescription ? "h-full" : "line-clamp-2 sm:line-clamp-3"}`} onClick={() => setShowFullDescription(!showFullDescription)}>{<ParseContents content={playlistData.description} />} {isDescOverflowing && <span className={`font-bold bottom-0 right-0 ${showFullDescription ? "" : "absolute"}`}>{showFullDescription ? " less" : "more"}</span>} </p>}
                     </div>
                     <div className="mt-6 flex items-center gap-x-3">
                         <AccountHover user={{ ...playlistData.owner, subscribers: playlistData.owner.subscribersCount, isSubscribed: playlistData.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
@@ -271,7 +281,7 @@ const PlaylistVideo = () => {
                                             <div className="w-full">
                                                 <div className='flex justify-between gap-x-2 items-start'>
                                                     <NavLink to={`/video/${video._id}`} className="flex-1">
-                                                        <h6 className="mb-1 sm:mt-1 font-semibold sm:max-w-[75%]" title={video.title}>{video.title}</h6>
+                                                        <h6 className="mb-1 sm:mt-1 font-semibold sm:max-w-[75%] max-h-16 line-clamp-2 whitespace-normal" title={video.title}>{video.title}</h6>
                                                     </NavLink>
 
                                                     {playlistData.isPlaylistOwner && (
