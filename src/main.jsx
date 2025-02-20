@@ -14,8 +14,9 @@ import Login from './pages/Login.page.jsx'
 import Video from './pages/Video.page.jsx'
 import UploadVideo from './pages/UploadVideo.page.jsx'
 import Dashboard from './pages/Dashboard.page.jsx'
-import Playlist from './pages/Playlist.page'
-import PlaylistVideo from './pages/PlaylistVideo.page'
+import Playlist from './pages/Playlist.page.jsx'
+import PlaylistVideo from './pages/PlaylistVideo.page.jsx'
+import Subscribed from './pages/Subscribed.page.jsx'
 import NotFound from './pages/NotFound.page.jsx'
 
 const router = createBrowserRouter([
@@ -49,7 +50,11 @@ const router = createBrowserRouter([
         )
       }, {
         path: '/subscribed',
-        element: <NotFound />
+        element: (
+          <AuthLayout >
+            <Subscribed />
+          </AuthLayout>
+        )
       }, {
         path: '/settings',
         element: <NotFound />

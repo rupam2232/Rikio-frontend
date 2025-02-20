@@ -8,7 +8,7 @@ import { timeAgo } from '../utils/timeAgo.js'
 import { videoDuration } from '../utils/videoDuration.js'
 import { AccountHover, Button, ParseContents, UploadPlaylist } from '../components/index.js'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Play, LoaderCircle, LockKeyholeIcon, Earth, EditIcon, Trash2, Loader } from 'lucide-react'
+import { Play, LoaderCircle, LockKeyholeIcon, Earth, EditIcon, Trash2 } from 'lucide-react'
 import { useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice.js'
 import toast from 'react-hot-toast'
@@ -271,7 +271,7 @@ const PlaylistVideo = () => {
                                 </span>
                             )}
                         </div>
-                        {playlistData.description && <p ref={descriptionRef} className={`w-full relative cursor-pointer sm:pr-8 text-sm text-primary/60 break-words break-all whitespace-pre-wrap transition-all ${showFullDescription ? "h-full" : "line-clamp-2 sm:line-clamp-3"}`} onClick={() => setShowFullDescription(!showFullDescription)}>{<ParseContents content={playlistData.description} />} {isDescOverflowing && <span className={`font-bold bottom-0 right-0 ${showFullDescription ? "" : "absolute"}`}>{showFullDescription ? " less" : "more"}</span>} </p>}
+                        {playlistData.description && <p ref={descriptionRef} className={`w-full relative cursor-pointer sm:pr-8 text-sm text-primary/60 break-words break-all whitespace-pre-wrap transition-all ${showFullDescription ? "h-full" : "line-clamp-3"}`} onClick={() => setShowFullDescription(!showFullDescription)}>{<ParseContents content={playlistData.description} />} {isDescOverflowing && <span className={`font-bold bottom-0 right-0 ${showFullDescription ? "" : "absolute"}`}>{showFullDescription ? " less" : "more"}</span>} </p>}
                     </div>
                     <div className="mt-6 flex items-center gap-x-3">
                         <AccountHover user={{ ...playlistData.owner, subscribers: playlistData.owner.subscribersCount, isSubscribed: playlistData.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
@@ -281,7 +281,7 @@ const PlaylistVideo = () => {
                         </AccountHover>
                         <div className="w-full">
                             <AccountHover user={{ ...playlistData.owner, subscribers: playlistData.owner.subscribersCount, isSubscribed: playlistData.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                <h6 className="font-semibold cursor-pointer w-max" onClick={() => navigate(`/@${playlistData.owner.username}`)}>{playlistData.owner.fullName}</h6>
+                                <h6 className="font-semibold cursor-pointer w-max break-words break-all whitespace-pre-wrap" onClick={() => navigate(`/@${playlistData.owner.username}`)}>{playlistData.owner.fullName}</h6>
                                 <p className="text-sm text-primary/60 cursor-pointer w-max" onClick={() => navigate(`/@${playlistData.owner.username}`)}>{`${formatNumbers(playlistData.owner.subscribersCount)} Subscribers`}</p>
                             </AccountHover>
                         </div>

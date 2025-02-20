@@ -448,7 +448,7 @@ const Video = () => {
                                             </AlertDialogContent>
                                         </AlertDialog> :
                                         <Button
-                                            className="gap-0 py-0 px-0 xs:py-2 xs:px-4 group flex w-auto items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary" onClick={() => toggleSubscribe(video.owner._id)}>
+                                            className="gap-0 py-2 px-4 group flex w-auto items-center hover:bg-[#b689ff] bg-[#ae7aff] text-center text-primary" onClick={() => toggleSubscribe(video.owner._id)}>
                                             <span className="hidden xs:inline-block w-5">
                                                 <UserRoundPlus />
                                             </span>
