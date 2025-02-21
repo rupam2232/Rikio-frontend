@@ -17,6 +17,7 @@ import Dashboard from './pages/Dashboard.page.jsx'
 import Playlist from './pages/Playlist.page.jsx'
 import PlaylistVideo from './pages/PlaylistVideo.page.jsx'
 import Subscribed from './pages/Subscribed.page.jsx'
+import LikedVideo from './pages/LikedVideo.page.jsx'
 import NotFound from './pages/NotFound.page.jsx'
 
 const router = createBrowserRouter([
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
         element: <Home />
       }, {
         path: '/liked-videos',
-        element: <NotFound />
+        element: (
+          <AuthLayout >
+            <LikedVideo />
+          </AuthLayout>
+        )
       }, {
         path: '/watch-history',
         element: <NotFound />

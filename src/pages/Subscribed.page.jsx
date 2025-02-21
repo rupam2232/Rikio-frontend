@@ -4,7 +4,7 @@ import errorMessage from '../utils/errorMessage.js'
 import formatNumbers from '../utils/formatNumber.js'
 import setAvatar from '../utils/setAvatar.js'
 import { useNavigate } from 'react-router-dom'
-import { FolderClosed, Play, LoaderCircle, Earth, LockKeyholeIcon, BadgeCheck, UserRoundPlus, UserRoundCheck } from 'lucide-react';
+import { LoaderCircle, BadgeCheck, UserRoundPlus, UserRoundCheck } from 'lucide-react';
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 import { AccountHover, Button } from '../components/index.js'
 import toast from 'react-hot-toast'
@@ -118,10 +118,12 @@ const Subscribed = () => {
         )
     }
 
-    if(subscribedChannels && subscribedChannels.subscribed.length === 0){
+    if (subscribedChannels && subscribedChannels.subscribed.length === 0) {
         return (
             <section className='h-[80vh] flex items-center justify-center flex-col'>
-                <UserRoundCheck className='mb-2 px-2 py-2 w-auto size-10 text-[#AE7AFF] bg-[#E4D3FF] rounded-full' />
+                <div className='mb-2 px-2 py-2 w-auto  text-[#AE7AFF] bg-[#E4D3FF] rounded-full'>
+                    <UserRoundCheck className='size-7' />
+                </div>
                 <h3 className='font-bold mb-2'>No subscribed channels</h3>
                 <p>You haven't subscribed to any channel</p>
             </section>
@@ -145,7 +147,7 @@ const Subscribed = () => {
                                 <div className="block">
                                     <div className="font-bold relative flex ">
                                         <p className='break-words break-all whitespace-pre-wrap min-w-0 max-w-[8rem] sm:max-w-[10rem] md:max-w-[15rem] lg:max-w-[20rem] line-clamp-1'>
-                                        {channel.fullName}</p>
+                                            {channel.fullName}</p>
                                         {channel.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
                                             <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
                                         </span>}</div>

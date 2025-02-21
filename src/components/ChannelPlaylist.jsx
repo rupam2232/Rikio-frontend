@@ -41,7 +41,9 @@ const ChannelPlaylist = ({ userId, username }) => {
     if (playlist?.length === 0) {
         return (
             <div className='h-[80vh] flex items-center justify-center flex-col'>
-                <FolderClosed className='mb-2 px-2 py-2 w-auto size-10 text-[#AE7AFF] bg-[#E4D3FF] rounded-full' />
+                <div className='mb-2 px-2 py-2 w-auto  text-[#AE7AFF] bg-[#E4D3FF] rounded-full'>
+                    <FolderClosed className='size-7' />
+                </div>
                 <h3 className='font-bold mb-2'>No playlist created</h3>
                 <p>There are no playlist created on this channel.</p>
             </div>
