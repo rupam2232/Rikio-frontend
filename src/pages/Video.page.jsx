@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { NavLink, useParams } from 'react-router-dom'
 import { timeAgo } from '../utils/timeAgo'
 import { Like, Button, AccountHover, Comments, ParseContents, Video as VideoPlayer } from "../components/index.js"
@@ -35,11 +35,13 @@ const Video = () => {
     const [error, setError] = useState("")
     const [openSavePopup, setOpenSavePopup] = useState(false)
     const [savePopupLoader, setSavePopupLoader] = useState(false)
+    const [isDescOverflowing, setIsDescOverflowing] = useState(false);
     const [playlists, setPlaylists] = useState(null)
     const { videoId } = useParams()
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const loggedInUser = useSelector((state) => state.auth.userData);
+    const descriptionRef = useRef(null);
 
     const toggleSubscribe = (ownerId) => {
 
@@ -159,15 +161,15 @@ const Video = () => {
                 .then((res) => {
                     let updatedPlaylists = playlists.map((elem) => {
                         if (elem._id === playlist._id) {
-                          return {
-                            ...elem,
-                            videoIds: elem.videoIds.filter((e) => e !== videoId)
-                          };
+                            return {
+                                ...elem,
+                                videoIds: elem.videoIds.filter((e) => e !== videoId)
+                            };
                         }
                         return elem;
-                      });
-                      
-                      setPlaylists(updatedPlaylists);
+                    });
+
+                    setPlaylists(updatedPlaylists);
                 })
                 .catch((error) => {
                     if (error.status === 401) {
@@ -197,7 +199,7 @@ const Video = () => {
                             return {
                                 ...elem,
                                 videoIds: [...elem.videoIds, videoId]
-                              };
+                            };
                         }
                         return elem
                     })
@@ -236,6 +238,14 @@ const Video = () => {
             })
             .finally(() => setSavePopupLoader(false))
     }, [])
+
+    useEffect(() => {
+        if (descriptionRef.current) {
+            const lineHeight = parseFloat(getComputedStyle(descriptionRef.current).lineHeight);
+            const maxHeight = lineHeight * 3;
+            setIsDescOverflowing(descriptionRef.current.scrollHeight > maxHeight);
+        }
+    }, [video?.description, fullDesc]);
 
     useEffect(() => {
         setError("")
@@ -325,38 +335,6 @@ const Video = () => {
                                                 </span>
                                                 Save
                                             </Button>
-                                            {/* <div className="absolute right-0 top-full z-10 hidden w-64 overflow-hidden rounded-lg bg-[#121212] p-4 shadow shadow-slate-50/30 hover:block peer-focus:block">
-                                                <h3 className="mb-4 text-center text-lg font-semibold">Save to playlist</h3>
-                                                <ul className="mb-4">
-                                                    <li className="mb-2 last:mb-0">
-                                                        <label
-                                                            className="group/label inline-flex cursor-pointer items-center gap-x-3"
-                                                            htmlFor="Collections-checkbox">
-                                                            <Input
-                                                                type="checkbox"
-                                                                className="peer hidden"
-                                                                id="Collections-checkbox" />
-                                                            <span
-                                                                className="inline-flex h-4 w-4 items-center justify-center rounded-[4px] border border-transparent bg-white text-white group-hover/label:border-[#ae7aff] peer-checked:border-[#ae7aff] peer-checked:text-[#ae7aff]">
-                                                                <Plus />
-                                                            </span>
-                                                            Collections
-                                                        </label>
-                                                    </li>
-                                                </ul>
-                                                <div className="flex flex-col">
-                                                    <label
-                                                        htmlFor="playlist-name"
-                                                        className="mb-1 inline-block cursor-pointer">
-                                                        Name
-                                                    </label>
-                                                    <Input
-                                                        className="w-full rounded-lg border border-transparent bg-white px-3 py-2 text-black outline-none focus:border-[#ae7aff]"
-                                                        id="playlist-name"
-                                                        placeholder="Enter playlist name" />
-                                                    <button className="mx-auto mt-4 rounded-lg bg-[#ae7aff] px-4 py-2 text-black">Create new playlist</button>
-                                                </div>
-                                            </div> */}
                                         </div>
 
                                         {openSavePopup && <div className='fixed z-[50] inset-0 flex items-center justify-center bg-black bg-opacity-70 overflow-y-auto no-scrollbar max-h-screen'>
@@ -382,7 +360,7 @@ const Video = () => {
                                                                 htmlFor={playlist._id}>
                                                                 <input
                                                                     type="checkbox"
-                                                                    onChange={()=> handlePlaylistSave(playlist)}
+                                                                    onChange={() => handlePlaylistSave(playlist)}
                                                                     defaultChecked={playlist.videoIds.some((e) => e === videoId)}
                                                                     className="peer hidden"
                                                                     id={playlist._id} />
@@ -408,16 +386,19 @@ const Video = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="mt-4 flex flex-wrap gap-y-3 items-center justify-between">
+                            <div className="mt-4 w-full flex justify-between items-center">
                                 <AccountHover user={{ ...video.owner, isSubscribed: subscribed, subscribers: sub }} toggleSubscribe={toggleSubscribe}>
-                                    <div className="flex flex-wrap items-center gap-x-4 group cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
+                                    <div className="flex flex-row items-center gap-x-4 cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
                                         <Avatar className='h-12 w-12'>
                                             <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
                                         </Avatar>
                                         <div className="block">
-                                            <p className="font-bold relative">{video.owner.fullName}{video.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                            </span>}</p>
+                                            <div className="font-bold relative flex">
+                                                <p className="break-words break-all whitespace-pre-wrap min-w-0 max-w-[8rem] sm:max-w-[10rem] md:max-w-[15rem] lg:max-w-[20rem] line-clamp-1">{video.owner.fullName}</p>
+                                                {video.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                    <BadgeCheck className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                </span>}
+                                            </div>
                                             <p className="text-sm text-sidebar-foreground/95">{formatNumbers(sub)} Subscribers</p>
                                         </div>
                                     </div>
@@ -459,16 +440,16 @@ const Video = () => {
                                 </div>
                             </div>
                             <hr className="my-4 border-primary" />
-                            <div className={`relative`} role="button" tabIndex="0" onClick={() => setFullDesc(!fullDesc)}>
-                                <p className={`relative text-sm cursor-pointer break-words break-all whitespace-pre-wrap transition-all ${fullDesc ? "h-auto" : " line-clamp-3 "}`}>
-                                    {video.description && <ParseContents content={video.description} />}
-                                </p>
 
-                                {/* <span className={`absolute bottom-0 right-0 p-2 bg-gradient-to-t from-background to-transparent w-full h-4 ${fullDesc && "hidden"}`}></span> */}
-
-                                <div className={`${video.description && video?.tags && "mt-3"} ${fullDesc ? 'block' : 'hidden'}`}>
+                            <div ref={descriptionRef} className={`w-full relative cursor-pointer text-sm break-words break-all whitespace-pre-wrap transition-all ${isDescOverflowing &&fullDesc ? "h-full" : "line-clamp-3"}`} onClick={() => setFullDesc(!fullDesc)}>
+                                {video.description && <p className='relative'>{<ParseContents content={video.description} />}</p>}
+                                <div className={`block ${video.description && "pt-4"}`}>
                                     {video?.tags && video.tags.map((tag, index) => (<span key={index} className="inline-block px-2 py-1 bg-primary/20 text-primary text-xs rounded-md mr-2">{tag}</span>))}
                                 </div>
+                                {isDescOverflowing && <span className={`font-bold block bottom-0 right-0 ${fullDesc ? "pt-4" : "absolute w-full bg-background"}`}>{fullDesc ? "Show Less" : "...more"}</span>}
+                            </div>
+
+                            <div className={`relative`} role="button" tabIndex="0" onClick={() => setFullDesc(!fullDesc)}>
                             </div>
                         </div>
                         < Comments parentContentId={videoId} toggleSubscribe={toggleSubscribe} allComment={allComment} setAllComment={setAllComment} />

@@ -8,7 +8,7 @@ import { timeAgo } from '../utils/timeAgo.js'
 import { videoDuration } from '../utils/videoDuration.js'
 import { AccountHover, Button, ParseContents, UploadPlaylist } from '../components/index.js'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Play, LoaderCircle, LockKeyholeIcon, Earth, EditIcon, Trash2 } from 'lucide-react'
+import { Play, LoaderCircle, LockKeyholeIcon, Earth, EditIcon, Trash2, BadgeCheck } from 'lucide-react'
 import { useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice.js'
 import toast from 'react-hot-toast'
@@ -62,7 +62,7 @@ const PlaylistVideo = () => {
     useEffect(() => {
         if (descriptionRef.current) {
             const lineHeight = parseFloat(getComputedStyle(descriptionRef.current).lineHeight);
-            const maxHeight = lineHeight * 2; // Two lines max
+            const maxHeight = lineHeight * 3;
             setIsDescOverflowing(descriptionRef.current.scrollHeight > maxHeight);
         }
     }, [playlistData?.description, showFullDescription]);
@@ -201,8 +201,8 @@ const PlaylistVideo = () => {
     if (playlistData) return (
         <section className="w-full">
             {openEditPopup && <UploadPlaylist setOpenEditPopup={setOpenEditPopup} playlistData={playlistData} setPlaylistData={setPlaylistData} />}
-            <div className="flex flex-wrap gap-x-4 gap-y-10 p-4 xl:flex-nowrap">
-                <div className="w-full shrink-0 sm:max-w-md xl:max-w-sm">
+            <div className="flex flex-wrap gap-x-4 gap-y-10 p-4 lg:flex-nowrap">
+                <div className="w-full shrink-0 sm:max-w-md lg:max-w-sm">
                     <div className="relative mb-2 w-full pt-[56%] group">
                         <div className="absolute inset-0">
                             {playlistData.videos.length > 0 ? <img src={playlistData.videos[0].thumbnail} alt={`${playlistData.playlistName} | by @${playlistData.owner.username}`} className="h-full w-full rounded-md object-cover" />
@@ -271,7 +271,7 @@ const PlaylistVideo = () => {
                                 </span>
                             )}
                         </div>
-                        {playlistData.description && <p ref={descriptionRef} className={`w-full relative cursor-pointer sm:pr-8 text-sm text-primary/60 break-words break-all whitespace-pre-wrap transition-all ${showFullDescription ? "h-full" : "line-clamp-3"}`} onClick={() => setShowFullDescription(!showFullDescription)}>{<ParseContents content={playlistData.description} />} {isDescOverflowing && <span className={`font-bold bottom-0 right-0 ${showFullDescription ? "" : "absolute"}`}>{showFullDescription ? " less" : "more"}</span>} </p>}
+                        {playlistData.description && <p ref={descriptionRef} role="button" className={`w-full relative cursor-pointer text-sm text-primary/60 break-words break-all whitespace-pre-wrap transition-all ${showFullDescription ? "h-full" : "line-clamp-3 "}`} onClick={() => setShowFullDescription(!showFullDescription)}>{<ParseContents content={playlistData.description} />} {isDescOverflowing && <span className={`font-bold bottom-0 left-0 ${showFullDescription ? "block" : "absolute w-full bg-background"}`}>{showFullDescription ? "Show Less" : "...more"}</span>} </p>}
                     </div>
                     <div className="mt-6 flex items-center gap-x-3">
                         <AccountHover user={{ ...playlistData.owner, subscribers: playlistData.owner.subscribersCount, isSubscribed: playlistData.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
@@ -281,7 +281,12 @@ const PlaylistVideo = () => {
                         </AccountHover>
                         <div className="w-full">
                             <AccountHover user={{ ...playlistData.owner, subscribers: playlistData.owner.subscribersCount, isSubscribed: playlistData.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                <h6 className="font-semibold cursor-pointer w-max break-words break-all whitespace-pre-wrap" onClick={() => navigate(`/@${playlistData.owner.username}`)}>{playlistData.owner.fullName}</h6>
+                            <div className="font-bold relative flex" onClick={() => navigate(`/@${playlistData.owner.username}`)}>
+                                <h6 className="font-semibold break-words break-all whitespace-pre-wrap min-w-0 max-w-[8rem] sm:max-w-[15rem] lg:max-w-[10rem] line-clamp-1">{playlistData.owner.fullName}</h6>
+                                {playlistData.owner.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                    <BadgeCheck className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                </span>}
+                            </div>
                                 <p className="text-sm text-primary/60 cursor-pointer w-max" onClick={() => navigate(`/@${playlistData.owner.username}`)}>{`${formatNumbers(playlistData.owner.subscribersCount)} Subscribers`}</p>
                             </AccountHover>
                         </div>
