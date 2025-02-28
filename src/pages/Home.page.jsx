@@ -265,7 +265,7 @@ const Home = () => {
 
     if (videos.length === 0) {
         return (
-            <VideoNotFound pText="There are no videos here available. Please upload a video first." />
+            <VideoNotFound pText="There are no videos available here. Please upload a video first." />
         )
     }
 
