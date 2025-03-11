@@ -16,7 +16,7 @@ import { logout } from '../store/authSlice.js'
 const WatchHistory = () => {
     const [historyData, setHistoryData] = useState()
     const [loader, setLoader] = useState(true)
-    const [videoLoader, setVideoLoader] = useState(true)
+    const [videoLoader, setVideoLoader] = useState(false)
     const [totalPages, setTotalPages] = useState(1)
     const [page, setPage] = useState(1)
     const isFetching = useRef(false);
@@ -27,14 +27,13 @@ const WatchHistory = () => {
     useEffect(() => {
         if ((historyData?.totalPages && page > totalPages) || isFetching.current === true) {
             setVideoLoader(false)
-            console.log(page)
             setLoader(false)
             return;
         }
         isFetching.current = true;
         if (historyData?.history?.length > 0) {
             setVideoLoader(true)
-            axios.get(`/users/history?page=${page}&limit=1`)
+            axios.get(`/users/history?page=${page}`)
                 .then((res) => {
                     setTotalPages(res.data.data.totalPages)
                     const newHistory = res.data.data.history;
@@ -74,7 +73,7 @@ const WatchHistory = () => {
                 )
         } else {
             setLoader(true)
-            axios.get('/users/history?limit=1')
+            axios.get('/users/history')
                 .then((res) => {
                     setTotalPages(res.data.data.totalPages)
                     setHistoryData(res.data.data)
@@ -92,14 +91,12 @@ const WatchHistory = () => {
     const lastVideoElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect()
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                console.log(page)
+            if (entries[0].isIntersecting && (historyData?.totalPages && page < totalPages)) {
                 setPage(prevPageNumber => prevPageNumber + 1)
             }
         })
         if (node) observer.current.observe(node)
     }, [])
-console.log(page)
 
     const toggleSubscribe = (userId) => {
         axios.post(`/subscription/c/${userId}`)
@@ -189,12 +186,12 @@ console.log(page)
                 </div>
 
                 {historyData?.history?.length === 0 ? (
-                    <p className="text-center text-gray-500">No watch history available.</p>
+                    <p className="text-center text-zinc-500">No watch history available.</p>
                 ) : (
                     <div className="flex w-full flex-col gap-y-4">
                         {historyData.history.map((day, index) => (
                             <div key={index}>
-                                <h3 className="text-xl font-medium text-gray-700 mb-3">
+                                <h3 className="text-xl font-medium mb-3">
                                     {`${new Date(day.createdAt).getDate()}th ${new Date(day.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(day.createdAt).getFullYear()}`}
                                 </h3>
                                 <hr className="my-4 border-primary" />

@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState } from "react";
+import { useRef, useMemo } from "react";
 import VideoPlayer from "./VideoPlayer.jsx";
 import { useSelector } from 'react-redux'
 import { useLocation } from "react-router-dom";
@@ -7,11 +7,11 @@ import errorMessage from '../utils/errorMessage.js'
 
 const Video = ({ poster, src, autoplay = false }) => {
     const playerRef = useRef(null);
+    const isAddedToHistory = useRef(false);
     const userStatus = useSelector((state) => state.auth.status);
-    const [addedToHistory, setAddedToHistory] = useState(false);
     const location = useLocation();
     const videoId = location.pathname.split("/")[2]
-    const userTimeZoneOffset = -new Date().getTimezoneOffset();
+    const userTimeZoneOffset = new Date().getTimezoneOffset();
 
     const videoJsOptions = useMemo(() => (
         {
@@ -33,21 +33,19 @@ const Video = ({ poster, src, autoplay = false }) => {
     const handlePlayerReady = (player) => {
         playerRef.current = player;
 
-        // Get the current playback time (in seconds)
         player.on("timeupdate", () => {
             const currentTime = player.currentTime();
             if (currentTime >= 10 && userStatus) {
-                if (!addedToHistory) {
-                    setAddedToHistory(true)
-                    axios.post('/users/add-history/', { videoId })
-                        .then((res) => {
-                            console.log(res)
+                if (!isAddedToHistory.current) {
+                    isAddedToHistory.current = true
+                    axios.post('/users/add-history/', { videoId, userTimeZoneOffset })
+                        .then((_) => {
+                            isAddedToHistory.current = true
                         })
                         .catch((error) => {
-                            setAddedToHistory(false)
+                            isAddedToHistory.current = false
                             console.error(errorMessage(error))
                         })
-                    console.log(addedToHistory)
                 }
             }
         });

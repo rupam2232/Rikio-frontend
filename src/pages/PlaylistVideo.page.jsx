@@ -297,7 +297,7 @@ const PlaylistVideo = () => {
                     {playlistData.videos.length > 0 ?
                         playlistData.videos.map((video) => {
                             return (
-                                <div key={video._id} className="sm:border border-zinc-500 rounded-md">
+                                <div key={video._id} className="sm:border border-zinc-500 rounded-md shadow-md">
                                     <div className="w-full  gap-x-4 sm:flex">
                                         <div className="relative mb-2 w-full sm:mb-0 sm:w-5/12">
                                             <div className="w-full pt-[56%]" aria-label='Thubmnail'>
