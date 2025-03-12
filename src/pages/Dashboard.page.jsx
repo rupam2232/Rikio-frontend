@@ -27,7 +27,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Trash2, EditIcon } from 'lucide-react'
+import { Trash2, EditIcon, UserRoundCheck, ThumbsUp, UsersRound, SquarePlay } from 'lucide-react'
 
 const Dashboard = () => {
     const [statsData, setStatsData] = useState(null);
@@ -165,10 +165,10 @@ const Dashboard = () => {
             .then((res) => {
                 if (res.data.data) {
                     videos.map((video) => {
-                            if (video._id === videoId) {
-                                video.isPublished = toggleStatus
-                            }
-                        })
+                        if (video._id === videoId) {
+                            video.isPublished = toggleStatus
+                        }
+                    })
                     toast.success(`Video is now ${toggleStatus ? "Public" : "Private"}`, {
                         style: { color: "#ffffff", backgroundColor: "#333333" },
                         position: "top-center"
@@ -225,7 +225,7 @@ const Dashboard = () => {
 
     return (
         <section className="flex w-screen sm:w-[97vw] md:w-[90vw] lg:w-full flex-col gap-y-6 px-4 py-8">
-            {openEditPopup && <EditVideo setOpenEditPopup={setOpenEditPopup} videoDetails={editVideo} setVideoDetails={setEditVideo}/>}
+            {openEditPopup && <EditVideo setOpenEditPopup={setOpenEditPopup} videoDetails={editVideo} setVideoDetails={setEditVideo} />}
             <div className="flex flex-wrap justify-between gap-4 bg-background">
                 <div className="block">
                     <h1 className="text-2xl font-bold flex flex-wrap gap-x-2">Welcome Back,<span>{user.fullName}</span></h1>
@@ -237,19 +237,31 @@ const Dashboard = () => {
             </div>
             <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-4">
                 <div className="border border-zinc-400 rounded-md shadow-sm shadow-zinc-500 p-4">
-                    <h6 >Total views</h6>
+                    <div className='flex items-center justify-between'>
+                        <h6 >Total views</h6>
+                        <UsersRound className='size-4 text-primary/80'/>
+                    </div>
                     <p className="text-3xl font-semibold">{formatNumbers(statsData.totalVideoViews)}</p>
                 </div>
                 <div className="border border-zinc-400 rounded-md shadow-sm shadow-zinc-500 p-4">
-                    <h6>Total subscribers</h6>
+                    <div className='flex items-center justify-between'>
+                        <h6>Total subscribers</h6>
+                        <UserRoundCheck className='size-4 text-primary/80'/>
+                    </div>
                     <p className="text-3xl font-semibold">{formatNumbers(statsData.totalSubscribers)}</p>
                 </div>
                 <div className="border border-zinc-400 rounded-md shadow-sm shadow-zinc-500 p-4">
-                    <h6>Total likes</h6>
+                    <div className='flex items-center justify-between'>
+                        <h6>Total likes</h6>
+                        <ThumbsUp className='size-4 text-primary/80'/>
+                    </div>
                     <p className="text-3xl font-semibold">{formatNumbers(statsData.totalVideoLikes)}</p>
                 </div>
                 <div className="border border-zinc-400 rounded-md shadow-sm shadow-zinc-500 p-4">
-                    <h6>Total videos</h6>
+                    <div className='flex items-center justify-between'>
+                        <h6>Total videos</h6>
+                        <SquarePlay className='size-4 text-primary/80'/>
+                    </div>
                     <p className="text-3xl font-semibold">{formatNumbers(statsData.totalVideos)}</p>
                 </div>
             </div>
@@ -308,7 +320,7 @@ const Dashboard = () => {
                                                 {/* <span className="inline-block rounded-xl bg-red-200 px-1.5 py-0.5 text-red-700">49 dislikes</span> */}
                                             </div>
                                         </td>
-                                        <td title={`${new Date(video.createdAt).getDate()}th ${new Date(video.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(video.createdAt).getFullYear()}`} className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${("0"+new Date(video.createdAt).getDate()).slice(-2)}/${("0"+(new Date(video.createdAt).getMonth()+1)).slice(-2)}/${new Date(video.createdAt).getFullYear()}`}</td>
+                                        <td title={`${new Date(video.createdAt).getDate()}th ${new Date(video.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(video.createdAt).getFullYear()}`} className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${("0" + new Date(video.createdAt).getDate()).slice(-2)}/${("0" + (new Date(video.createdAt).getMonth() + 1)).slice(-2)}/${new Date(video.createdAt).getFullYear()}`}</td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
 
                                             <DropdownMenu>
@@ -321,10 +333,10 @@ const Dashboard = () => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent className="min-w-min !z-30">
                                                     <DropdownMenuItem className="py-0 px-1 w-full">
-                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={()=>{ 
+                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={() => {
                                                             setOpenEditPopup(true)
                                                             setEditVideo(video)
-                                                            }}>
+                                                        }}>
                                                             <EditIcon />Edit
                                                         </Button>
                                                     </DropdownMenuItem>
@@ -382,7 +394,7 @@ const Dashboard = () => {
                                                 {/* <span className="inline-block rounded-xl bg-red-200 px-1.5 py-0.5 text-red-700">49 dislikes</span> */}
                                             </div>
                                         </td>
-                                        <td title={`${new Date(video.createdAt).getDate()}th ${new Date(video.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(video.createdAt).getFullYear()}`} className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${("0"+new Date(video.createdAt).getDate()).slice(-2)}/${("0"+(new Date(video.createdAt).getMonth()+1)).slice(-2)}/${new Date(video.createdAt).getFullYear()}`}</td>
+                                        <td title={`${new Date(video.createdAt).getDate()}th ${new Date(video.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(video.createdAt).getFullYear()}`} className="px-4 py-3 border-t border-collapse border-zinc-500 text-center">{`${("0" + new Date(video.createdAt).getDate()).slice(-2)}/${("0" + (new Date(video.createdAt).getMonth() + 1)).slice(-2)}/${new Date(video.createdAt).getFullYear()}`}</td>
                                         <td className="px-4 py-3 border-t border-collapse border-zinc-500">
 
                                             <DropdownMenu>
@@ -395,10 +407,10 @@ const Dashboard = () => {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent className="min-w-min !z-30">
                                                     <DropdownMenuItem className="py-0 px-1 w-full">
-                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={()=>{ 
+                                                        <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={() => {
                                                             setOpenEditPopup(true)
                                                             setEditVideo(video)
-                                                            }}>
+                                                        }}>
                                                             <EditIcon />Edit
                                                         </Button>
                                                     </DropdownMenuItem>
@@ -434,9 +446,9 @@ const Dashboard = () => {
                             : (
                                 <tr>
 
-                                <td colspan="3"> <p className='mx-5 my-5 w-full text-primary/60'>No videos available to show</p> </td>
-                            
-                              </tr>
+                                    <td colspan="3"> <p className='mx-5 my-5 w-full text-primary/60'>No videos available to show</p> </td>
+
+                                </tr>
                             )}
 
                         {videoLoader && (

@@ -18,7 +18,8 @@ import Playlist from './pages/Playlist.page.jsx'
 import PlaylistVideo from './pages/PlaylistVideo.page.jsx'
 import Subscribed from './pages/Subscribed.page.jsx'
 import LikedVideo from './pages/LikedVideo.page.jsx'
-import WatchHistory from './pages/WatchHistory.page'
+import WatchHistory from './pages/WatchHistory.page.jsx'
+import Settings from './pages/Settings.pages.jsx'
 import NotFound from './pages/NotFound.page.jsx'
 
 const router = createBrowserRouter([
@@ -67,7 +68,18 @@ const router = createBrowserRouter([
         )
       }, {
         path: '/settings',
-        element: <NotFound />
+        element: (
+          <AuthLayout >
+            <Settings />
+          </AuthLayout>
+        )
+      }, {
+        path: '/settings/:tab',
+        element: (
+          <AuthLayout >
+            <Settings />
+          </AuthLayout>
+        )
       }, {
         path: '/dashboard',
         element: (

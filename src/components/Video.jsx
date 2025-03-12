@@ -35,7 +35,7 @@ const Video = ({ poster, src, autoplay = false }) => {
 
         player.on("timeupdate", () => {
             const currentTime = player.currentTime();
-            if (currentTime >= 10 && userStatus) {
+            if (currentTime >= 5 && userStatus) {
                 if (!isAddedToHistory.current) {
                     isAddedToHistory.current = true
                     axios.post('/users/add-history/', { videoId, userTimeZoneOffset })
