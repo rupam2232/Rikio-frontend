@@ -63,7 +63,10 @@ const Playlist = () => {
     return (
         <section className="w-full p-4 pt-0 mb-10">
             <div className="w-full mt-4 px-4 flex items-center justify-between">
-                <h1 className="font-medium text-2xl">Playlists</h1>
+                <div>
+                <h1 className="font-medium text-2xl flex items-center gap-2"><span><FolderClosed className='size-4'/></span>Playlists</h1>
+                <p className='text-sm text-primary/80'>Manage all your created playlists.</p>
+                </div>
                 <Button onClick={() => setOpenEditPopup(true)} className="flex justify-center items-center gap-2 bg-[#ae7aff] hover:bg-[#ae7aff] text-primary hover:text-primary px-4 py-2 rounded-md font-medium text-sm [&>svg]:size-4 [&>svg]:shrink-0">Create new Playlist</Button>
             </div>
             <hr className="my-4 border-primary" />

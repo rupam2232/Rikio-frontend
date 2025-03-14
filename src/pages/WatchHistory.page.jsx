@@ -9,7 +9,7 @@ import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import { videoDuration } from '../utils/videoDuration.js'
 import toast from "react-hot-toast"
-import { LoaderCircle, LockKeyholeIcon, Play, Loader } from 'lucide-react'
+import { LoaderCircle, LockKeyholeIcon, Play, Loader, HistoryIcon } from 'lucide-react'
 import { useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice.js'
 
@@ -40,12 +40,12 @@ const WatchHistory = () => {
 
                     setHistoryData((prevHistory) => {
                         let updatedHistory = [...prevHistory.history];
-        
+
                         newHistory.forEach((newEntry) => {
                             const existingIndex = updatedHistory.findIndex(
                                 (entry) => entry.createdAt.split("T")[0] === newEntry.createdAt.split("T")[0]
                             );
-        
+
                             if (existingIndex !== -1) {
                                 newEntry.videos.forEach((video) => {
                                     const isDuplicate = updatedHistory[existingIndex].videos.some(
@@ -54,13 +54,13 @@ const WatchHistory = () => {
                                     if (!isDuplicate) {
                                         updatedHistory[existingIndex].videos.push(video);
                                     }
-                            })
+                                })
                             } else {
                                 updatedHistory.push(newEntry);
                             }
                         });
-        
-                        return {...res.data.data, history: updatedHistory.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))};
+
+                        return { ...res.data.data, history: updatedHistory.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) };
                     });
                 })
                 .catch((error) => {
@@ -174,7 +174,10 @@ const WatchHistory = () => {
                     </div>
                     <div>
                         <div className='flex justify-between items-start gap-x-2'>
-                            <h6 className="mb-1 font-semibold">Watch History</h6>
+                            <div className='mb-1'>
+                                <h6 className="font-semibold flex items-center gap-2"><span><HistoryIcon className='size-4' /></span>Watch History</h6>
+                                <p className='text-sm text-primary/80'>Videos you have watched before.</p>
+                            </div>
                             <span className='flex gap-x-2 items-center'>
                                 <button className="relative group cursor-pointer h-min  sm:mr-2" title={"Private"}>{<LockKeyholeIcon className='size-4' />}
                                     <span className='top-1/2 right-6 -translate-y-1/2 sm:right-auto sm:-translate-y-0 sm:-translate-x-1/2 sm:left-1/2 sm:top-6 z-[5] text-sm bg-primary text-background absolute text-nowrap hidden group-hover:block group-focus:block px-3 py-1 border border-zinc-600 rounded-md backdrop-blur-md'>{`Only you can see your watch history`}</span>
@@ -299,9 +302,9 @@ const WatchHistory = () => {
                                 </div>
                             </div>
                         ))}
-                            {videoLoader && <div className='w-full flex justify-center items-center'>
-                                <Loader className="animate-spin" />
-                            </div>}
+                        {videoLoader && <div className='w-full flex justify-center items-center'>
+                            <Loader className="animate-spin" />
+                        </div>}
                     </div>
                 )}
             </div>

@@ -51,6 +51,7 @@ import ChannelAbout from "./ChannelAbout.jsx"
 import ChannelPlaylist from "./ChannelPlaylist.jsx"
 import EditVideo from "./EditVideo.jsx"
 import UploadPlaylist from "./UploadPlaylist.jsx"
+import ProfileTab from "./ProfileTab.jsx"
 
 export {
     Logo,
@@ -101,5 +102,6 @@ export {
     ChannelAbout,
     ChannelPlaylist,
     EditVideo,
-    UploadPlaylist
+    UploadPlaylist,
+    ProfileTab
 }

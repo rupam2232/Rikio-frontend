@@ -105,15 +105,14 @@ const Channel = ({ username, pageName }) => {
 
     return (
         <section className="w-full">
-            <div className="relative min-h-[150px] w-full pt-[16.28%]">
-                <div className="absolute inset-0 overflow-hidden">
-                    {channelData.coverImage ?
-                        <img src={channelData.coverImage} className='object-cover' alt="cover-photo" />
-                        :
-                        <div className='w-full h-full bg-gray-400'>
-                        </div>}
+
+            <div className="w-full max-w-[2560px]">
+                <div className="relative w-full lg:aspect-[2560/510] aspect-[2560/576]">
+                    {channelData.coverImage ? <img src={channelData.coverImage} alt={`cover image | @${channelData.username}`} className="absolute inset-0 w-full h-full object-cover rounded-md" /> : <div className='w-full h-full bg-gray-400'>
+                    </div>}
                 </div>
             </div>
+
             <div className="px-4 pb-4">
                 <div className="flex flex-col sm:flex-row flex-wrap gap-4 pb-4 pt-6 md:px-10">
                     <span className="relative mx-auto sm:mx-0 -mt-24 sm:-mt-12 inline-block h-28 w-28 shrink-0 overflow-hidden rounded-full border-2">

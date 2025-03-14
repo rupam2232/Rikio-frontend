@@ -133,7 +133,8 @@ const Subscribed = () => {
     return (
         <section className="w-full p-4 pt-0 mb-10">
             <div className="w-full mt-4 px-4">
-                <h1 className="font-medium text-2xl">Subscribed Channels</h1>
+                <h1 className="font-medium text-2xl flex items-center gap-2"><span><UserRoundCheck className='size-4'/></span>Subscribed Channels</h1>
+                <p className='text-sm text-primary/80'>Channels you have subscribed.</p>
             </div>
             <hr className="my-4 border-primary" />
             <div className=' flex flex-col gap-8 flex-wrap lg:px-14'>

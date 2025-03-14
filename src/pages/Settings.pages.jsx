@@ -1,56 +1,47 @@
 import React from 'react'
 import { NavLink, useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import setAvatar from '../utils/setAvatar.js'
+import { Settings as SettingsIcon } from 'lucide-react'
+import { Button, ProfileTab } from '@/components/index.js'
 
 const Settings = () => {
     const { tab } = useParams()
+    const user = useSelector(state => state.auth.userData)
+
     return (
-        <section className="w-full p-4 pt-0 mb-10">
+        <section className="w-full p-4 pt-0 md:max-h-[87vh] md:overflow-y-hidden">
             <div className="w-full mt-4 px-4">
-                <h1 className="font-medium text-2xl">Settings</h1>
+                <h1 className="font-medium text-2xl flex items-center gap-2"><span><SettingsIcon className='size-4' /></span>Settings</h1>
+                <p className='text-sm text-primary/80'>Manage your account settings.</p>
             </div>
             <hr className="my-4 border-primary" />
             <div className="flex flex-col md:flex-row md:space-x-4">
                 <div className="w-full md:w-1/4">
                     <div className="flex flex-col space-y-2">
                         <div className="flex space-x-2 items-center">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+                            <img className='w-10 h-10 object-cover rounded-full' src={setAvatar(user.avatar)} alt="" />
+
                             <div>
-                                <h1 className="font-medium">Name</h1>
-                                <p className="text-gray-500">
-                                    <span className="text-primary">Email</span>
-                                </p>
+                                <h1 className="font-medium break-all line-clamp-1">{user.fullName}</h1>
+                                <p className="text-primary text-sm break-all line-clamp-1">{user.email}</p>
                             </div>
                         </div>
-                        <div className="space-y-2">
-                            <NavLink to="/settings/profile" className={`block p-2 rounded ${tab === 'profile' ? '' : 'hover:bg-gray-200'}`}>Profile</NavLink>
-                            <NavLink to="/settings/account" className={`block p-2 rounded ${tab === 'account' ? 'bg-primary text-white' : 'hover:bg-gray-200'}`}>Account</NavLink>
-                            <NavLink to="/settings/security" className={`block p-2 rounded ${tab === 'security' ? 'bg-primary text-white' : 'hover:bg-gray-200'}`}>Security</NavLink>
-                            <NavLink to="/settings/notifications" className={`block p-2 rounded ${tab === 'notifications' ? 'bg-primary text-white' : 'hover:bg-gray-200'}`}>Notifications</NavLink>
+                        <div className="space-y-1">
+                            <NavLink to="/settings/profile" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'profile' ? '' : 'hover:bg-primary/10 hover:underline'}`}>Profile</NavLink>
+                            <NavLink to="/settings/account" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'account' ? '' : 'hover:bg-primary/10 hover:underline'}`}>Account</NavLink>
+                            <NavLink to="/settings/security" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'security' ? '' : 'hover:bg-primary/10 hover:underline'}`}>Security</NavLink>
+                            <NavLink to="/settings/notifications" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'notifications' ? '' : 'hover:bg-primary/10 hover:underline'}`}>Notifications</NavLink>
 
                         </div>
                     </div>
                 </div>
+                <div className='h-screen w-[1px] bg-primary'></div>
 
-                <div className="w-full md:w-3/4">
-                    <div className="bg-gray-100 p-4 rounded">
-                        <h1 className="font-medium text-xl">Edit Profile</h1>
-                        <hr className="my-2 border-primary" />
-                        <div className="space-y-4">
-                            <div>
-                                <label htmlFor="name" className="block">Name</label>
-                                <input type="text" id="name" className="w-full border p-2 rounded" />
-                            </div>
-                            <div>
-                                <label htmlFor="email" className="block">Email</label>
-                                <input type="email" id="email" className="w-full border p-2 rounded" />
-                            </div>
-                            <div>
-                                <label htmlFor="bio" className="block">Bio</label>
-                                <textarea id="bio" className="w-full border p-2 rounded"></textarea>
-                            </div>
-                            <button className="w-full bg-primary text-white py-2 rounded">Save</button>
-                        </div>
-                    </div>
+                <div className="w-full md:w-3/4 mb-10 md:max-h-[70vh] md:overflow-y-auto">
+                    {tab === 'profile' && <ProfileTab user={user}/>}
+                    {/* {tab === 'account' && <AccountTab />} */}
+                    
                 </div>
             </div>
         </section>

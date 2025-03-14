@@ -30,7 +30,7 @@ import { NavLink, useNavigate } from 'react-router-dom'
 const UploadVideo = () => {
     const [videoFile, setVideoFile] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [thumnailErrorMessage, setThumbnailErrorMessage] = useState('');
+    const [thumbnailErrorMessage, setThumbnailErrorMessage] = useState('');
     const [thumbnailFile, setThumbnailFile] = useState(null);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -224,7 +224,7 @@ const UploadVideo = () => {
 
                     <div
                         {...getRootProps()}
-                        className={` border-zinc-500 rounded-md p-6 ${videoFile && "hidden"} text-center cursor-pointer hover:bg-secondary/70 bg-secondary ${isDragActive ? 'border-green-500 border-2' : isDragReject ? 'border-red-500 border-2' : 'border-dashed border'
+                        className={`rounded-md p-6 ${videoFile && "hidden"} text-center cursor-pointer hover:bg-secondary/70 bg-secondary ${isDragActive ? `${!isDragReject ?"border-green-500" : "border-red-500"} border-2` : isDragReject ? 'border-red-500 border-2' : 'border-zinc-500 border-dashed border'
                             }`}
                     >
                         <input {...getInputProps()} name="video" />
@@ -265,7 +265,7 @@ const UploadVideo = () => {
 
                     <div
                         {...getThumbnailRootProps()}
-                        className={`border-zinc-500 hover:bg-secondary/70 bg-secondary rounded-md p-4 text-center cursor-pointer ${thumbnailFile && "hidden"} ${isThumbnailDragActive ? 'border-green-500 border-2' : isThumbnailDragReject ? 'border-red-500 border-2' : 'border-dashed border'
+                        className={`hover:bg-secondary/70 bg-secondary rounded-md p-4 text-center cursor-pointer ${thumbnailFile && "hidden"} ${isThumbnailDragActive ? `${!isThumbnailDragReject ? "border-green-500" : "border-red-500"} border-2` : isThumbnailDragReject ? 'border-red-500 border-2' : 'border-zinc-500 border-dashed border'
                             }`}
                     >
                         <input {...getThumbnailInputProps()} name="thumbnail" />
@@ -303,7 +303,7 @@ const UploadVideo = () => {
                         </div>
                     )}
 
-                    {thumnailErrorMessage && <p className="text-red-500 text-sm">{thumnailErrorMessage}</p>}
+                    {thumbnailErrorMessage && <p className="text-red-500 text-sm">{thumbnailErrorMessage}</p>}
 
                     <div>
                         <label className="block text-sm font-medium mb-2" htmlFor="title">
