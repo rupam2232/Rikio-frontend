@@ -28,15 +28,15 @@ const Settings = () => {
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <NavLink to="/settings/profile" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'profile' ? '' : 'hover:bg-primary/10 hover:underline'}`}>Profile</NavLink>
-                            <NavLink to="/settings/account" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'account' ? '' : 'hover:bg-primary/10 hover:underline'}`}>Account</NavLink>
-                            <NavLink to="/settings/security" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'security' ? '' : 'hover:bg-primary/10 hover:underline'}`}>Security</NavLink>
-                            <NavLink to="/settings/notifications" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'notifications' ? '' : 'hover:bg-primary/10 hover:underline'}`}>Notifications</NavLink>
+                            <NavLink to="/settings/profile" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'profile' ? '' : 'hover:bg-accent hover:underline'}`}>Profile</NavLink>
+                            <NavLink to="/settings/account" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'account' ? '' : 'hover:bg-accent hover:underline'}`}>Account</NavLink>
+                            <NavLink to="/settings/security" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'security' ? '' : 'hover:bg-accent hover:underline'}`}>Security</NavLink>
+                            <NavLink to="/settings/notifications" className={`block text-sm font-medium px-3 py-2 rounded ${tab === 'notifications' ? '' : 'hover:bg-accent hover:underline'}`}>Notifications</NavLink>
 
                         </div>
                     </div>
                 </div>
-                <div className='h-screen w-[1px] bg-primary'></div>
+                <div className='h-screen w-[1px] bg-primary hidden md:block'></div>
 
                 <div className="w-full md:w-3/4 mb-10 md:max-h-[70vh] md:overflow-y-auto">
                     {tab === 'profile' && <ProfileTab user={user}/>}

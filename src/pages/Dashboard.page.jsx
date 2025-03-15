@@ -446,7 +446,7 @@ const Dashboard = () => {
                             : (
                                 <tr>
 
-                                    <td colspan="3"> <p className='mx-5 my-5 w-full text-primary/60'>No videos available to show</p> </td>
+                                    <td colSpan="3"> <p className='mx-5 my-5 w-full text-primary/60'>No videos available to show</p> </td>
 
                                 </tr>
                             )}
