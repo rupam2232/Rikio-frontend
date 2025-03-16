@@ -108,7 +108,7 @@ const Channel = ({ username, pageName }) => {
 
             <div className="w-full max-w-[2560px]">
                 <div className="relative w-full lg:aspect-[2560/510] aspect-[2560/576]">
-                    {channelData.coverImage ? <img src={channelData.coverImage} alt={`cover image | @${channelData.username}`} className="absolute inset-0 w-full h-full object-cover rounded-md" /> : <div className='w-full h-full bg-gray-400'>
+                    {channelData.coverImage ? <img src={channelData.coverImage} alt={`cover image | @${channelData.username}`} className="absolute inset-0 w-full h-full object-cover rounded-md" /> : <div className='w-full h-full bg-gray-400 rounded-md'>
                     </div>}
                 </div>
             </div>

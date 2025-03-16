@@ -1,10 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button, Facebook, Github, Input, Instagram, Linkedin, Website, X } from './index.js'
 import { useDropzone } from 'react-dropzone';
-import { Pencil, LoaderCircle, Users } from 'lucide-react';
+import { Pencil, LoaderCircle } from 'lucide-react';
 import setAvatar from '../utils/setAvatar.js';
 import errorMessage from '../utils/errorMessage.js';
 import axios from '../utils/axiosInstance.js';
+import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../store/authSlice.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -31,10 +35,12 @@ const ProfileTab = ({ user }) => {
     const [coverImageFile, setCoverImageFile] = useState(null);
     const [coverImageErrorMessage, setCoverImageErrorMessage] = useState('');
     const [loader, setLoader] = useState(null)
+    const [error, setError] = useState(null)
     const [avatarUrl, setAvatarUrl] = useState(user?.avatar ? user.avatar : null)
     const [coverImageUrl, setCoverImageUrl] = useState(user?.coverImage ? user.coverImage : null)
     const [fullName, setFullName] = useState(user?.fullName ? user.fullName : "")
     const [bio, setBio] = useState(user?.bio ? user.bio : "")
+    const [socials, setSocials] = useState(null)
     const [instagram, setInstagram] = useState("")
     const [github, setGithub] = useState("")
     const [linkedin, setLinkedin] = useState("")
@@ -43,6 +49,8 @@ const ProfileTab = ({ user }) => {
     const [website, setWebsite] = useState("")
     const avatarRef = useRef(null);
     const coverImageRef = useRef(null);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
     const MAX_COVERIMAGE_SIZE = 5 * 1024 * 1024;
@@ -122,13 +130,27 @@ const ProfileTab = ({ user }) => {
             setLoader(true)
             try {
                 const response = await axios.get(`/users/c/${user.username}`)
-                if (response.data.data.socials) {
+                if (response.data.data?.socials) {
+                    const processedData = Object.entries(response.data.data.socials).reduce((acc, [key, value]) => {
+                        acc[key] = value === null ? '' : value;
+                        return acc;
+                    }, {});
+                    setSocials(processedData)
                     setInstagram(response.data.data.socials?.instagram ? response.data.data.socials.instagram : "")
                     setGithub(response.data.data.socials?.github ? response.data.data.socials.github : "")
                     setLinkedin(response.data.data.socials?.linkedin ? response.data.data.socials.linkedin : "")
                     setFacebook(response.data.data.socials?.facebook ? response.data.data.socials.facebook : "")
                     setX(response.data.data.socials?.x ? response.data.data.socials.x : "")
                     setWebsite(response.data.data.socials?.website ? response.data.data.socials.website : "")
+                } else {
+                    setSocials({
+                        instagram: "",
+                        github: "",
+                        linkedin: "",
+                        facebook: "",
+                        x: "",
+                        website: ""
+                    })
                 }
             } catch (error) {
                 console.error(errorMessage(error))
@@ -139,9 +161,10 @@ const ProfileTab = ({ user }) => {
         fetchChannelData()
 
     }, [])
+    console.log(socials)
 
     const removeAvatar = () => {
-        if(avatarFile){
+        if (avatarFile) {
             setAvatarFile(null);
         } else {
             setAvatarUrl(null)
@@ -149,51 +172,103 @@ const ProfileTab = ({ user }) => {
     }
 
     const removeCoverImage = () => {
-        if(coverImageFile){
+        if (coverImageFile) {
             setCoverImageFile(null);
         } else {
             setCoverImageUrl(null)
         }
     }
 
-    const onFormSubmit = ()=>{
+    const onFormSubmit = (e) => {
+        e.preventDefault();
         setLoader(true)
-        if((bio.trim() !== user.bio.trim()) || (fullName.trim() !== user.fullName.trim())){
-            axios.patch("/users/update-account", {fullName, bio})
-                .then((res)=>{
-
-                })
-                .catch((err)=>{
+        if ((bio.trim() !== user.bio.trim()) || (fullName.trim() !== user.fullName.trim())) {
+            axios.patch("/users/update-account", { fullName, bio })
+                .catch((err) => {
                     console.error(errorMessage(err))
+                    setError(true)
+                    toast.error(errorMessage(err), {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    if (err.status === 401) {
+                        dispatch(logout())
+                        navigate("/login")
+                    }
                 })
         }
-        if(avatarFile){
-            axios.patch("/users/avatar", {avatar: avatarFile})
-                .then((res)=>{
-
+        if (avatarFile || !avatarUrl) {
+            axios.patch("/users/avatar",
+                { avatar: avatarFile },
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
                 })
-                .catch((err)=>{
+                .catch((err) => {
                     console.error(errorMessage(err))
+                    setError(true)
+                    toast.error(errorMessage(err), {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    if (err.status === 401) {
+                        dispatch(logout())
+                        navigate("/login")
+                    }
                 })
         }
-        if(coverImageFile){
-            axios.patch("/users/cover-image", {coverImage: coverImageFile})
-                .then((res)=>{
-
+        if (coverImageFile || !coverImageUrl) {
+            axios.patch("/users/cover-image",
+                { coverImage: coverImageFile },
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
                 })
-                .catch((err)=>{
+                .catch((err) => {
                     console.error(errorMessage(err))
+                    setError(true)
+                    toast.error(errorMessage(err), {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    if (err.status === 401) {
+                        dispatch(logout())
+                        navigate("/login")
+                    }
                 })
         }
+        axios.post("/users/add-socials", { instagram, github, linkedin, facebook, x, website })
+            .catch((err) => {
+                console.error(errorMessage(err))
+                setError(true)
+                toast.error(errorMessage(err), {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                if (err.status === 401) {
+                    dispatch(logout())
+                    navigate("/login")
+                }
+            })
+        if (!error) {
+            toast.success("Profile updated successfully", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+        }
+        setLoader(false)
     }
-    console.log((bio.trim() !== user.bio.trim()) || (fullName.trim() !== user.fullName.trim()))
+
+
     return (
         <div className="py-4 px-1 rounded">
             <h1 className="font-medium text-xl">Profile</h1>
             <p className='text-sm text-primary/80'>This is how others will see you on the site.</p>
             <hr className="my-2 border-primary" />
 
-            <form className="space-y-4 relative">
+            <form className="space-y-4 relative" onSubmit={onFormSubmit}>
                 {loader && <div className='fixed inset-0 z-40 bg-accent/50 flex justify-center items-center'>
                     <div className='bg-background p-6 rounded-lg shadow-xl'>
                         <LoaderCircle className='size-14 animate-spin' />
@@ -223,28 +298,28 @@ const ProfileTab = ({ user }) => {
                                         Upload a new avatar
                                     </Button>
                                 </DropdownMenuItem>
-                                {(avatarUrl || avatarFile) && 
-                                <>
-                                <DropdownMenuSeparator />
-                                <AlertDialog>
-                                    <AlertDialogTrigger className="py-0 px-0 w-full hover:bg-accent rounded-sm transition-colors ">
-                                        <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-full h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
-                                            Remove avatar
-                                        </div>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete your avatar.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => removeAvatar()}>Delete</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog> </>}
+                                {(avatarUrl || avatarFile) &&
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        <AlertDialog>
+                                            <AlertDialogTrigger className="py-0 px-0 w-full hover:bg-accent rounded-sm transition-colors ">
+                                                <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-full h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
+                                                    Remove avatar
+                                                </div>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete your avatar.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => removeAvatar()}>Delete</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog> </>}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -279,28 +354,28 @@ const ProfileTab = ({ user }) => {
                                         Upload a new cover image
                                     </Button>
                                 </DropdownMenuItem>
-                                {(coverImageUrl || coverImageFile) && 
-                                <>
-                                <DropdownMenuSeparator />
-                                <AlertDialog>
-                                    <AlertDialogTrigger className="py-0 px-0 w-full hover:bg-accent rounded-sm transition-colors ">
-                                        <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-full h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
-                                            Remove cover image
-                                        </div>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete your cover image.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => removeCoverImage()}>Delete</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog> </>}
+                                {(coverImageUrl || coverImageFile) &&
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        <AlertDialog>
+                                            <AlertDialogTrigger className="py-0 px-0 w-full hover:bg-accent rounded-sm transition-colors ">
+                                                <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-full h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
+                                                    Remove cover image
+                                                </div>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete your cover image.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => removeCoverImage()}>Delete</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog> </>}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
@@ -310,8 +385,8 @@ const ProfileTab = ({ user }) => {
 
                 <div>
                     <label htmlFor="name" className="block font-medium">Name*</label>
-                    <Input type="text" required placeholder="Enter your name" id="name" onChange={(e) => setFullName(e.target.value)} value={fullName} className="border-zinc-500 text-sm" />
-                    <p className='text-xs mt-2 text-primary/80 md:w-3/4'>This field is required!</p>
+                    <Input type="text" required placeholder="Enter your name" id="name" onChange={(e) => setFullName(e.target.value)} value={fullName} className={` text-sm ${fullName.trim() === "" ? "!border-red-500 !ring-red-500" : "border-zinc-500"}`} />
+                    <p className={`text-xs mt-2 text-primary/80 md:w-3/4 ${fullName.trim() === "" && "text-red-500 text-sm font-bold"}`}>This field is required!</p>
                 </div>
 
                 <div>
@@ -348,8 +423,10 @@ const ProfileTab = ({ user }) => {
                         </div>
                     </div>
                 </div>
-
-                <Button>Save</Button>
+                <div>
+                    <Button type="submit" disabled={!fullName.trim() || (fullName.trim() === user.fullName && bio.trim() === user.bio && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(!avatarUrl && !avatarFile) && !(!coverImageUrl && !coverImageFile))} className="w-full sm:w-auto mt-3">Save</Button>
+                </div>
+                {console.log(fullName.trim() === user.fullName && bio.trim() === user.bio && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(!avatarUrl && !avatarFile) && !(!coverImageUrl && !coverImageFile))}
             </form>
         </div>
     )
