@@ -62,20 +62,20 @@ const Playlist = () => {
     }
     return (
         <section className="w-full p-4 pt-0 mb-10">
-            <div className="w-full mt-4 px-4 flex items-center justify-between">
-                <div>
+            <div className="w-full mt-4 px-4">
+                <div className='flex items-center justify-between'>
                 <h1 className="font-medium text-2xl flex items-center gap-2"><span><FolderClosed className='size-4'/></span>Playlists</h1>
-                <p className='text-sm text-primary/80'>Manage all your created playlists.</p>
-                </div>
                 <Button onClick={() => setOpenEditPopup(true)} className="flex justify-center items-center gap-2 bg-[#ae7aff] hover:bg-[#ae7aff] text-primary hover:text-primary px-4 py-2 rounded-md font-medium text-sm [&>svg]:size-4 [&>svg]:shrink-0">Create new Playlist</Button>
+                </div>
+                <p className='text-sm text-primary/80 mt-2 sm:mt-0'>Manage all your created playlists.</p>
             </div>
             <hr className="my-4 border-primary" />
             {(isCreate === "create" || openEditPopup) && <UploadPlaylist setOpenEditPopup={setOpenEditPopup} setFetch={setFetch} />}
             <div className="grid grid-cols-[repeat(auto-fill,_minmax(300px,_1fr))] gap-x-4 gap-y-8 relative mt-2 mb-5">
                 {playlist && playlist.map((elem) => {
                     return (
-                        <NavLink to={`/playlist/${elem._id}`} className="w-full group" key={elem._id}>
-                            <div className="relative mb-2 w-full pt-[56%]">
+                        <NavLink to={`/playlist/${elem._id}`} className="w-full group shadow-md" key={elem._id}>
+                            <div className="relative w-full pt-[56%]">
                                 <div className="absolute inset-0">
                                     {
                                         elem.thumbnail ?

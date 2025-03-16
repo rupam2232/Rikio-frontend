@@ -82,8 +82,8 @@ function Signup() {
         if (e.target.value === "") {
             setErrors({ ...errors, fullName: { type: 'manual', message: 'Full Name is required*' } })
             setStep1(false);
-        } else if (e.target.value.length < 3 || e.target.value.length > 20) {
-            setErrors({ ...errors, fullName: { type: 'manual', message: 'Full Name must be min 3 characters max 20 characters' } })
+        } else if (e.target.value.length < 3 || e.target.value.length > 30) {
+            setErrors({ ...errors, fullName: { type: 'manual', message: 'Full Name must be min 3 characters max 30 characters' } })
             setStep1(false);
         } else if (!e.target.value.match(/^[a-zA-Z. ]+$/)) {
             setErrors({ ...errors, fullName: { type: 'manual', message: 'Full name can only contain alphabets' } })
@@ -373,6 +373,7 @@ function Signup() {
                                     placeholder="Enter your full name"
                                     name="fullName"
                                     value={fullName}
+                                    required
                                     onChange={handleFullNameChange}
                                     aria-invalid={errors.fullName ? "true" : "false"}
                                 />

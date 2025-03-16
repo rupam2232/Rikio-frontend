@@ -149,6 +149,13 @@ const UploadVideo = () => {
     }, [tags])
     
     const handleSubmit = async () => {
+        if(!videoFile || !thumbnailFile || !title.trim() || tagsError){
+            toast.error("Please fill the form correctly", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            return;
+        }
         setTagsError(false)
         const finalTags = tags.trim() ? tags.split(',').map(tag => tag.trim()) : [];
         if(((tags.trim() ? tags.split(',').map(tag => tag.trim()) : []).some((field) => field?.trim() === ""))){

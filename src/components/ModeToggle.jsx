@@ -15,6 +15,18 @@ import {
 
 export function ModeToggle({ className, ...props }) {
   const { setTheme } = useTheme()
+  // return (
+  //   <button >
+  //     <div variant="outline" size="icon" className={`w-max bg-transparent flex items-center gap-4 border-none shadow-none ${className}`} {...props}>
+  //               <div className="inline-flex bg-transparent items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 text-primary shadow h-8 w-8 border border-zinc-500">
+  //                 <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+  //                 <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+  //               </div>
+  //               <span className="sr-only">Toggle theme</span>
+  //               <p className="group-data-[collapsible=icon]:hidden truncate">Toggle Theme</p>
+  //             </div>
+  //   </button>
+  // )
 
   return (
     <SidebarMenu>
@@ -31,7 +43,7 @@ export function ModeToggle({ className, ...props }) {
                 <p className="group-data-[collapsible=icon]:hidden truncate">Toggle Theme</p>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            {/* <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setTheme("light")}>
                 Light
               </DropdownMenuItem>
@@ -41,7 +53,7 @@ export function ModeToggle({ className, ...props }) {
               <DropdownMenuItem onClick={() => setTheme("system")}>
                 System
               </DropdownMenuItem>
-            </DropdownMenuContent>
+            </DropdownMenuContent> */}
           </DropdownMenu>
         </SidebarMenuButton>
       </SidebarMenuItem>

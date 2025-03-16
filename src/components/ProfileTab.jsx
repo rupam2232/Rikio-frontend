@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 
-const ProfileTab = ({ user }) => {
+const ProfileTab = ({ user, setRecheckUser }) => {
     const [avatarErrorMessage, setAvatarErrorMessage] = useState('');
     const [avatarFile, setAvatarFile] = useState(null);
     const [coverImageFile, setCoverImageFile] = useState(null);
@@ -47,6 +47,7 @@ const ProfileTab = ({ user }) => {
     const [facebook, setFacebook] = useState("")
     const [x, setX] = useState("")
     const [website, setWebsite] = useState("")
+    const [recheckSocials, setRecheckSocials] = useState(false)
     const avatarRef = useRef(null);
     const coverImageRef = useRef(null);
     const dispatch = useDispatch();
@@ -160,8 +161,7 @@ const ProfileTab = ({ user }) => {
         }
         fetchChannelData()
 
-    }, [])
-    console.log(socials)
+    }, [recheckSocials])
 
     const removeAvatar = () => {
         if (avatarFile) {
@@ -181,9 +181,16 @@ const ProfileTab = ({ user }) => {
 
     const onFormSubmit = (e) => {
         e.preventDefault();
+        if (!fullName.trim() || fullName.trim().length < 3 || fullName.trim().length > 30 || bio.length > 200 || (fullName.trim() === user.fullName && bio.trim() === (user.bio ? user.bio : "") && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(user.avatar && (!avatarUrl && !avatarFile)) && !(user.coverImage && (!coverImageUrl && !coverImageFile)))) {
+            toast.error("Please make correct changes", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            return;
+        }
         setLoader(true)
-        if ((bio.trim() !== user.bio.trim()) || (fullName.trim() !== user.fullName.trim())) {
-            axios.patch("/users/update-account", { fullName, bio })
+        if ((bio.trim() !== (user.bio ? user.bio.trim() : "")) || (fullName.trim() !== user.fullName.trim())) {
+            axios.patch("/users/update-account", { fullName: fullName.trim(), bio: bio.trim() })
                 .catch((err) => {
                     console.error(errorMessage(err))
                     setError(true)
@@ -197,7 +204,7 @@ const ProfileTab = ({ user }) => {
                     }
                 })
         }
-        if (avatarFile || !avatarUrl) {
+        if (avatarFile || (!avatarUrl && user.avatar)) {
             axios.patch("/users/avatar",
                 { avatar: avatarFile },
                 {
@@ -218,7 +225,7 @@ const ProfileTab = ({ user }) => {
                     }
                 })
         }
-        if (coverImageFile || !coverImageUrl) {
+        if (coverImageFile || (!coverImageUrl && user.coverImage)) {
             axios.patch("/users/cover-image",
                 { coverImage: coverImageFile },
                 {
@@ -259,6 +266,10 @@ const ProfileTab = ({ user }) => {
             })
         }
         setLoader(false)
+        setTimeout(() => {
+            setRecheckUser(recheckUser => !recheckUser)
+            setRecheckSocials(!recheckSocials)
+        }, 3000);
     }
 
 
@@ -384,14 +395,15 @@ const ProfileTab = ({ user }) => {
                 </div>
 
                 <div>
-                    <label htmlFor="name" className="block font-medium">Name*</label>
-                    <Input type="text" required placeholder="Enter your name" id="name" onChange={(e) => setFullName(e.target.value)} value={fullName} className={` text-sm ${fullName.trim() === "" ? "!border-red-500 !ring-red-500" : "border-zinc-500"}`} />
-                    <p className={`text-xs mt-2 text-primary/80 md:w-3/4 ${fullName.trim() === "" && "text-red-500 text-sm font-bold"}`}>This field is required!</p>
+                    <label htmlFor="name" className="block font-medium">Name</label>
+                    <Input type="text" required placeholder="Enter your name" id="name" onChange={(e) => setFullName(e.target.value)} value={fullName} className={` text-sm ${(fullName.trim() === "" || fullName.trim().length < 3 || fullName.trim().length > 30) ? "!border-red-500 !ring-red-500" : "border-zinc-500"}`} />
+                    <p className={`text-xs mt-2 text-primary/80 md:w-3/4 ${(fullName.trim() === "" || fullName.trim().length < 3 || fullName.trim().length > 30) && "text-red-500 text-sm font-bold"}`}>This field is required! (min 3 characters max 30 characters)</p>
                 </div>
 
                 <div>
                     <label htmlFor="bio" className="block font-medium">Bio</label>
                     <textarea id="bio" placeholder='Tell us a little bit about yourself' rows={4} onChange={(e) => setBio(e.target.value)} value={bio} maxLength="200" className="w-full border p-2 rounded-md bg-transparent border-zinc-500 resize-none text-sm"></textarea>
+                    <p className='text-xs text-primary/80 md:w-3/4 '>{bio.length}/200</p>
                 </div>
 
                 <div>
@@ -424,9 +436,8 @@ const ProfileTab = ({ user }) => {
                     </div>
                 </div>
                 <div>
-                    <Button type="submit" disabled={!fullName.trim() || (fullName.trim() === user.fullName && bio.trim() === user.bio && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(!avatarUrl && !avatarFile) && !(!coverImageUrl && !coverImageFile))} className="w-full sm:w-auto mt-3">Save</Button>
+                    <Button type="submit" disabled={!fullName.trim() || fullName.trim().length < 3 || fullName.trim().length > 30 || bio.length > 200 || (fullName.trim() === user.fullName && bio.trim() === (user.bio ? user.bio : "") && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(user.avatar && (!avatarUrl && !avatarFile)) && !(user.coverImage && (!coverImageUrl && !coverImageFile)))} className="w-full sm:w-auto mt-3">Save</Button>
                 </div>
-                {console.log(fullName.trim() === user.fullName && bio.trim() === user.bio && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(!avatarUrl && !avatarFile) && !(!coverImageUrl && !coverImageFile))}
             </form>
         </div>
     )

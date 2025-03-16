@@ -35,7 +35,6 @@ const Header = () => {
                 </div>
 
                 <div className=" flex w-max md:gap-3 gap-1 sm:items-center sm:px-0 justify-center">
-                    {/* <ModeToggle className="border-zinc-500 hidden md:inline-flex" title="toggle theme" /> */}
                     {!user && <Button title='Login' className="md:block px-2 py-1 md:px-4 md:py-2" onClick={loginPage}>Log in</Button>}
                     {!user && <Button title='Signup' className="md:block px-2 py-1 md:px-4 md:py-2" onClick={signUpPage}>Sign up</Button>}
                     {isMobile && user && <NavUser />}

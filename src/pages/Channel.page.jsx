@@ -120,7 +120,7 @@ const Channel = ({ username, pageName }) => {
                     </span>
                     <div className='flex items-center justify-between flex-1'>
                         <div className="sm:mr-auto sm:inline-block">
-                            <div className="font-bold relative flex">
+                            <div className="font-bold relative flex items-center">
                                 <h1 className="font-bold text-2xl break-words break-all whitespace-pre-wrap min-w-0 max-w-[15rem] lg:max-w-[20rem] line-clamp-1">{channelData.fullName}</h1>
                                 {channelData.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
                                     <BadgeCheck className='w-5 h-5 fill-blue-600 text-background inline-block ' />
