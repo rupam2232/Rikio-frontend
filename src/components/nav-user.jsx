@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {
   BadgeCheck,
-  Bell,
   ChevronsUpDown,
   LogOut,
   Sparkles,
   Upload,
   LoaderCircle,
-  LayoutDashboard
+  LayoutDashboard,
+  CircleUserRound
 } from "lucide-react";
 
 import {
@@ -146,6 +146,10 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
+              <DropdownMenuItem className="px-0 py-0">
+                <button onClick={() => navigate(`/@${user.username}`)} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><CircleUserRound />Profile</button>
+              </DropdownMenuItem>
+
               <DropdownMenuItem className="px-0 py-0">
                 <button onClick={() => navigate(`/dashboard`)} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><LayoutDashboard />Dashboard</button>
               </DropdownMenuItem>

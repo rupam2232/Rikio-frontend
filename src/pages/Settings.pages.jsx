@@ -5,7 +5,7 @@ import setAvatar from '../utils/setAvatar.js'
 import errorMessage from '../utils/errorMessage.js'
 import axios from '../utils/axiosInstance.js'
 import { Settings as SettingsIcon, User2, CircleUserRound, Bell, LockKeyhole } from 'lucide-react'
-import { ProfileTab } from '../components/index.js'
+import { AccountTab, ProfileTab } from '../components/index.js'
 import { login, logout } from '../store/authSlice.js'
 import { useIsMobile } from '../hooks/use-mobile.jsx'
 
@@ -70,7 +70,7 @@ const Settings = () => {
           </>}
         <div className="w-full md:w-3/4 mb-10 md:max-h-[70vh] md:overflow-y-auto">
           {(tab === 'profile' || (!tab && !isMobile)) && <ProfileTab user={user} setRecheckUser={setRecheckUser} />}
-          {/* {tab === 'account' && <AccountTab />} */}
+          {tab === 'account' && <AccountTab  user={user} setRecheckUser={setRecheckUser} />}
 
         </div>
       </div>

@@ -190,7 +190,7 @@ const ProfileTab = ({ user, setRecheckUser }) => {
         }
         setLoader(true)
         if ((bio.trim() !== (user.bio ? user.bio.trim() : "")) || (fullName.trim() !== user.fullName.trim())) {
-            axios.patch("/users/update-account", { fullName: fullName.trim(), bio: bio.trim() })
+            axios.patch("/users/update-profile", { fullName: fullName.trim(), bio: bio.trim() })
                 .catch((err) => {
                     console.error(errorMessage(err))
                     setError(true)
@@ -436,7 +436,7 @@ const ProfileTab = ({ user, setRecheckUser }) => {
                     </div>
                 </div>
                 <div>
-                    <Button type="submit" disabled={!fullName.trim() || fullName.trim().length < 3 || fullName.trim().length > 30 || bio.length > 200 || (fullName.trim() === user.fullName && bio.trim() === (user.bio ? user.bio : "") && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(user.avatar && (!avatarUrl && !avatarFile)) && !(user.coverImage && (!coverImageUrl && !coverImageFile)))} className="w-full sm:w-auto mt-3">Save</Button>
+                    <Button type="submit" disabled={!fullName.trim() || fullName.trim().length < 3 || fullName.trim().length > 30 || bio.length > 200 || (fullName.trim() === user.fullName && bio.trim() === (user.bio ? user.bio : "") && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(user.avatar && (!avatarUrl && !avatarFile)) && !(user.coverImage && (!coverImageUrl && !coverImageFile)))} className="w-full sm:w-auto mt-3">Update profile</Button>
                 </div>
             </form>
         </div>
