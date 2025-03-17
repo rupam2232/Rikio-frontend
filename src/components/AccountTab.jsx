@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { Button, Facebook, Github, Input, Instagram, Linkedin, Website, X } from './index.js'
+import { Button, Input } from './index.js'
 import { useDropzone } from 'react-dropzone';
-import { Pencil, LoaderCircle } from 'lucide-react';
+import { Pencil, LoaderCircle, Verified, X, Check } from 'lucide-react';
 import setAvatar from '../utils/setAvatar.js';
 import errorMessage from '../utils/errorMessage.js';
 import axios from '../utils/axiosInstance.js';
@@ -34,9 +34,6 @@ import {
 const AccountTab = ({ user, setRecheckUser }) => {
     const [loader, setLoader] = useState(null)
     const [errors, setErrors] = useState({});
-    const [error, setError] = useState(null)
-    const [fullName, setFullName] = useState(user?.fullName ? user.fullName : "")
-    const [bio, setBio] = useState(user?.bio ? user.bio : "")
     const [email, setEmail] = useState(user?.email ? user.email : "");
     const [isEmailChecked, setIsEmailChecked] = useState(false);
     const [isEmailValid, setIsEmailValid] = useState(false)
@@ -46,10 +43,15 @@ const AccountTab = ({ user, setRecheckUser }) => {
     const [otp, setOtp] = useState(["", "", "", "", "", ""]);
     const [sendOtpBtn, setSendOtpBtn] = useState("send otp")
     const [isOtpSent, setIsOtpSent] = useState(false);
+    const [isOtpValid, setIsOtpValid] = useState(null)
+    const [password, setPassword] = useState("")
+    const [openPasswordPopup, setOpenPasswordPopup] = useState(false)
     const [handleRefreshAnimation, setHandleRefreshAnimation] = useState(false)
     const inputRefs = useRef([]);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    // console.log(otp.join(""))
 
     useEffect(() => {
         const checkUsername = async () => {
@@ -165,12 +167,27 @@ const AccountTab = ({ user, setRecheckUser }) => {
         }
     };
 
+    const counter = (message) => {
+        let counter = 30
+        let clear = setInterval(() => {
+            setSendOtpBtn(`${counter}s`);
+            counter -= 1;
+            if (counter === 0) {
+                setSendOtpBtn(message)
+                clearInterval(clear)
+            }
+        }, 1000);
+    }
+
     const handleSendOtp = async () => {
+        if (isOtpValid) {
+            return;
+        }
         setSendOtpBtn("sending...")
         setHandleRefreshAnimation(true)
         const newCode = [...otp];
         try {
-            const response = await axios.post(`otp/send-otp/register`, { email, fullName })
+            const response = await axios.post(`otp/send-otp/register`, { email, fullName: user.fullName })
             if (response.data.data !== true) {
                 toast.error(response.data.message, {
                     style: { color: "#ffffff", backgroundColor: "#333333" },
@@ -212,98 +229,89 @@ const AccountTab = ({ user, setRecheckUser }) => {
         }
     }
 
+    const verifyOtp = () => {
+        if (isOtpValid) {
+            return;
+        }
+        setLoader(true)
+        axios.post("/otp/verify-otp", { email, otp: otp.join(""), context: "register" })
+            .then((res) => {
+                setIsOtpValid(res.data.data)
+                toast.success(res.data.message, {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+            })
+            .catch((err) => {
+                setIsOtpValid(false)
+                toast.error(errorMessage(err), {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                setOtp(["", "", "", "", "", ""])
+            })
+            .finally(() => {
+                setLoader(false)
+            })
+    }
 
     const onFormSubmit = (e) => {
         e.preventDefault();
-        // if (true) {
-        //     toast.error("Please make correct changes", {
-        //         style: { color: "#ffffff", backgroundColor: "#333333" },
-        //         position: "top-center"
-        //     })
-        //     return;
-        // }
-        // setLoader(true)
-        // if ((bio.trim() !== (user.bio ? user.bio.trim() : "")) || (fullName.trim() !== user.fullName.trim())) {
-        //     axios.patch("/users/update-account", { fullName: fullName.trim(), bio: bio.trim() })
-        //         .catch((err) => {
-        //             console.error(errorMessage(err))
-        //             setError(true)
-        //             toast.error(errorMessage(err), {
-        //                 style: { color: "#ffffff", backgroundColor: "#333333" },
-        //                 position: "top-center"
-        //             })
-        //             if (err.status === 401) {
-        //                 dispatch(logout())
-        //                 navigate("/login")
-        //             }
-        //         })
-        // }
-        // if (avatarFile || (!avatarUrl && user.avatar)) {
-        //     axios.patch("/users/avatar",
-        //         { avatar: avatarFile },
-        //         {
-        //             headers: {
-        //                 'Content-Type': 'multipart/form-data',
-        //             }
-        //         })
-        //         .catch((err) => {
-        //             console.error(errorMessage(err))
-        //             setError(true)
-        //             toast.error(errorMessage(err), {
-        //                 style: { color: "#ffffff", backgroundColor: "#333333" },
-        //                 position: "top-center"
-        //             })
-        //             if (err.status === 401) {
-        //                 dispatch(logout())
-        //                 navigate("/login")
-        //             }
-        //         })
-        // }
-        // if (coverImageFile || (!coverImageUrl && user.coverImage)) {
-        //     axios.patch("/users/cover-image",
-        //         { coverImage: coverImageFile },
-        //         {
-        //             headers: {
-        //                 'Content-Type': 'multipart/form-data',
-        //             }
-        //         })
-        //         .catch((err) => {
-        //             console.error(errorMessage(err))
-        //             setError(true)
-        //             toast.error(errorMessage(err), {
-        //                 style: { color: "#ffffff", backgroundColor: "#333333" },
-        //                 position: "top-center"
-        //             })
-        //             if (err.status === 401) {
-        //                 dispatch(logout())
-        //                 navigate("/login")
-        //             }
-        //         })
-        // }
-        // axios.post("/users/add-socials", { instagram, github, linkedin, facebook, x, website })
-        //     .catch((err) => {
-        //         console.error(errorMessage(err))
-        //         setError(true)
-        //         toast.error(errorMessage(err), {
-        //             style: { color: "#ffffff", backgroundColor: "#333333" },
-        //             position: "top-center"
-        //         })
-        //         if (err.status === 401) {
-        //             dispatch(logout())
-        //             navigate("/login")
-        //         }
-        //     })
-        // if (!error) {
-        //     toast.success("Profile updated successfully", {
-        //         style: { color: "#ffffff", backgroundColor: "#333333" },
-        //         position: "top-center"
-        //     })
-        // }
-        // setLoader(false)
-        // setTimeout(() => {
-        //     setRecheckUser(recheckUser => !recheckUser)
-        //     setRecheckSocials(!recheckSocials)
-        // }, 3000);
+        if (!isOtpValid && (email.trim().toLowerCase() !== user.email.trim().toLowerCase())) {
+            toast.error("Please verify your email", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            return;
+        }
+        if ((email.trim().toLowerCase() === user.email.trim().toLowerCase()) && (username.trim().toLowerCase() === user.username.trim().toLowerCase())) {
+            toast.error("Make any changes to proceed", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            return;
+        }
+
+        if (!password) {
+            toast.error("Enter your password", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            return;
+        }
+        setLoader(true)
+        axios.patch("/users/update-account", { email: email.trim().toLowerCase(), username: username.trim().toLowerCase(), password, isOtpValid })
+            .then((res) => {
+                toast.success(res.data.message, {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                setIsEmailValid(false)
+                setIsOtpValid(null)
+                setOtp(["", "", "", "", "", ""])
+                setPassword("")
+                setIsOtpSent(false)
+                setSendOtpBtn("send otp")
+            })
+            .catch((err) => {
+                console.error(errorMessage(err))
+                toast.error(errorMessage(err), {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                if (err.status === 401) {
+                    dispatch(logout())
+                    navigate("/login")
+                }
+            })
+            .finally(() => {
+                setLoader(false)
+                setOpenPasswordPopup(false)
+                setTimeout(() => {
+                    setRecheckUser(recheckUser => !recheckUser)
+                }, 3000);
+            })
+
     }
 
 
@@ -317,6 +325,19 @@ const AccountTab = ({ user, setRecheckUser }) => {
                 {loader && <div className='fixed inset-0 z-40 bg-accent/50 flex justify-center items-center'>
                     <div className='bg-background p-6 rounded-lg shadow-xl'>
                         <LoaderCircle className='size-14 animate-spin' />
+                    </div>
+                </div>}
+
+                {openPasswordPopup && <div className='fixed inset-0 z-40 bg-accent/50 flex justify-center items-center'>
+                    <div className='bg-background p-6 rounded-lg shadow-xl w-full sm:3/5 md:w-2/5'>
+                        <div className='flex items-center justify-between'>
+                            <p className='text-lg font-bold'>Enter Password</p>
+                            <button onClick={() => setOpenPasswordPopup(false)} type='button'><X /></button>
+                        </div>
+                        <label htmlFor='password' className="block font-medium">Password</label>
+                        <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <p className={`text-xs mt-1 text-primary/80`}>This field is required!</p>
+                        <Button disabled={!password} className="mt-2" type="submit">Confirm</Button>
                     </div>
                 </div>}
 
@@ -337,11 +358,10 @@ const AccountTab = ({ user, setRecheckUser }) => {
                     {(email.trim().toLowerCase() === user.email) ? <p className='text-xs mt-3 text-primary/80'>Type a different email to check if it's available</p> : !errors.email && isEmailChecked && (isEmailValid ? <p className='text-xs font-bold mt-3 text-green-500'>Email is available</p> : <p className='text-xs font-bold mt-3 text-red-500'>A user with same email already exists</p>)}
                 </div>
 
-                {isEmailValid && <div className={`w-full sm:w-1/2 mb-10`}>
-                    <h2 className='mb-2 text-center sm:text-left'>
-                        Verify your new email <span className="font-bold">{`${email}`}</span>
-                    </h2>
-                    <p className='text-center sm:text-left text-primary/80 mb-2'>Enter the 6-digit code sent to your email address.</p>
+                {isEmailValid && <div className={`w-full sm:w-1/2`}>
+                    <p className='text-center sm:text-left'>Enter the 6-digit code sent to your email address.</p>
+                    <p className='text-xs font-light text-primary/70 mb-3'>If the OTP is not found in your inbox, then check in your spam folder.</p>
+
                     <div className='flex justify-between mb-2'>
                         {otp.map((digit, index) => (
                             <input
@@ -357,11 +377,15 @@ const AccountTab = ({ user, setRecheckUser }) => {
                             />
                         ))}
                     </div>
-                    <div className="flex justify-end">
-                        <Button className={`flex justify-center gap-2 w-max text-primary hover:bg-transparent shadow-none bg-transparent`} onClick={handleSendOtp} disabled={sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp"}>
+
+                    {!isOtpValid && <div className="flex justify-end">
+                        <Button className={`flex justify-center gap-2 w-max text-primary hover:bg-transparent shadow-none bg-transparent`} onClick={handleSendOtp} disabled={(sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp") || isOtpValid}>
                             <Refresh height="24px" width="24px" className={`${handleRefreshAnimation && "animate-spin"} relative left-1`} />
                             {sendOtpBtn}
                         </Button>
+                    </div>}
+                    <div>
+                        <Button disabled={!isOtpSent || isOtpValid} className="disabled:opacity-70" onClick={verifyOtp}>{isOtpValid && <span><Check /></span>}{isOtpValid ? "Verified" : "Verify otp"}</Button>
                     </div>
                 </div>}
 
@@ -382,7 +406,7 @@ const AccountTab = ({ user, setRecheckUser }) => {
                 </div>
 
                 <div>
-                    <Button type="submit" disabled={false} className="w-full sm:w-auto mt-3">Update account</Button>
+                    <Button disabled={((email.trim().toLowerCase() === user.email.trim().toLowerCase()) && (username.trim().toLowerCase() === user.username.trim().toLowerCase())) || (!isOtpValid && (email.trim().toLowerCase() !== user.email.trim().toLowerCase())) || (errors.email || errors.username)} onClick={() => setOpenPasswordPopup(true)} className="w-full sm:w-auto mt-3">Update account</Button>
                 </div>
             </form>
         </div>

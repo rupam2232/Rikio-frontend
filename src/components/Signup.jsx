@@ -254,7 +254,7 @@ function Signup() {
             return;
         }
 
-        const response = await axios.get(`/users/check-email/${email}`)
+        const response = await axios.get(`/users/check-email/${email.trim().toLowerCase()}`)
         if (!response.data.data) {
             setErrors({ ...errors, email: { type: 'manual', message: 'Email is already in use' } });
             setStep1(false);
@@ -283,13 +283,13 @@ function Signup() {
         setIsSubmitting(true)
         const newCode = [...otp];
         try {
-            const registerResponse = await axios.post(`users/register`, { fullName, email, username, password, otp: joinedOtp });
+            const registerResponse = await axios.post(`users/register`, { fullName, email: email.trim().toLowerCase(), username, password, otp: joinedOtp });
             toast.success(registerResponse.data.message, {
                 style: { color: "#ffffff", backgroundColor: "#333333" },
                 position: "top-center"
             })
             try {
-                const loginResponse = await axios.post(`/users/login`, { email, username, password })
+                const loginResponse = await axios.post(`/users/login`, { email: email.trim().toLowerCase(), username, password })
                 toast.success(loginResponse.data.message, {
                     style: { color: "#ffffff", backgroundColor: "#333333" },
                     position: "top-center"
@@ -383,6 +383,7 @@ function Signup() {
                                 <Input
                                     label="Email: "
                                     placeholder="Enter your email"
+                                    className="lowercase"
                                     type="email"
                                     name="email"
                                     value={email}
