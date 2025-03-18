@@ -33,7 +33,7 @@ import {
   } from "./ui/sidebar"
 import { useTheme } from "./ThemeProvider.jsx"
 import { ModeToggle } from "./ModeToggle.jsx"
-import Login from "./login.jsx"
+import Login from "./Login.jsx"
 import Signup from "./Signup.jsx"
 import VideoNotFound from "./VideoNotFound.jsx"
 import Loading from "./Loading.jsx"
