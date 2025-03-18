@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom"
 import { Logo, Button, FormInput as Input } from "./index.js"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
+import conf from '../conf/conf.js'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout, login } from '../store/authSlice.js'
 
@@ -42,7 +43,7 @@ function Login() {
                     <div className="flex h-full items-center justify-center w-full py-8">
                         <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
                             <div className="mb-2 flex flex-col items-center space-y-4">
-                                <NavLink to="/" className="inline-block relative left-3 w-full max-w-[100px] cursor-pointer" title='Limo'>
+                                <NavLink to="/" className="inline-block relative left-3 w-full max-w-[100px] cursor-pointer" title={conf.appName}>
                                     <Logo width="100%" />
                                 </NavLink>
                             <p className='text-center'>You are already logged In.Please logout first to use this page.</p>
@@ -56,7 +57,7 @@ function Login() {
             <div className='flex h-full items-center justify-center w-full py-8'>
                 <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-md overflow-hidden shadow-slate-500`}>
                     <div className="mb-2 flex justify-center">
-                        <NavLink className="inline-block relative left-2 w-full max-w-[100px] cursor-pointer" title='Limo' to="/">
+                        <NavLink className="inline-block relative left-2 w-full max-w-[100px] cursor-pointer" title={conf.appName} to="/">
                             <Logo className="w-full" />
                         </NavLink>
                     </div>

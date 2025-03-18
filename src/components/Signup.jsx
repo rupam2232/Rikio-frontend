@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import axios from "../utils/axiosInstance.js"
 import errorMessage from "../utils/errorMessage.js"
+import conf from '../conf/conf.js'
 import { NavLink, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button, FormInput as Input, Logo, ArrowBack } from './index.js'
 import toast from "react-hot-toast"
@@ -332,7 +333,7 @@ function Signup() {
             <div className="flex h-full items-center justify-center w-full py-8">
                 <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
                     <div className="mb-2 flex flex-col items-center space-y-4">
-                        <NavLink to="/" className="inline-block relative left-3 w-full max-w-[100px] cursor-pointer" title='Limo'>
+                        <NavLink to="/" className="inline-block relative left-3 w-full max-w-[100px] cursor-pointer" title={conf.appName}>
                             <Logo width="100%" />
                         </NavLink>
                     <p className='text-center'>You are already logged In.Please logout first to use this page.</p>
@@ -350,7 +351,7 @@ function Signup() {
                         <ArrowBack height="24px" width="24px" className={`relative left-1 fill-primary`} />
                     </Button>
                     <div className="mb-2 flex justify-center">
-                        <NavLink className="inline-block relative left-2 w-full max-w-[100px] cursor-pointer" title='Limo' to="/">
+                        <NavLink className="inline-block relative left-2 w-full max-w-[100px] cursor-pointer" title={conf.appName} to="/">
                             <Logo width="100%" />
                         </NavLink>
                     </div>

@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { Button, Logo, ModeToggle } from "./index.js"
 import { useIsMobile } from "../hooks/use-mobile.jsx"
+import conf from '../conf/conf.js'
 
 const items = [
   {
@@ -66,10 +67,10 @@ export function AppSidebar(props) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <NavLink to={"/"} className="!bg-transparent hover:!bg-transparent cursor-pointer flex items-center gap-0" title='Limo' aria-label='Limo'>
+        <NavLink to={"/"} className="!bg-transparent hover:!bg-transparent cursor-pointer flex items-center gap-0" title={conf.appName} aria-label={conf.appName}>
           <Logo className="w-12 size-11" />
-          <p className="group-data-[collapsible=icon]:hidden logo-font !font-bold text-2xl  from-[#d2b1ea] to-[#6356f4] bg-gradient-to-r bg-clip-text text-transparent relative right-1">
-            Limo
+          <p className="group-data-[collapsible=icon]:hidden logo-font !font-bold text-4xl  from-[#d2b1ea] to-[#6356f4] bg-gradient-to-r bg-clip-text text-transparent relative right-1">
+          {conf.appName}
           </p>
         </NavLink>
       </SidebarHeader>

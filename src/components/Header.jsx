@@ -4,6 +4,7 @@ import { useNavigate, NavLink } from 'react-router-dom'
 import { useSelector } from "react-redux";
 import { useIsMobile } from "../hooks/use-mobile.jsx"
 import { NavUser } from "./nav-user";
+import conf from '../conf/conf.js'
 
 const Header = () => {
     const user = useSelector((state) => state.auth.userData);
@@ -17,7 +18,7 @@ const Header = () => {
             <nav className="mx-auto flex  justify-between  max-w-7xl  items-center py-2">
                 <div className="flex items-center gap-4">
                     <SidebarTrigger />
-                    {isMobile && <NavLink to={"/"} className="mr-4 w-12 !bg-transparent hover:!bg-transparent shrink-0 sm:w-16 cursor-pointer" title='Limo' aria-label='Logo'>
+                    {isMobile && <NavLink to={"/"} className="mr-4 w-12 !bg-transparent hover:!bg-transparent shrink-0 sm:w-16 cursor-pointer" title={conf.appName} aria-label='Logo'>
                         <Logo />
                     </NavLink>}
 
