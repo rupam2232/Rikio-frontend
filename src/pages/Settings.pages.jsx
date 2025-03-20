@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import setAvatar from '../utils/setAvatar.js'
 import errorMessage from '../utils/errorMessage.js'
 import axios from '../utils/axiosInstance.js'
-import { Settings as SettingsIcon, User2, CircleUserRound, Bell, LockKeyhole } from 'lucide-react'
-import { AccountTab, ProfileTab } from '../components/index.js'
+import { Settings as SettingsIcon, User2, CircleUserRound, LockKeyhole } from 'lucide-react'
+import { AccountTab, ProfileTab, SecurityTab } from '../components/index.js'
 import { login, logout } from '../store/authSlice.js'
 import { useIsMobile } from '../hooks/use-mobile.jsx'
 
@@ -55,13 +55,13 @@ const Settings = () => {
                   </div>
                 </div>
                 {(!isMobile || (isMobile && !tab)) && <div className="space-y-1">
-                  <NavLink to="/settings/profile" className={`flex items-center gap-2 text-base sm:text-sm font-medium px-3 py-2 rounded ${(tab === 'profile' || (!tab && !isMobile)) ? '' : 'hover:bg-accent hover:underline'} ${(!tab && !isMobile) && "active"}`}><span><CircleUserRound className='size-4'/></span>Profile</NavLink>
+                  <NavLink to="/settings/profile" className={`flex items-center gap-2 text-base sm:text-sm font-medium px-3 py-2 rounded ${(tab === 'profile' || (!tab && !isMobile)) ? '' : 'hover:bg-accent hover:underline'} ${(!tab && !isMobile) && "active"}`}><span><CircleUserRound className='size-4' /></span>Profile</NavLink>
 
-                  <NavLink to="/settings/account" className={`flex items-center gap-2 text-base sm:text-sm font-medium px-3 py-2 rounded ${tab === 'account' ? '' : 'hover:bg-accent hover:underline'}`}><span><User2 className='size-4'/></span>Account</NavLink>
+                  <NavLink to="/settings/account" className={`flex items-center gap-2 text-base sm:text-sm font-medium px-3 py-2 rounded ${tab === 'account' ? '' : 'hover:bg-accent hover:underline'}`}><span><User2 className='size-4' /></span>Account</NavLink>
 
-                  <NavLink to="/settings/security" className={`flex items-center gap-2 text-base sm:text-sm font-medium px-3 py-2 rounded ${tab === 'security' ? '' : 'hover:bg-accent hover:underline'}`}><span><LockKeyhole className='size-4'/></span>Security</NavLink>
-                  
-                  <NavLink to="/settings/notifications" className={`flex items-center gap-2 text-base sm:text-sm font-medium px-3 py-2 rounded ${tab === 'notifications' ? '' : 'hover:bg-accent hover:underline'}`}><span><Bell className='size-4'/></span>Notifications</NavLink>
+                  <NavLink to="/settings/security" className={`flex items-center gap-2 text-base sm:text-sm font-medium px-3 py-2 rounded ${tab === 'security' ? '' : 'hover:bg-accent hover:underline'}`}><span><LockKeyhole className='size-4' /></span>Security</NavLink>
+
+                  {/* <NavLink to="/settings/notifications" className={`flex items-center gap-2 text-base sm:text-sm font-medium px-3 py-2 rounded ${tab === 'notifications' ? '' : 'hover:bg-accent hover:underline'}`}><span><Bell className='size-4' /></span>Notifications</NavLink> */}
 
                 </div>}
               </div>
@@ -70,8 +70,8 @@ const Settings = () => {
           </>}
         <div className="w-full md:w-3/4 mb-10 md:max-h-[70vh] md:overflow-y-auto">
           {(tab === 'profile' || (!tab && !isMobile)) && <ProfileTab user={user} setRecheckUser={setRecheckUser} />}
-          {tab === 'account' && <AccountTab  user={user} setRecheckUser={setRecheckUser} />}
-
+          {tab === 'account' && <AccountTab user={user} setRecheckUser={setRecheckUser} />}
+          {tab === 'security' && <SecurityTab user={user} setRecheckUser={setRecheckUser} />}
         </div>
       </div>
     </section>

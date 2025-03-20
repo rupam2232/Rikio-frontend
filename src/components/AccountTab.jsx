@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button, Input } from './index.js'
-import { useDropzone } from 'react-dropzone';
-import { Pencil, LoaderCircle, Verified, X, Check } from 'lucide-react';
-import setAvatar from '../utils/setAvatar.js';
+import { LoaderCircle, X, Check } from 'lucide-react';
 import errorMessage from '../utils/errorMessage.js';
 import axios from '../utils/axiosInstance.js';
 import toast from 'react-hot-toast';
@@ -10,26 +8,6 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../store/authSlice.js';
 import { RotateCw as Refresh } from 'lucide-react'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
-
 
 const AccountTab = ({ user, setRecheckUser }) => {
     const [loader, setLoader] = useState(null)
@@ -50,8 +28,6 @@ const AccountTab = ({ user, setRecheckUser }) => {
     const inputRefs = useRef([]);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    // console.log(otp.join(""))
 
     useEffect(() => {
         const checkUsername = async () => {
@@ -168,7 +144,7 @@ const AccountTab = ({ user, setRecheckUser }) => {
     };
 
     const counter = (message) => {
-        let counter = 30
+        let counter = 60
         let clear = setInterval(() => {
             setSendOtpBtn(`${counter}s`);
             counter -= 1;
@@ -181,6 +157,9 @@ const AccountTab = ({ user, setRecheckUser }) => {
 
     const handleSendOtp = async () => {
         if (isOtpValid) {
+            return;
+        }
+        if(sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp") {
             return;
         }
         setSendOtpBtn("sending...")
@@ -292,6 +271,10 @@ const AccountTab = ({ user, setRecheckUser }) => {
                 setPassword("")
                 setIsOtpSent(false)
                 setSendOtpBtn("send otp")
+                setHandleRefreshAnimation(false)
+                setErrors({})
+                setIsEmailChecked(false)
+                setIsUsernameChecked(false)
             })
             .catch((err) => {
                 console.error(errorMessage(err))
@@ -322,22 +305,22 @@ const AccountTab = ({ user, setRecheckUser }) => {
             <hr className="my-2 border-primary" />
 
             <form className="space-y-4 relative" onSubmit={onFormSubmit}>
-                {loader && <div className='fixed inset-0 z-40 bg-accent/50 flex justify-center items-center'>
+                {loader && <div className='fixed inset-0 z-[41] bg-accent/50 flex justify-center items-center'>
                     <div className='bg-background p-6 rounded-lg shadow-xl'>
                         <LoaderCircle className='size-14 animate-spin' />
                     </div>
                 </div>}
 
-                {openPasswordPopup && <div className='fixed inset-0 z-40 bg-accent/50 flex justify-center items-center'>
-                    <div className='bg-background p-6 rounded-lg shadow-xl w-full sm:3/5 md:w-2/5'>
+                {openPasswordPopup && <div className='fixed inset-0 z-40 bg-black/50 flex justify-center items-center'>
+                    <div className='bg-background p-6 rounded-lg shadow-xl w-full sm:w-3/5 md:w-2/5'>
                         <div className='flex items-center justify-between'>
                             <p className='text-lg font-bold'>Enter Password</p>
                             <button onClick={() => setOpenPasswordPopup(false)} type='button'><X /></button>
                         </div>
                         <label htmlFor='password' className="block font-medium">Password</label>
-                        <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <Input id="password" className="border-zinc-500" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                         <p className={`text-xs mt-1 text-primary/80`}>This field is required!</p>
-                        <Button disabled={!password} className="mt-2" type="submit">Confirm</Button>
+                        <Button disabled={!password || loader} className="mt-4 w-full sm:w-auto" type="submit">Confirm</Button>
                     </div>
                 </div>}
 
@@ -348,6 +331,7 @@ const AccountTab = ({ user, setRecheckUser }) => {
                         placeholder="Enter your email"
                         type="email"
                         name="email"
+                        disabled={isOtpValid}
                         required
                         className={`lowercase ${errors.email || (isEmailChecked && !isEmailValid) ? "!border-red-500 !ring-red-500" : isEmailValid ? "focus-visible:!border-green-500 focus-visible:!ring-green-500 border-zinc-500" : "border-zinc-500"}`}
                         value={email}
@@ -391,23 +375,28 @@ const AccountTab = ({ user, setRecheckUser }) => {
 
                 <div>
                     <label htmlFor="username" className="block font-medium">Username</label>
-                    <Input
-                        id="username"
-                        className={`lowercase ${errors.username || (isUsernameChecked && !isUsernameValid) ? "!border-red-500 !ring-red-500" : isUsernameValid ? "focus-visible:!border-green-500 focus-visible:!ring-green-500 border-zinc-500" : "border-zinc-500"}`}
-                        autoComplete="username"
-                        placeholder="Create your unique username"
-                        name="username"
-                        value={username}
-                        onChange={handleUsernameChange}
-                        aria-invalid={(errors.username || !isUsernameValid) ? "true" : "false"}
-                    />
+                    <div className={`input-parent flex items-center border border-zinc-500 rounded-md ${errors.username || ((isUsernameChecked) && !isUsernameValid) ? "!border-red-500 !ring-red-500" : isUsernameValid ? "ring-green-500 border-zinc-500" : "border-zinc-500 ring-ring"}`}>
+                        <span className='text-sm pl-3 pr-1 bg-primary/20 font-medium py-2 rounded-s-md'>{window.location.host}/@</span>
+                        <Input
+                            id="username"
+                            className={`lowercase peer border-0 pl-2 !ring-0`}
+                            autoComplete="username"
+                            placeholder="Set your unique username"
+                            name="username"
+                            value={username}
+                            onChange={handleUsernameChange}
+                            aria-invalid={(errors.username || !isUsernameValid) ? "true" : "false"}
+                        />
+
+                    </div>
                     {errors.username && <p role='alert' className="text-red-500 text-xs mt-3 font-bold">{errors.username.message}</p>}
                     {(username.trim().toLowerCase() === user.username) ? <p className='text-xs mt-3 text-primary/80'>Type a different username to check if it's available</p> : !errors.username && isUsernameChecked && (isUsernameValid ? <p className='text-xs font-bold mt-3 text-green-500'>Username is available</p> : <p className='text-xs font-bold mt-3 text-red-500'>Username is not available</p>)}
                 </div>
 
                 <div>
-                    <Button disabled={((email.trim().toLowerCase() === user.email.trim().toLowerCase()) && (username.trim().toLowerCase() === user.username.trim().toLowerCase())) || (!isOtpValid && (email.trim().toLowerCase() !== user.email.trim().toLowerCase())) || (errors.email || errors.username)} onClick={() => setOpenPasswordPopup(true)} className="w-full sm:w-auto mt-3">Update account</Button>
+                    <Button disabled={((email.trim().toLowerCase() === user.email.trim().toLowerCase()) && (username.trim().toLowerCase() === user.username.trim().toLowerCase())) || (!isOtpValid && (email.trim().toLowerCase() !== user.email.trim().toLowerCase())) || (errors.email || errors.username) || ((user.username !== username) && !isUsernameValid) || ((user.email !== email) && !isEmailValid)} onClick={() => setOpenPasswordPopup(true)} className="w-full sm:w-auto mt-3">Update account</Button>
                 </div>
+                
             </form>
         </div>
     )

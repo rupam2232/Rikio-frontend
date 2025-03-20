@@ -336,8 +336,8 @@ function Signup() {
                         <NavLink to="/" className="inline-block relative left-3 w-full max-w-[100px] cursor-pointer" title={conf.appName}>
                             <Logo width="100%" />
                         </NavLink>
-                    <p className='text-center'>You are already logged In.Please logout first to use this page.</p>
-                    <Button onClick={()=> navigate("/")}>Go back home</Button>
+                        <p className='text-center'>You are already logged In.Please logout first to use this page.</p>
+                        <Button onClick={() => navigate("/")}>Go back home</Button>
                     </div>
                 </div>
             </div>

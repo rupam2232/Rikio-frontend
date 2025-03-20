@@ -53,6 +53,7 @@ import EditVideo from "./EditVideo.jsx"
 import UploadPlaylist from "./UploadPlaylist.jsx"
 import ProfileTab from "./ProfileTab.jsx"
 import AccountTab from "./AccountTab.jsx"
+import SecurityTab from "./SecurityTab.jsx"
 
 export {
     Logo,
@@ -105,5 +106,6 @@ export {
     EditVideo,
     UploadPlaylist,
     ProfileTab,
-    AccountTab
+    AccountTab,
+    SecurityTab
 }

@@ -35,17 +35,33 @@ const Video = ({ poster, src, autoplay = false }) => {
 
         player.on("timeupdate", () => {
             const currentTime = player.currentTime();
-            if (currentTime >= 5 && userStatus) {
-                if (!isAddedToHistory.current) {
-                    isAddedToHistory.current = true
-                    axios.post('/users/add-history/', { videoId, userTimeZoneOffset })
-                        .then((_) => {
-                            isAddedToHistory.current = true
-                        })
-                        .catch((error) => {
-                            isAddedToHistory.current = false
-                            console.error(errorMessage(error))
-                        })
+            if (player.duration() >= 5) {
+                if (currentTime >= 5 && userStatus) {
+                    if (!isAddedToHistory.current) {
+                        isAddedToHistory.current = true
+                        axios.post('/users/add-history/', { videoId, userTimeZoneOffset })
+                            .then((_) => {
+                                isAddedToHistory.current = true
+                            })
+                            .catch((error) => {
+                                isAddedToHistory.current = false
+                                console.error(errorMessage(error))
+                            })
+                    }
+                }
+            } else {
+                if (userStatus) {
+                    if (!isAddedToHistory.current) {
+                        isAddedToHistory.current = true
+                        axios.post('/users/add-history/', { videoId, userTimeZoneOffset })
+                            .then((_) => {
+                                isAddedToHistory.current = true
+                            })
+                            .catch((error) => {
+                                isAddedToHistory.current = false
+                                console.error(errorMessage(error))
+                            })
+                    }
                 }
             }
         });

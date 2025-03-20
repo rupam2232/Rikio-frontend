@@ -69,7 +69,7 @@ export function AppSidebar(props) {
       <SidebarHeader>
         <NavLink to={"/"} className="!bg-transparent hover:!bg-transparent cursor-pointer flex items-center gap-0" title={conf.appName} aria-label={conf.appName}>
           <Logo className="w-12 size-11" />
-          <p className="group-data-[collapsible=icon]:hidden logo-font !font-bold text-4xl  from-[#d2b1ea] to-[#6356f4] bg-gradient-to-r bg-clip-text text-transparent relative right-1">
+          <p className="group-data-[collapsible=icon]:hidden logo-font !font-bold text-4xl pr-1 from-[#d2b1ea] to-[#6356f4] bg-gradient-to-r bg-clip-text text-transparent relative right-1">
           {conf.appName}
           </p>
         </NavLink>
