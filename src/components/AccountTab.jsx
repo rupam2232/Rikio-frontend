@@ -1,13 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button, Input } from './index.js'
-import { LoaderCircle, X, Check } from 'lucide-react';
+import { LoaderCircle, X, Check, RotateCw as Refresh } from 'lucide-react';
 import errorMessage from '../utils/errorMessage.js';
 import axios from '../utils/axiosInstance.js';
 import toast from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../store/authSlice.js';
-import { RotateCw as Refresh } from 'lucide-react'
 
 const AccountTab = ({ user, setRecheckUser }) => {
     const [loader, setLoader] = useState(null)

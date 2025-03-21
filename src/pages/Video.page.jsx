@@ -129,9 +129,21 @@ const Video = () => {
     }
 
     const toggleLike = () => {
+        if (!loggedInUser) {
+            toast.error("You need to login first", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            navigate("/login")
+            return;
+        }
+        if (like.isLiked) {
+            setLike({ _id: video._id, totalLikes: like.totalLikes - 1, isLiked: false })
+        } else {
+            setLike({ _id: video._id, totalLikes: like.totalLikes + 1, isLiked: true })
+        }
         axios.post(`/like/toggle/v/${videoId}`)
             .then((res) => {
-
                 if (res.data.message.trim().toLowerCase() === "liked") {
                     setLike({ _id: video._id, totalLikes: like.totalLikes + 1, isLiked: true })
                 } else if (res.data.message.trim().toLowerCase() === "like removed") {
@@ -158,7 +170,7 @@ const Video = () => {
         if (playlist.videoIds.some((e) => e === videoId)) {
             setSavePopupLoader(true)
             axios.patch(`/playlist/remove/${videoId}/${playlist._id}`)
-                .then((res) => {
+                .then((_) => {
                     let updatedPlaylists = playlists.map((elem) => {
                         if (elem._id === playlist._id) {
                             return {
@@ -441,7 +453,7 @@ const Video = () => {
                             </div>
                             <hr className="my-4 border-primary" />
 
-                            <div ref={descriptionRef} className={`w-full relative cursor-pointer text-sm break-words break-all whitespace-pre-wrap transition-all ${isDescOverflowing &&fullDesc ? "h-full" : "line-clamp-3"}`} onClick={() => setFullDesc(!fullDesc)}>
+                            <div ref={descriptionRef} className={`w-full relative cursor-pointer text-sm break-words break-all whitespace-pre-wrap transition-all ${isDescOverflowing && fullDesc ? "h-full" : "line-clamp-3"}`} onClick={() => setFullDesc(!fullDesc)}>
                                 {video.description && <p className='relative'>{<ParseContents content={video.description} />}</p>}
                                 <div className={`block ${video.description && "pt-4"}`}>
                                     {video?.tags && video.tags.map((tag, index) => (<span key={index} className="inline-block px-2 py-1 bg-primary/20 text-primary text-xs rounded-md mr-2">{tag}</span>))}

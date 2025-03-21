@@ -21,6 +21,8 @@ import LikedVideo from './pages/LikedVideo.page.jsx'
 import WatchHistory from './pages/WatchHistory.page.jsx'
 import Settings from './pages/Settings.pages.jsx'
 import NotFound from './pages/NotFound.page.jsx'
+import TermsAndConditions from './pages/TermsAndConditions.page.jsx'
+import PrivacyPolicy from './pages/PrivacyPolicy.page.jsx'
 
 const router = createBrowserRouter([
   {
@@ -106,7 +108,13 @@ const router = createBrowserRouter([
       }, {
         path: '/login',
         element: <Login />,
-      },
+      }, {
+        path: '/terms',
+        element: <TermsAndConditions />
+      } ,{
+        path: '/privacy',
+        element: <PrivacyPolicy />
+      }
     ]
   },
   {

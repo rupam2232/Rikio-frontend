@@ -7,7 +7,7 @@ import { Button, FormInput as Input, Logo, ArrowBack } from './index.js'
 import toast from "react-hot-toast"
 import { useDispatch, useSelector } from 'react-redux'
 import { logout, login } from '../store/authSlice.js'
-import { RotateCw as Refresh } from 'lucide-react'
+import { RotateCw as Refresh, LoaderCircle } from 'lucide-react'
 
 function Signup() {
     const [fullName, setFullName] = useState("");
@@ -482,13 +482,14 @@ function Signup() {
 
                                 {step === "3" && (
                                     <Button type="submit" className={`w-full`} disabled={errors.otp || isSubmitting || otp.some((field) => field?.trim() === "")}>
-                                        {isSubmitting ? "Creating account..." : "Verify & Create Account"}
+                                        {isSubmitting ? <><span className='animate-spin'><LoaderCircle /></span> Creating account...</> : "Verify & Create Account"}
                                     </Button>
                                 )}
                             </div>
                         </div>
                     </form>
-                    {step === "3" && <p className='text-sm font-light text-primary/70 absolute bottom-2'>If the OTP is not found in your inbox, then check in your spam folder.</p>}
+                    {step === "3" && <p className='text-sm font-light text-primary/70 absolute bottom-6'>If the OTP is not found in your inbox, then check in your spam folder.</p>}
+                    <p className='text-sm font-light text-primary/70 absolute bottom-1'>By signing in, you are accepting the <NavLink to="/terms" className="underline">Terms and Conditions</NavLink> of this website.</p>
                 </div>
             </div>
         )

@@ -7,6 +7,7 @@ import toast from "react-hot-toast"
 import conf from '../conf/conf.js'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout, login } from '../store/authSlice.js'
+import { LoaderCircle } from 'lucide-react';
 
 function Login() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm()
@@ -104,7 +105,7 @@ function Login() {
                                 type="submit"
                                 className="w-full"
                                 disabled={isSubmitting}
-                            >{isSubmitting ? "Loging..." : "Log in"}</Button>
+                            >{isSubmitting ? <><span className="animate-spin"><LoaderCircle /></span>Loging...</> : "Log in"}</Button>
                         </div>
                     </form>
                 </div>
