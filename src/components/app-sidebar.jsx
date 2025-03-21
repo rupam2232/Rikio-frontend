@@ -95,11 +95,11 @@ export function AppSidebar(props) {
           </>
         }
         <SidebarMenuButton className={`text-xs py-0 h-auto hover:bg-transparent ${(state === "collapsed" && !isMobile) && "hidden"}`}>
-            <NavLink to="/terms" className="deactive mr-2 !bg-transparent hover:underline group-data-[collapsible=icon]:hidden truncate">Terms</NavLink>
-            <NavLink to="/privacy" className="deactive !bg-transparent hover:underline group-data-[collapsible=icon]:hidden truncate">Privacy</NavLink>
+            <NavLink to="/terms" onClick={toggleSidebar} className="deactive mr-2 !bg-transparent hover:underline group-data-[collapsible=icon]:hidden truncate">Terms</NavLink>
+            <NavLink to="/privacy" onClick={toggleSidebar} className="deactive !bg-transparent hover:underline group-data-[collapsible=icon]:hidden truncate">Privacy</NavLink>
         </SidebarMenuButton>
         <SidebarMenuButton className={`text-sm cursor-default py-0 h-auto hover:bg-transparent ${(state === "collapsed" && !isMobile) && "hidden"}`}>
-        <p className="group-data-[collapsible=icon]:hidden truncate">Made with <span><Heart className="fill-[#ae7aff] text-transparent size-5 inline-block animate-pulse" /></span> by <a className="bg-gradient-to-t font-semibold from-[#ae7aff] to-[#fcfcfc] text-transparent bg-clip-text" rel="noopener noreferrer" target="_blank" href="https://x.com/rupam2232/">Rupam</a></p>
+        <p className="group-data-[collapsible=icon]:hidden truncate">Made with <span><Heart className="fill-[#ae7aff] text-transparent size-5 inline-block animate-pulse" /></span> by <a className="bg-gradient-to-t font-semibold from-[#ae7aff] to-[#d8cde9] text-transparent bg-clip-text" rel="noopener noreferrer" target="_blank" href="https://x.com/rupam2232/">Rupam</a></p>
         </SidebarMenuButton>
         <SidebarMenuButton className={`text-xs cursor-default py-0 h-auto hover:bg-transparent ${(state === "collapsed" && !isMobile) && "hidden"}`}>
         <span className="text-xs text-zinc-500 group-data-[collapsible=icon]:hidden truncate">© {new Date().getFullYear()} {conf.appName} All rights reserved</

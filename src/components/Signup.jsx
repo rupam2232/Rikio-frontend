@@ -346,7 +346,7 @@ function Signup() {
     } else {
         return (
             <div className="flex h-full items-center justify-center w-full py-8">
-                <div className={`mx-auto w-full max-w-lg rounded-xl p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
+                <div className={`mx-auto w-full max-w-lg rounded-xl p-8 sm:p-10 border border-border bg-opacity-50 backdrop-filter backdrop-blur-xl shadow-lg  overflow-hidden shadow-slate-500 relative`}>
                     <Button type="button" title="back" className={`text-2xl shadow-slate-500 bg-transparent hover:bg-transparent flex justify-center items-center font-bold absolute h-max w-max`} onClick={() => navigate(`/signup?step=${parseInt(step) - 1}`)} disabled={step === "1" ? true : false}>
                         <ArrowBack height="24px" width="24px" className={`relative left-1 fill-primary`} />
                     </Button>
@@ -367,7 +367,7 @@ function Signup() {
                     </p>
 
                     <form onSubmit={SingUpForm}>
-                        <div className={`space-y-5 `}>
+                        <div className={`space-y-5`}>
                             <div className={`w-full ${step === "1" ? "" : "hidden"}`}>
                                 <Input
                                     label="Full Name: "
@@ -440,7 +440,9 @@ function Signup() {
                                 <h2 className='text-lg font-bold mb-3 text-center bg-gradient-to-r from-primary/70 to-primary text-transparent bg-clip-text'>
                                     Verify Your Email <span className="underline">{`${email}`}</span>
                                 </h2>
-                                <p className='text-center text-primary/80 mb-6'>Enter the 6-digit code sent to your email address.</p>
+                                <p className='text-center text-primary/80'>Enter the 6-digit code sent to your email address.</p>
+                                <p className='text-sm font-light text-primary/70 mb-6'>If the OTP is not found in your inbox, then check in your spam folder.</p>
+                                
                                 <div className='flex justify-between mb-4'>
                                     {otp.map((digit, index) => (
                                         <input
@@ -488,8 +490,7 @@ function Signup() {
                             </div>
                         </div>
                     </form>
-                    {step === "3" && <p className='text-sm font-light text-primary/70 absolute bottom-6'>If the OTP is not found in your inbox, then check in your spam folder.</p>}
-                    <p className='text-sm font-light text-primary/70 absolute bottom-1'>By signing in, you are accepting the <NavLink to="/terms" className="underline">Terms and Conditions</NavLink> of this website.</p>
+                    <p className='text-sm font-light text-primary/70 mt-3'>By signing in, you are accepting the <NavLink to="/terms" className="underline">Terms and Conditions</NavLink> of this website.</p>
                 </div>
             </div>
         )
