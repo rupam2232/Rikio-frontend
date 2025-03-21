@@ -284,7 +284,7 @@ function Signup() {
         setIsSubmitting(true)
         const newCode = [...otp];
         try {
-            const registerResponse = await axios.post(`users/register`, { fullName, email: email.trim().toLowerCase(), username, password, otp: joinedOtp });
+            const registerResponse = await axios.post(`/users/register`, { fullName, email: email.trim().toLowerCase(), username, password, otp: joinedOtp });
             toast.success(registerResponse.data.message, {
                 style: { color: "#ffffff", backgroundColor: "#333333" },
                 position: "top-center"

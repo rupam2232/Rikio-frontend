@@ -4,6 +4,9 @@ import { Eye, EyeClosed, LoaderCircle, X, RotateCw as Refresh } from 'lucide-rea
 import axios from '../utils/axiosInstance.js';
 import toast from 'react-hot-toast';
 import errorMessage from '../utils/errorMessage.js';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../store/authSlice.js';
 
 const SecurityTab = ({ user, setRecheckUser }) => {
   const [loader, setLoader] = useState(false);
@@ -20,23 +23,18 @@ const SecurityTab = ({ user, setRecheckUser }) => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [sendOtpBtn, setSendOtpBtn] = useState("send otp")
   const [isOtpSent, setIsOtpSent] = useState(false);
-  const [isOtpValid, setIsOtpValid] = useState(null);
   const inputRefs = useRef([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value)
     if (e.target.value === "") {
       setErrors({ ...errors, password: { type: 'manual', message: 'Password is required*' } })
-    } else if (e.target.value === currentPassword) {
-      setErrors({ ...errors, password: { type: 'manual', message: 'Current password and new passwords are same' } })
     } else if (!e.target.value.match(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&.,:;'"<>?() \[\] {}|\\/~`_^+-]{8,}$/)) {
       setErrors({ ...errors, password: { type: 'manual', message: 'Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character' } })
     } else {
       setErrors({ ...errors, password: null })
-      // if(e.target.value !== confirmPassword) {
-      //   setErrors({ ...errors, confirmPassword: { type: 'manual', message: 'Passwords must match' } })
-  
-      // } 
     }
 
     setIsPasswordChecked(true)
@@ -153,34 +151,50 @@ const SecurityTab = ({ user, setRecheckUser }) => {
     }
   }
 
-  // const verifyOtp = () => {
-  //   if (isOtpValid) {
-  //     return;
-  //   }
-  //   setLoader(true)
-  //   axios.post("/otp/verify-otp", { email, otp: otp.join(""), context: "register" })
-  //     .then((res) => {
-  //       setIsOtpValid(res.data.data)
-  //       toast.success(res.data.message, {
-  //         style: { color: "#ffffff", backgroundColor: "#333333" },
-  //         position: "top-center"
-  //       })
-  //     })
-  //     .catch((err) => {
-  //       setIsOtpValid(false)
-  //       toast.error(errorMessage(err), {
-  //         style: { color: "#ffffff", backgroundColor: "#333333" },
-  //         position: "top-center"
-  //       })
-  //       setOtp(["", "", "", "", "", ""])
-  //     })
-  //     .finally(() => {
-  //       setLoader(false)
-  //     })
-  // }
+  const closePopup = () => {
+    setOpenPopup(false)
+    const newCode = [...otp];
+    for (let i = 0; i < 6; i++) {
+      newCode[i] = "";
+    }
+    setOtp(newCode);
+    setIsOtpSent(false);
+    counter("send otp");
+    setHandleRefreshAnimation(false);
+  }
 
   const onFormSubmit = (e) => {
-    e.preventDefault
+    e.preventDefault()
+    if (currentPassword.trim() === "" || (isConfirmPasswordChecked && errors.confirmPassword) || (isPasswordChecked && errors.password) || password.trim() === "" || confirmPassword.trim() === "" || (password.trim() !== confirmPassword.trim()) || currentPassword.trim() === password.trim() || !isOtpSent || otp.join("").length !== 6 || loader) {
+      return;
+    }
+    setLoader(true)
+    axios.post("/users/change-password", { oldPassword: currentPassword, newPassword: password, email: user.email, otp: otp.join("") })
+      .then((res) => {
+        toast.success(res.data.message, {
+          style: { color: "#ffffff", backgroundColor: "#333333" },
+          position: "top-center"
+        })
+        setCurrentPassword("")
+        setPassword("")
+        setConfirmPassword("")
+      })
+      .catch((err) => {
+        console.error(errorMessage(err))
+        toast.error(errorMessage(err), {
+          style: { color: "#ffffff", backgroundColor: "#333333" },
+          position: "top-center"
+        })
+        if (err.status === 401) {
+          dispatch(logout())
+          navigate("/login")
+        }
+      })
+      .finally(() => {
+        setRecheckUser(reacheckUser => !reacheckUser)
+        setLoader(false)
+        closePopup();
+      })
   }
 
   return (
@@ -199,7 +213,14 @@ const SecurityTab = ({ user, setRecheckUser }) => {
         {openPopup && <div className='fixed inset-0 z-40 bg-black/50 flex justify-center items-center'>
           <div className='bg-background p-6 rounded-lg shadow-xl w-full sm:w-3/5 md:w-2/5'>
             <div className='flex items-center justify-end'>
-              <button onClick={() => setOpenPopup(false)} type='button'><X /></button>
+              <button onClick={() =>{ 
+                setOpenPopup(false)
+                const newCode = [...otp];
+                for (let i = 0; i < 6; i++) {
+                  newCode[i] = "";
+                }
+                setOtp(newCode);
+              }} type='button'><X /></button>
             </div>
             <p className='text-center sm:text-left'>Enter the 6-digit code sent to your email address.</p>
             <p className='text-xs font-light text-primary/70 mb-3'>If the OTP is not found in your inbox, then check in your spam folder.</p>
@@ -221,7 +242,7 @@ const SecurityTab = ({ user, setRecheckUser }) => {
             </div>
 
             <div className="flex justify-end">
-              <Button className={`flex justify-center gap-2 w-max text-primary hover:bg-transparent shadow-none bg-transparent`} onClick={handleSendOtp} disabled={(sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp") || isOtpValid}>
+              <Button className={`flex justify-center gap-2 w-max text-primary hover:bg-transparent shadow-none bg-transparent`} onClick={handleSendOtp} disabled={(sendOtpBtn !== "send otp" && sendOtpBtn !== "resend otp") || loader}>
                 <Refresh height="24px" width="24px" className={`${handleRefreshAnimation && "animate-spin"} relative left-1`} />
                 {sendOtpBtn}
               </Button>
@@ -231,7 +252,7 @@ const SecurityTab = ({ user, setRecheckUser }) => {
           </div>
         </div>}
 
-        <input type="text" name='username' id='username' className='hidden' disabled={true} value={user.username} />
+        <input type="text" name='username' id='username' autoComplete='username' className='hidden' readOnly={true} value={user.username} />
         <div>
           <label htmlFor="currentPassword" className='block font-medium'>Current Password</label>
           <div className='input-parent ring-ring flex items-center border border-zinc-500 rounded-md'>
@@ -270,7 +291,7 @@ const SecurityTab = ({ user, setRecheckUser }) => {
             />
             {showNewPass ? <button type='button' className='px-4 py-1 cursor-pointer hover:bg-primary/10 bg-transparent z-30 group transition-colors flex items-center justify-center' onClick={() => setShowNewPass(false)}><Eye /></button> : <button type='button' className='px-4 py-1 cursor-pointer hover:bg-primary/10 bg-transparent z-30 group transition-colors flex items-center justify-center' onClick={() => setShowNewPass(true)}><EyeClosed /></button>}
           </div>
-          {isPasswordChecked && errors.password && <p role='alert' className="text-red-500 text-xs mt-2 md:w-3/4">{errors.password.message}</p>}
+          {(isPasswordChecked && errors.password) ? <p role='alert' className="text-red-500 text-xs mt-2 md:w-3/4">{errors.password.message}</p> : (isPasswordChecked && (password.trim() === currentPassword.trim())) && <p className='text-red-500 text-xs mt-2 md:w-3/4'>Password must not be the same as the current password</p>}
         </div>
 
         <div>
@@ -288,7 +309,7 @@ const SecurityTab = ({ user, setRecheckUser }) => {
             onCopy={copyFunction}
             aria-invalid={errors.confirmPassword ? "true" : "false"}
           />
-          {isConfirmPasswordChecked && errors.confirmPassword && <p role='alert' className="text-red-500 text-xs mt-2 md:w-3/4">{errors.confirmPassword.message}</p>}
+          {(isConfirmPasswordChecked && errors.confirmPassword) ? <p role='alert' className="text-red-500 text-xs mt-2 md:w-3/4">{errors.confirmPassword.message}</p> : (isConfirmPasswordChecked && (password.trim() !== confirmPassword.trim())) && <p className='text-red-500 text-xs mt-2 md:w-3/4'>Passwords must match</p>}
         </div>
 
         <div>
