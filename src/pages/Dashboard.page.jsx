@@ -268,7 +268,7 @@ const Dashboard = () => {
             <div className='relative'>
                 {optionLoader && (
                     <>
-                        <div className='absolute z-[31] inset-0 flex items-start justify-center bg-background/70 bg-opacity-50'>
+                        <div className='absolute z-[31] inset-0 flex items-center justify-center bg-background/70 bg-opacity-50'>
                             <p className='w-full mt-5 flex justify-center'> <Loader height="24px" width="24px" className="animate-spin fill-primary" /> </p>
                         </div>
                     </>
@@ -291,11 +291,10 @@ const Dashboard = () => {
 
                                 if (videos.length === index + 1) {
                                     return (
-
                                         <tr key={video._id} ref={lastVideoElementRef} className="group ">
                                             <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                                 <div className="flex justify-center">
-                                                    <label title={video.isPublished ? "On" : "Off"} htmlFor={`vid-pub-${video._id}`} className="relative inline-block w-12 cursor-pointer overflow-hidden">
+                                                    <label title={video.isPublished ? "Public" : "Private"} htmlFor={`vid-pub-${video._id}`} className="relative inline-block w-12 cursor-pointer overflow-hidden">
                                                         <input type="checkbox" id={`vid-pub-${video._id}`} className="peer sr-only" checked={video.isPublished} onChange={() => handleStatusChange(video._id, video.isPublished)} />
                                                         <span className="inline-block h-6 w-full rounded-2xl bg-primary duration-200 after:absolute after:bottom-1 after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-background after:duration-200 peer-checked:bg-[#ae7aff] peer-checked:after:left-7"></span>
                                                     </label>
@@ -370,7 +369,7 @@ const Dashboard = () => {
                                         <tr key={video._id} className="group ">
                                             <td className="px-4 py-3 border-t border-collapse border-zinc-500">
                                                 <div className="flex justify-center">
-                                                    <label title={video.isPublished ? "On" : "Off"} htmlFor={`vid-pub-${video._id}`} className="relative inline-block w-12 cursor-pointer overflow-hidden">
+                                                    <label title={video.isPublished ? "Public" : "Private"} htmlFor={`vid-pub-${video._id}`} className="relative inline-block w-12 cursor-pointer overflow-hidden">
                                                         <input type="checkbox" id={`vid-pub-${video._id}`} className="peer sr-only" checked={video.isPublished} onChange={() => handleStatusChange(video._id, video.isPublished)} />
                                                         <span className="inline-block h-6 w-full rounded-2xl bg-primary duration-200 after:absolute after:bottom-1 after:left-1 after:top-1 after:h-4 after:w-4 after:rounded-full after:bg-background after:duration-200 peer-checked:bg-[#ae7aff] peer-checked:after:left-7"></span>
                                                     </label>

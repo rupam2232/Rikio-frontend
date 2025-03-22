@@ -6,7 +6,7 @@ import formatNumbers from '../utils/formatNumber.js'
 import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import { AccountHover } from '../components/index.js'
-import { useNavigate, NavLink, useSearchParams } from 'react-router-dom'
+import { useNavigate, NavLink } from 'react-router-dom'
 import { VideoNotFound } from '../components/index.js'
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 import toast from "react-hot-toast"
@@ -18,16 +18,9 @@ const Home = () => {
     const [page, setPage] = useState(1)
     const [loader, setLoader] = useState(true)
     const [videoLoader, setVideoLoader] = useState(true)
-    const [searchParams] = useSearchParams()
     const isFetching = useRef(false);
     const observer = useRef();
     const navigate = useNavigate()
-
-    const limit = searchParams.get("limit");
-    const channel = searchParams.get("channel");
-    const search = searchParams.get("search");
-    const sortBy = searchParams.get("sortBy");
-    const sortType = searchParams.get("sortType");
 
     useEffect(() => {
         if ((totalPages && page > totalPages) || isFetching.current === true) {
