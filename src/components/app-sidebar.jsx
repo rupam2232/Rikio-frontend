@@ -95,12 +95,12 @@ export function AppSidebar(props) {
           </>
         }
         <SidebarMenuButton className={`text-xs cursor-auto py-0 flex-col items-start gap-0 h-auto hover:bg-transparent ${(state === "collapsed" && !isMobile) && "hidden"}`}>
-          <div>
-            <NavLink to="/terms" onClick={toggleSidebar} className="deactive mr-2 !bg-transparent hover:underline group-data-[collapsible=icon]:hidden truncate">Terms</NavLink>
-            <NavLink to="/privacy" onClick={toggleSidebar} className="deactive !bg-transparent hover:underline group-data-[collapsible=icon]:hidden truncate">Privacy</NavLink>
-          </div>
           <div className="text-sm">
             <p className="group-data-[collapsible=icon]:hidden truncate">Made with <span><Heart className="fill-[#ae7aff] text-transparent size-5 inline-block animate-pulse" /></span> by <a className="bg-gradient-to-t font-semibold from-[#ae7aff] to-[#d8cde9] text-transparent bg-clip-text" rel="noopener noreferrer" target="_blank" href="https://x.com/rupam2232/">Rupam</a></p>
+          </div>
+          <div>
+            <NavLink to="/terms" onClick={toggleSidebar} className="deactive mr-2 !bg-transparent hover:underline group-data-[collapsible=icon]:hidden truncate !text-primary/60">Terms</NavLink>
+            <NavLink to="/privacy" onClick={toggleSidebar} className="deactive !bg-transparent hover:underline group-data-[collapsible=icon]:hidden truncate !text-primary/60">Privacy</NavLink>
           </div>
           <div>
             <span className="text-xs text-zinc-500 group-data-[collapsible=icon]:hidden truncate">© {new Date().getFullYear()} {conf.appName} All rights reserved</span>

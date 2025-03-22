@@ -289,13 +289,13 @@ const Video = () => {
     }, [videoId])
 
     if (loader) {
-        return (<div className='w-full h-full flex justify-center items-center'>
+        return (<section className='w-full h-full flex justify-center items-center'>
             <LoaderCircle className="w-16 h-16 animate-spin" />
-        </div>)
+        </section>)
     }
 
     if (error) {
-        return (<div className='content-center text-center w-full h-full'>{error}</div>)
+        return (<section className='content-center text-center w-full h-full'>{error}</section>)
     }
 
     return (
