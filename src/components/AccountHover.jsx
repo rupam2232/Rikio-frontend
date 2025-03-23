@@ -56,6 +56,7 @@ const AccountHover = ({ user, toggleSubscribe, children,className="" }) => {
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                                         <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => toggleSubscribe(user._id)}>Unsubscribe</AlertDialogAction>
+                                        {console.log(user._id)}
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
