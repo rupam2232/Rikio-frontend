@@ -313,6 +313,7 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
             </div>
 
             {videos ? videos.map((video, index) => {
+                if(video.isPublished){
                 if (videos.length === index + 1) {
                     return (
                         <div key={video._id} ref={lastVideoElementRef} className="aspect-video rounded-xl">
@@ -399,7 +400,7 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
                             </div>
                         </div>
                     )
-                }
+                }}
             }) : <h1>Some thing went wrong please refresh the page or else contact to the support</h1>}
 
             {videoLoader && (

@@ -182,10 +182,6 @@ const ProfileTab = ({ user, setRecheckUser }) => {
     const onFormSubmit = (e) => {
         e.preventDefault();
         if (!fullName.trim() || fullName.trim().length < 3 || fullName.trim().length > 30 || bio.length > 200 || (fullName.trim() === user.fullName && bio.trim() === (user.bio ? user.bio : "") && x.trim() === socials?.x && website.trim() === socials?.website && facebook.trim() === socials?.facebook && linkedin.trim() === socials?.linkedin && instagram.trim() === socials?.instagram && github.trim() === socials?.github && !avatarFile && !coverImageFile && !(user.avatar && (!avatarUrl && !avatarFile)) && !(user.coverImage && (!coverImageUrl && !coverImageFile)))) {
-            toast.error("Please make correct changes", {
-                style: { color: "#ffffff", backgroundColor: "#333333" },
-                position: "top-center"
-            })
             return;
         }
         setLoader(true)

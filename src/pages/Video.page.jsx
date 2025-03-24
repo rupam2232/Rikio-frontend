@@ -44,6 +44,14 @@ const Video = () => {
     const descriptionRef = useRef(null);
 
     const toggleSubscribe = (ownerId) => {
+        if (!loggedInUser) {
+            toast.error("You need to login first", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            navigate("/login")
+            return;
+        }
 
         axios.post(`/subscription/c/${ownerId}`)
             .then((value) => {

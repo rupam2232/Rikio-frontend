@@ -133,28 +133,30 @@ const Subscribed = () => {
     return (
         <section className="w-full p-4 pt-0 mb-10">
             <div className="w-full mt-4 px-4">
-                <h1 className="font-medium text-2xl flex items-center gap-2"><span><UserRoundCheck className='size-4'/></span>Subscribed Channels</h1>
+                <h1 className="font-medium text-2xl flex items-center gap-2"><span><UserRoundCheck className='size-4' /></span>Subscribed Channels</h1>
                 <p className='text-sm text-primary/80'>Channels you have subscribed.</p>
             </div>
             <hr className="my-4 border-primary" />
-            <div className=' flex flex-col gap-8 flex-wrap lg:px-14'>
+            <div className=' flex flex-col gap-4 flex-wrap lg:px-14'>
                 {subscribedChannels && subscribedChannels.subscribed.map((channel) => (
-                    <div className='w-full flex justify-between items-center' key={channel._id}>
-                        <AccountHover user={channel} toggleSubscribe={toggleSubscribe}>
-                            <div className="flex flex-row items-center gap-x-4 cursor-pointer" onClick={() => navigate(`/@${channel.username}`)}>
-                                <Avatar className='h-12 w-12'>
-                                    <AvatarImage src={setAvatar(channel.avatar)} alt={`@${channel.username}`} className="object-cover" />
-                                </Avatar>
-                                <div className="block">
-                                    <div className="font-bold relative flex">
-                                        <p className='break-words break-all whitespace-pre-wrap min-w-0 max-w-[8rem] sm:max-w-[10rem] md:max-w-[15rem] lg:max-w-[20rem] line-clamp-1'>{channel.fullName}</p>
-                                        {channel.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                            <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
-                                        </span>}</div>
-                                    <p className="text-sm text-sidebar-foreground/95">{formatNumbers(channel.subscribers)} Subscribers</p>
+                    <div className='w-full flex justify-between items-center hover:bg-accent p-2 rounded-md' key={channel._id}>
+                        <div className="flex-1 cursor-pointer" onClick={() => navigate(`/@${channel.username}`)}>
+                            <AccountHover user={channel} toggleSubscribe={toggleSubscribe}>
+                                <div className="flex flex-row items-center gap-x-4">
+                                    <Avatar className='h-12 w-12'>
+                                        <AvatarImage src={setAvatar(channel.avatar)} alt={`@${channel.username}`} className="object-cover" />
+                                    </Avatar>
+                                    <div className="block">
+                                        <div className="font-bold relative flex">
+                                            <p className='break-words break-all whitespace-pre-wrap min-w-0 max-w-[8rem] sm:max-w-[10rem] md:max-w-[15rem] lg:max-w-[20rem] line-clamp-1'>{channel.fullName}</p>
+                                            {channel.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
+                                                <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                            </span>}</div>
+                                        <p className="text-sm text-sidebar-foreground/95">{formatNumbers(channel.subscribers)} Subscribers</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </AccountHover>
+                            </AccountHover>
+                        </div>
                         {channel.isSubscribed ?
                             <AlertDialog>
                                 <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
