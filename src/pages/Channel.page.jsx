@@ -19,8 +19,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Button, ChannelAbout, ChannelPlaylist, ChannelVideo } from '../components/index.js'
-import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle } from 'lucide-react'
+import { Button, ChannelAbout, ChannelPlaylist, ChannelTweets, ChannelVideo } from '../components/index.js'
+import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 const Channel = ({ username, pageName }) => {
@@ -103,21 +103,49 @@ const Channel = ({ username, pageName }) => {
         </NotFound>
     )
 
+    if (pageName === 'avatar') {
+        return (
+            <section>
+                <div className="w-full">
+                    <button type="button" onClick={() => navigate(`/@${channelData.username}`)} className='ml-3 sm:ml-4 p-3' title='close'><X /></button>
+                    <div className="sm:h-96 aspect-square mx-auto mt-4">
+                        <img src={setAvatar(channelData.avatar)} alt={`@${channelData.username}`} className="object-cover rounded-full h-full w-full" />
+                    </div>
+                </div>
+            </section>
+        )
+    }
+
+    if (pageName === "coverimage") {
+        return (
+            <section>
+                <div className="w-full">
+                    <button type="button" onClick={() => navigate(`/@${channelData.username}`)} className='ml-3 sm:ml-4 p-3' title='close'><X /></button>
+                    <div className="w-full max-w-[2560px]">
+                        <div className="relative w-full lg:aspect-[2560/510] aspect-[2560/576]">
+                            {channelData.coverImage ? <img src={channelData.coverImage} alt={`cover image | @${channelData.username}`} className="absolute inset-0 w-full h-full object-cover rounded-md" /> : <div className='w-full h-full bg-gray-400 rounded-md'>
+                            </div>}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        )
+    }
+
     return (
         <section className="w-full">
-
             <div className="w-full max-w-[2560px]">
                 <div className="relative w-full lg:aspect-[2560/510] aspect-[2560/576]">
-                    {channelData.coverImage ? <img src={channelData.coverImage} alt={`cover image | @${channelData.username}`} className="absolute inset-0 w-full h-full object-cover rounded-md" /> : <div className='w-full h-full bg-gray-400 rounded-md'>
+                    {channelData.coverImage ? <NavLink to={`/@${channelData.username}/coverimage`}><img src={channelData.coverImage} alt={`cover image | @${channelData.username}`} className="absolute inset-0 w-full h-full object-cover rounded-md" /></NavLink> : <div className='w-full h-full bg-gray-400 rounded-md'>
                     </div>}
                 </div>
             </div>
 
             <div className="px-4 pb-4">
                 <div className="flex flex-col sm:flex-row flex-wrap gap-4 pb-4 pt-6 md:px-10">
-                    <span className="relative mx-auto sm:mx-0 -mt-24 sm:-mt-12 inline-block h-28 w-28 shrink-0 overflow-hidden rounded-full border-2">
+                    <NavLink to={`/@${channelData.username}/avatar`} className="relative mx-auto sm:mx-0 -mt-24 sm:-mt-12 inline-block h-28 w-28 shrink-0 overflow-hidden rounded-full border-2 cursor-pointer">
                         <img src={setAvatar(channelData.avatar)} alt={`@${channelData.username}`} className="h-full object-cover w-full" />
-                    </span>
+                    </NavLink>
                     <div className='flex items-center justify-between flex-1'>
                         <div className="sm:mr-auto sm:inline-block">
                             <div className="font-bold relative flex items-center">
@@ -168,16 +196,16 @@ const Channel = ({ username, pageName }) => {
                 </div>
                 <ul className="no-scrollbar overflow-x-scroll sticky top-16 sm:top-20 md:top-14 z-[30] flex flex-row gap-x-0 md:gap-x-2 border-b border-zinc-500 bg-background py-2 backdrop-blur-[12px] supports-[backdrop-filter]:bg-background/70">
                     <li className="w-full">
-                        <NavLink to={`/@${channelData.username}/videos`} className={`${!pageName && "active"} w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary`}>Videos</NavLink>
+                        <NavLink to={`/@${channelData.username}/videos`} className={`${!pageName && "active"} ${(!pageName || pageName === "videos") && "rounded-sm"} w-full block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary`}>Videos</NavLink>
                     </li>
                     <li className="w-full">
-                        <NavLink to={`/@${channelData.username}/playlist`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary">Playlist</NavLink>
+                        <NavLink to={`/@${channelData.username}/playlist`} className={`${pageName === "playlist" && "rounded-sm"} w-full block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary`}>Playlist</NavLink>
                     </li>
                     <li className="w-full">
-                        <NavLink to={`/@${channelData.username}/tweets`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary">Tweets</NavLink>
+                        <NavLink to={`/@${channelData.username}/tweets`} className={`${pageName === "tweets" && "rounded-sm"} w-full block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary`}>Tweets</NavLink>
                     </li>
                     <li className="w-full">
-                        <NavLink to={`/@${channelData.username}/about`} className="w-full rounded-sm block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary">About</NavLink>
+                        <NavLink to={`/@${channelData.username}/about`} className={`${pageName === "about" && "rounded-sm"} w-full block text-center border-b-2 border-transparent px-3 py-1.5 hover:border-b-2 hover:border-primary`}>About</NavLink>
                     </li>
                 </ul>
 
@@ -190,6 +218,12 @@ const Channel = ({ username, pageName }) => {
                 {
                     (pageName === 'playlist') && (
                         <ChannelPlaylist userId={channelData._id} username={username} isChannelOwner={channelData.isChannelOwner} />
+                    )
+                }
+
+                {
+                    (pageName === 'tweets') && (
+                        <ChannelTweets channelData={channelData} />
                     )
                 }
 

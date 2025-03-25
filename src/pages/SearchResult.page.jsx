@@ -254,13 +254,7 @@ const SearchResult = () => {
     }
 
     
-    if(!query && isMobile) {
-        return( 
-            <div></div>
-        )
-    }
-    
-    if (!query && !isMobile) {
+    if (!query) {
         return <NotFound>
             <p className='text-center'>Please Search something to access this page.</p>
         </NotFound>
