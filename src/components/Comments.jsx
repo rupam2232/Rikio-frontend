@@ -125,11 +125,6 @@ const Comments = ({
 
     }
 
-    // const handleEnter = (e) => {
-    //     if ((e.key === "Enter" && !e.nativeEvent.shiftKey) && postComment && !isCommentSubmitting) {
-    //         handleVideoComment();
-    //     }
-    // };
 
     const lastCommentElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect()
