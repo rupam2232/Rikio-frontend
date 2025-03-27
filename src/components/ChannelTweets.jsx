@@ -4,7 +4,7 @@ import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import formatNumbers from '../utils/formatNumber.js'
 import toast from 'react-hot-toast'
-import { ImagePlus, Loader, LoaderCircle, PencilLine } from 'lucide-react'
+import { EditIcon, ImagePlus, Loader, LoaderCircle, PencilLine, Trash2 } from 'lucide-react'
 import { timeAgo } from '../utils/timeAgo.js'
 import { useSelector, useDispatch } from 'react-redux'
 import { Button, Like, ParseContents } from './index.js'
@@ -17,8 +17,25 @@ import {
     CarouselItem,
     CarouselNext,
     CarouselPrevious,
-    
 } from "@/components/ui/carousel"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const ChannelTweets = ({ channelData }) => {
     const [tweetInput, setTweetInput] = useState("")
@@ -27,8 +44,8 @@ const ChannelTweets = ({ channelData }) => {
     const [loader, setLoader] = useState(true)
     const [tweetLoader, setTweetLoader] = useState(false)
     const [error, setError] = useState(null)
+    const [optionLoader, setOptionLoader] = useState(false)
     const [isTextAreaFocused, setIsTextAreaFocused] = useState(false);
-    const [api, setApi] = useState()
     const [selectedImages, setSelectedImages] = useState([]);
     const MAX_IMAGES = 4;
     const isUserLoggedin = useSelector((state) => state.auth.status)
@@ -44,7 +61,10 @@ const ChannelTweets = ({ channelData }) => {
             })
             .catch((err) => {
                 console.error(errorMessage(err))
-                setError(errorMessage(err))
+                toast.error(errorMessage(err), {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
             })
             .finally(() => {
                 setLoader(false)
@@ -169,16 +189,64 @@ const ChannelTweets = ({ channelData }) => {
             })
     }
 
+    const deleteTweet = (tweetId) => {
+        if (!isUserLoggedin) {
+            toast.error("You need to login first", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            navigate("/login")
+            return;
+        }
+        setOptionLoader(true)
+        axios.delete(`/tweet/${tweetId}`)
+            .then((res) => {
+                setRefetchTweets(!refetchTweets)
+                toast.success(res.data.message, {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+            })
+            .catch((err) => {
+                console.error(errorMessage(err))
+                if (err.status === 401) {
+                    toast.error("You need to login first", {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    dispatch(logout())
+                    navigate("/login")
+                } else {
+                    toast.error(errorMessage(err), {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                }
+            })
+            .finally(() => {
+                setOptionLoader(false)
+            })
+    }
+
+    const editTweet = () => {
+
+    }
+
     const handleImageChange = (event) => {
-        const files = event.target.files;
+        const files = [...event.target.files];
         const imageArray = [];
+        setError("")
 
         for (let i = 0; i < files.length; i++) {
-            imageArray.push(files[i]);
+            if (files[i].size > 1024 * 1024) {
+                setError(`File "${files[i].name}" exceeds 1MB.`);
+            } else {
+                imageArray.push(files[i]);
+            }
         }
 
         if (selectedImages.length + imageArray.length > MAX_IMAGES) {
-            alert(`You can only upload a maximum of ${MAX_IMAGES} images.`);
+            setError(`You can only upload a maximum of ${MAX_IMAGES} images.`);
             return;
         }
 
@@ -218,6 +286,7 @@ const ChannelTweets = ({ channelData }) => {
                     </div>
                 </div>
                 <p className='text-sm text-primary/80'>{tweetInput.length}/400</p>
+                {error && <p className='text-red-500 text-sm transition-opacity'>{error}</p>}
                 <div className="flex flex-wrap">
                     {selectedImages.map((image, index) => (
                         <div key={index} className="m-2 relative">
@@ -236,18 +305,60 @@ const ChannelTweets = ({ channelData }) => {
                     ))}
                 </div>
                 <Button type="submit" className='mt-2' disabled={(tweetInput.trim() === "" && selectedImages.length === 0) || tweetLoader}>{tweetLoader ? <Loader className='animate-spin' /> : "Tweet"}</Button>
+                <hr className='border-zinc-500 mt-3' />
+
             </form>}
             {tweets.length > 0 && tweets.map((tweet) => {
                 return (
-                    <div key={tweet._id} className='p-2 mb-2 rounded-md shadow-md border-b border-zinc-500'>
-                        <div className='flex items-center gap-3'>
-                            <div className='flex items-center'>
-                                <img src={setAvatar(channelData.avatar)} alt={`@${channelData.username}`} className='w-10 h-10 rounded-full' />
-                                <div className='ml-2'>
-                                    <h3 className='font-bold'>{channelData.fullName}</h3>
+                    <div key={tweet._id} className='p-2 mb-2 rounded-md shadow-md'>
+                        <div className='flex justify-between'>
+                            <div className='flex items-center gap-3'>
+                                <div className='flex items-center'>
+                                    <img src={setAvatar(channelData.avatar)} alt={`@${channelData.username}`} className='w-10 h-10 rounded-full' />
+                                    <div className='ml-2'>
+                                        <h3 className='font-bold'>{channelData.fullName}</h3>
+                                    </div>
                                 </div>
+                                <p className='text-xs'>{timeAgo(tweet.createdAt)}</p>
                             </div>
-                            <p className='text-xs'>{timeAgo(tweet.createdAt)}</p>
+                            {(tweet.isTweetOwner && isUserLoggedin) && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild title='options'>
+                                        <div className='flex cursor-pointer px-[15px] py-2 rounded-full transition-colors hover:bg-primary/30 flex-col gap-1 h-max w-max'>
+                                            <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                            <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                            <span className='h-[3px] w-[3px] rounded-full bg-primary'></span>
+                                        </div>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className={`min-w-min !z-30 ${optionLoader ? "!pointer-events-none opacity-70" : "pointer-events-auto"}`}>
+                                        <DropdownMenuItem className="py-0 px-1 w-full">
+                                            <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={editTweet}>
+                                                <EditIcon />Edit
+                                            </Button>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <AlertDialog>
+                                            <AlertDialogTrigger className="py-0 px-0 w-max hover:bg-accent rounded-sm transition-colors ">
+                                                <div role="button" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 px-4 py-2 bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary text-red-600 hover:text-red-600" >
+                                                    <Trash2 />Delete
+                                                </div>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete this tweet.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction className="text-red-600 bg-transparent shadow-none hover:bg-accent border border-input" onClick={() => deleteTweet(tweet._id)}>Delete</AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                         </div>
                         <div className='mt-2'>
                             {tweet.content.textContent && <p><ParseContents content={tweet.content.textContent} /></p>}
@@ -258,26 +369,21 @@ const ChannelTweets = ({ channelData }) => {
                                     {tweet.content.image.map((img, index) => {
                                         return (
                                             <CarouselItem key={index}>
-                                                <Card>
-                                                <CardContent className="flex aspect-square items-center justify-center p-3">
-                                                <img src={img} alt={index + 1} className='rounded-md' />
-                                                </CardContent>
-                                                </Card>
+                                                <div className='p-1'>
+                                                    <Card>
+                                                        <CardContent className="flex aspect-square items-center justify-center p-3">
+                                                            <img src={img} alt={index + 1} className='rounded-md w-full' />
+                                                        </CardContent>
+                                                    </Card>
+                                                </div>
                                             </CarouselItem>
                                         )
                                     })}
                                 </CarouselContent>
-                                    {tweet.content.image.length > 1 && <>
-                                <CarouselPrevious />
-                                <CarouselNext /> </>}
+                                {tweet.content.image.length > 1 && <>
+                                    <CarouselPrevious />
+                                    <CarouselNext /> </>}
                             </Carousel>}
-
-                            {/* {tweet.content.image.length > 0 && tweet.content.image.map((img, index) => {
-                                return (
-                                    <img src={img} key={index} alt={index + 1} className='w-full h-[200px] object-cover rounded-md mt-2' />
-                                )
-                            })
-                            } */}
                         </div>
                         <div className='mt-4'>
                             <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base"
@@ -287,6 +393,7 @@ const ChannelTweets = ({ channelData }) => {
                                 </span>
                             </Button>
                         </div>
+                        <hr className='border-zinc-500 mt-5' />
                     </div>
                 )
             })}
