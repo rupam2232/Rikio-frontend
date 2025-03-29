@@ -312,7 +312,7 @@ const Comments = ({
 
                             </Button>
                             {isEditing && <Button title="cancel" onClick={handleCancelEdit}>
-                                cancel
+                                Cancel
                             </Button>}
                         </div>
                     </div>
@@ -463,8 +463,8 @@ const Comments = ({
                                             "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
 
                                     </Button>
-                                    {isEditing && <Button title="cancel" onClick={handleCancelEdit}>
-                                        cancel
+                                    {isEditing && <Button title="Cancel" onClick={handleCancelEdit}>
+                                        Cancel
                                     </Button>}
                                 </div>
                             </div>

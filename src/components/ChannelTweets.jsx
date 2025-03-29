@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from '../utils/axiosInstance.js'
 import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
@@ -40,6 +40,8 @@ import {
 const ChannelTweets = ({ channelData }) => {
     const [tweetInput, setTweetInput] = useState("")
     const [tweets, setTweets] = useState(null)
+    const [isTweetEditing, setIsTweetEditing] = useState(false)
+    const [editingTweet, setEditingTweet] = useState(null)
     const [refetchTweets, setRefetchTweets] = useState(false)
     const [loader, setLoader] = useState(true)
     const [tweetLoader, setTweetLoader] = useState(false)
@@ -51,12 +53,12 @@ const ChannelTweets = ({ channelData }) => {
     const isUserLoggedin = useSelector((state) => state.auth.status)
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const textAreaRef = useRef()
 
     useEffect(() => {
         setLoader(true)
         axios.get(`/tweet/${channelData._id}`)
             .then((res) => {
-                console.log(res.data.data)
                 setTweets(res.data.data)
             })
             .catch((err) => {
@@ -73,6 +75,7 @@ const ChannelTweets = ({ channelData }) => {
 
     const postTweet = (e) => {
         e.preventDefault();
+        setError("")
         if (tweetLoader) return;
         if (tweetInput.trim() === "" && selectedImages.length === 0) {
             toast.error("Please enter some input to tweet", {
@@ -228,8 +231,19 @@ const ChannelTweets = ({ channelData }) => {
             })
     }
 
-    const editTweet = () => {
+    const editTweet = (tweet) => {
+        setEditingTweet(tweet)
+        setIsTweetEditing(true)
+        setTweetInput(tweet.content.textContent ? tweet.content.textContent : "")
+        setTimeout(() => {
+            if (textAreaRef.current) textAreaRef.current.focus();
+          }, 0);
+    }
 
+    const handleCancelEditing = () => {
+        setEditingTweet(null)
+        setIsTweetEditing(false)
+        setTweetInput("")
     }
 
     const handleImageChange = (event) => {
@@ -279,7 +293,7 @@ const ChannelTweets = ({ channelData }) => {
         <div className='p-2 mt-2 mb-5'>
             {(channelData.isChannelOwner && isUserLoggedin) && <form className='mb-6' onSubmit={(e) => postTweet(e)}>
                 <div className={`border-zinc-500 border rounded-md ${isTextAreaFocused ? 'ring-1 ring-primary' : ''}`}>
-                    <textarea rows="3" placeholder='Write a tweet' value={tweetInput} maxLength="400" onChange={(e) => setTweetInput(e.target.value)} onFocus={() => setIsTextAreaFocused(true)} onBlur={() => setIsTextAreaFocused(false)} className='bg-transparent w-full rounded-md resize-none p-3 outline-none border-none' />
+                    <textarea rows="3" placeholder='Write a tweet' value={tweetInput} ref={textAreaRef} maxLength="400" onChange={(e) => setTweetInput(e.target.value)} onFocus={() => setIsTextAreaFocused(true)} onBlur={() => setIsTextAreaFocused(false)} className='bg-transparent w-full rounded-md resize-none p-3 outline-none border-none' />
                     <div>
                         <label htmlFor="pictures" title='upload image' className='ml-2 cursor-pointer inline-block px-2 py-2 rounded-md self-center hover:bg-accent'><ImagePlus className='size-5' /></label>
                         <input type="file" onChange={handleImageChange} name="pictures[]" id="pictures" accept='image/*' multiple className='hidden' />
@@ -304,8 +318,12 @@ const ChannelTweets = ({ channelData }) => {
                         </div>
                     ))}
                 </div>
-                <Button type="submit" className='mt-2' disabled={(tweetInput.trim() === "" && selectedImages.length === 0) || tweetLoader}>{tweetLoader ? <Loader className='animate-spin' /> : "Tweet"}</Button>
+                <Button type="submit" className='mt-2' disabled={(tweetInput.trim() === "" && selectedImages.length === 0) || tweetLoader || (isTweetEditing && editingTweet.content.textContent.trim() === tweetInput.trim())}>{tweetLoader ? <Loader className='animate-spin' /> : isTweetEditing ? "Update" : "Tweet"}</Button>
+
+                {isTweetEditing && <Button className="ml-3" title="Cancel" type="button" onClick={handleCancelEditing}>Cancel</Button>}
+
                 <hr className='border-zinc-500 mt-3' />
+                
 
             </form>}
             {tweets.length > 0 && tweets.map((tweet) => {
@@ -332,7 +350,7 @@ const ChannelTweets = ({ channelData }) => {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className={`min-w-min !z-30 ${optionLoader ? "!pointer-events-none opacity-70" : "pointer-events-auto"}`}>
                                         <DropdownMenuItem className="py-0 px-1 w-full">
-                                            <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={editTweet}>
+                                            <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={()=> editTweet(tweet)}>
                                                 <EditIcon />Edit
                                             </Button>
                                         </DropdownMenuItem>
@@ -363,8 +381,8 @@ const ChannelTweets = ({ channelData }) => {
                         <div className='mt-2'>
                             {tweet.content.textContent && <p><ParseContents content={tweet.content.textContent} /></p>}
                         </div>
-                        <div>
-                            {tweet.content.image.length > 0 && <Carousel className="w-full max-w-xs mx-auto md:ml-4">
+                        <div className='w-full'>
+                            {tweet.content.image.length > 0 && <Carousel className="max-w-xs mx-auto md:ml-4">
                                 <CarouselContent>
                                     {tweet.content.image.map((img, index) => {
                                         return (
