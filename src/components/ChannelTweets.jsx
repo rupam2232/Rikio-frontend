@@ -42,6 +42,7 @@ const ChannelTweets = ({ channelData }) => {
     const [tweets, setTweets] = useState(null)
     const [isTweetEditing, setIsTweetEditing] = useState(false)
     const [editingTweet, setEditingTweet] = useState(null)
+    const [editingTweetImages, setEditingTweetImages] = useState([])
     const [refetchTweets, setRefetchTweets] = useState(false)
     const [loader, setLoader] = useState(true)
     const [tweetLoader, setTweetLoader] = useState(false)
@@ -77,34 +78,40 @@ const ChannelTweets = ({ channelData }) => {
         e.preventDefault();
         setError("")
         if (tweetLoader) return;
-        if (tweetInput.trim() === "" && selectedImages.length === 0) {
-            toast.error("Please enter some input to tweet", {
-                style: { color: "#ffffff", backgroundColor: "#333333" },
-                position: "top-center"
-            })
-            return;
-        }
-        if (tweetInput.length > 400) {
-            toast.error("Please write the tweet under 400 words", {
-                style: { color: "#ffffff", backgroundColor: "#333333" },
-                position: "top-center"
-            })
-            return;
-        }
-
-        setTweetLoader(true)
-
-        const formData = new FormData();
-        selectedImages.forEach((image) => {
-            formData.append('images', image);
-        });
-        formData.append('textContent', tweetInput.trim());
-
-        axios.post("/tweet", formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
+        if (isTweetEditing) {
+            if (tweetInput.trim() === "" && selectedImages.length === 0 && editingTweet.content.image.length === 0) {
+                toast.error("Please enter some input to tweet", {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                return;
             }
-        })
+
+            if (tweetInput.length > 400) {
+                toast.error("Please write the tweet under 400 words", {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                return;
+            }
+            setTweetLoader(true)
+
+            const formData = new FormData();
+            selectedImages.forEach((image) => {
+                formData.append('images', image);
+            });
+
+            formData.append('textContent', tweetInput.trim());
+
+            editingTweet.content.image.forEach(img => {
+                formData.append('allImage', img)
+            });
+
+            axios.patch(`/tweet/${editingTweet._id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
             .then((res) => {
                 setRefetchTweets(!refetchTweets)
                 toast.success(res.data.message, {
@@ -113,6 +120,7 @@ const ChannelTweets = ({ channelData }) => {
                 })
                 setSelectedImages([])
                 setTweetInput("")
+                setIsTweetEditing(false)
             })
             .catch((err) => {
                 console.error(errorMessage(err))
@@ -133,6 +141,66 @@ const ChannelTweets = ({ channelData }) => {
             .finally(() => {
                 setTweetLoader(false)
             })
+
+        } else {
+            if (tweetInput.trim() === "" && selectedImages.length === 0) {
+                toast.error("Please enter some input to tweet", {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                return;
+            }
+            if (tweetInput.length > 400) {
+                toast.error("Please write the tweet under 400 words", {
+                    style: { color: "#ffffff", backgroundColor: "#333333" },
+                    position: "top-center"
+                })
+                return;
+            }
+
+            setTweetLoader(true)
+
+            const formData = new FormData();
+            selectedImages.forEach((image) => {
+                formData.append('images', image);
+            });
+            formData.append('textContent', tweetInput.trim());
+
+            axios.post("/tweet", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
+                .then((res) => {
+                    setRefetchTweets(!refetchTweets)
+                    toast.success(res.data.message, {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
+                    setSelectedImages([])
+                    setTweetInput("")
+                })
+                .catch((err) => {
+                    console.error(errorMessage(err))
+                    if (err.status === 401) {
+                        toast.error("You need to login first", {
+                            style: { color: "#ffffff", backgroundColor: "#333333" },
+                            position: "top-center"
+                        })
+                        dispatch(logout())
+                        navigate("/login")
+                    } else {
+                        toast.error(errorMessage(err), {
+                            style: { color: "#ffffff", backgroundColor: "#333333" },
+                            position: "top-center"
+                        })
+                    }
+                })
+                .finally(() => {
+                    setTweetLoader(false)
+                })
+
+        }
     }
 
     const toggleLike = (tweetId) => {
@@ -232,15 +300,18 @@ const ChannelTweets = ({ channelData }) => {
     }
 
     const editTweet = (tweet) => {
+        setSelectedImages([])
         setEditingTweet(tweet)
+        setEditingTweetImages(tweet.content.image)
         setIsTweetEditing(true)
         setTweetInput(tweet.content.textContent ? tweet.content.textContent : "")
         setTimeout(() => {
             if (textAreaRef.current) textAreaRef.current.focus();
-          }, 0);
+        }, 500);
     }
 
     const handleCancelEditing = () => {
+        setSelectedImages([])
         setEditingTweet(null)
         setIsTweetEditing(false)
         setTweetInput("")
@@ -264,12 +335,23 @@ const ChannelTweets = ({ channelData }) => {
             return;
         }
 
+        if (isTweetEditing && editingTweet.content?.image.length + selectedImages.length + imageArray.length > MAX_IMAGES) {
+            setError(`You can only upload a maximum of ${MAX_IMAGES} images.`)
+            return;
+        }
+
         setSelectedImages([...selectedImages, ...imageArray]);
     };
 
     const handleRemoveImage = (indexToRemove) => {
+        setError("")
         setSelectedImages(selectedImages.filter((_, index) => index !== indexToRemove));
     };
+
+    const handleRemoveEditingImage = (indexToRemove) => {
+        setError("")
+        setEditingTweet({ ...editingTweet, content: { ...editingTweet.content, image: editingTweet.content.image.filter((_, index) => index !== indexToRemove) } })
+    }
 
     if (loader) {
         return <div className='w-full h-[80vh] flex justify-center items-center'>
@@ -302,6 +384,21 @@ const ChannelTweets = ({ channelData }) => {
                 <p className='text-sm text-primary/80'>{tweetInput.length}/400</p>
                 {error && <p className='text-red-500 text-sm transition-opacity'>{error}</p>}
                 <div className="flex flex-wrap">
+                    {isTweetEditing && editingTweet.content?.image.map((image, index) => (
+                        <div key={index} className="m-2 relative">
+                            <img
+                                src={image}
+                                alt={`Selected Image ${index}`}
+                                className="max-w-[150px] max-h-[150px]"
+                            />
+                            <button type='button'
+                                onClick={() => handleRemoveEditingImage(index)}
+                                className="absolute top-0 right-0 px-2 py-0 bg-red-500 text-white border-none cursor-pointer"
+                            >
+                                X
+                            </button>
+                        </div>
+                    ))}
                     {selectedImages.map((image, index) => (
                         <div key={index} className="m-2 relative">
                             <img
@@ -318,12 +415,14 @@ const ChannelTweets = ({ channelData }) => {
                         </div>
                     ))}
                 </div>
-                <Button type="submit" className='mt-2' disabled={(tweetInput.trim() === "" && selectedImages.length === 0) || tweetLoader || (isTweetEditing && editingTweet.content.textContent.trim() === tweetInput.trim())}>{tweetLoader ? <Loader className='animate-spin' /> : isTweetEditing ? "Update" : "Tweet"}</Button>
+                {console.log(editingTweetImages.some((img,index)=> img === editingTweet.content.image[index]), editingTweetImages, editingTweet?.content.textContent ? editingTweet.content.textContent.trim() : "" === tweetInput.trim() )}
+                {/* {console.log(isTweetEditing && editingTweet.content.textContent?.trim() === tweetInput.trim() && selectedImages.length === 0 && editingTweetImages.some((img,index)=> img === editingTweet.content.image[index]))} */}
+                <Button type="submit" className='mt-2' disabled={(!isTweetEditing && (tweetInput.trim() === "" && selectedImages.length === 0)) || tweetLoader || (isTweetEditing && editingTweet.content.textContent ? editingTweet.content.textContent.trim() : "" === tweetInput.trim() && selectedImages.length === 0 && editingTweetImages.some((img,index)=> img === editingTweet.content.image[index]))}>{tweetLoader ? <Loader className='animate-spin' /> : isTweetEditing ? "Update" : "Tweet"}</Button>
 
                 {isTweetEditing && <Button className="ml-3" title="Cancel" type="button" onClick={handleCancelEditing}>Cancel</Button>}
 
                 <hr className='border-zinc-500 mt-3' />
-                
+
 
             </form>}
             {tweets.length > 0 && tweets.map((tweet) => {
@@ -350,7 +449,7 @@ const ChannelTweets = ({ channelData }) => {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className={`min-w-min !z-30 ${optionLoader ? "!pointer-events-none opacity-70" : "pointer-events-auto"}`}>
                                         <DropdownMenuItem className="py-0 px-1 w-full">
-                                            <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={()=> editTweet(tweet)}>
+                                            <Button className="bg-transparent w-max h-min text-primary shadow-none hover:bg-transparent hover:text-primary" onClick={() => editTweet(tweet)}>
                                                 <EditIcon />Edit
                                             </Button>
                                         </DropdownMenuItem>
