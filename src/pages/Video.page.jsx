@@ -8,6 +8,7 @@ import axios from '../utils/axiosInstance.js'
 import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import toast from "react-hot-toast"
+import NotFound from './NotFound.page.jsx'
 import { BadgeCheck, UserRoundCheck, UserRoundPlus, LoaderCircle, FolderClosed, Plus, X, Earth, LockKeyholeIcon, Check } from 'lucide-react'
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 import { useDispatch, useSelector } from 'react-redux';
@@ -130,9 +131,13 @@ const Video = () => {
                     })
                     dispatch(logout())
                     navigate("/login")
+                } else {
+                    toast.error(errorMessage(error), {
+                        style: { color: "#ffffff", backgroundColor: "#333333" },
+                        position: "top-center"
+                    })
                 }
                 console.error(errorMessage(error));
-                setSubscribed(subscribed)
             })
     }
 
@@ -303,7 +308,7 @@ const Video = () => {
     }
 
     if (error) {
-        return (<section className='content-center text-center w-full h-full'>{error}</section>)
+        return (<NotFound><p className='text-center'>{error}</p></NotFound>)
     }
 
     return (
@@ -472,7 +477,7 @@ const Video = () => {
                             <div className={`relative`} role="button" tabIndex="0" onClick={() => setFullDesc(!fullDesc)}>
                             </div>
                         </div>
-                        < Comments parentContentId={videoId} toggleSubscribe={toggleSubscribe} allComment={allComment} setAllComment={setAllComment} />
+                        < Comments parentContentId={videoId} toggleSubscribe={toggleSubscribe} allComment={allComment} setAllComment={setAllComment} commentType="v" />
                     </div>
                 </div>
             </section>

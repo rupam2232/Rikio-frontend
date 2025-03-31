@@ -9,7 +9,7 @@ import { Button, CommentOptions, AccountHover, ParseContents, ArrowBack } from "
 import { useNavigate } from 'react-router-dom'
 import { useIsMobile } from "../hooks/use-mobile.jsx"
 import toast from "react-hot-toast"
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../store/authSlice.js'
 import {
     Select,
@@ -23,7 +23,8 @@ const Comments = ({
     parentContentId,
     toggleSubscribe,
     allComment,
-    setAllComment
+    setAllComment,
+    commentType
 }) => {
     const [commentLoader, setCommentLoader] = useState(false)
     const [postComment, setPostComment] = useState("")
@@ -40,16 +41,24 @@ const Comments = ({
     const singleComment = useRef();
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
     const isMobile = useIsMobile()
+    const isUserLoggedin = useSelector((state) => state.auth.status)
 
-    const handleVideoComment = () => {
+    const handleCommentPost = () => {
+        if(!isUserLoggedin){
+            toast.error("You need to login first", {
+                style: { color: "#ffffff", backgroundColor: "#333333" },
+                position: "top-center"
+            })
+            navigate("/login")
+            return;
+        }
         setIsCommentSubmitting(true)
         if (!isEditing) {
-            axios.post(`/comment/v/${parentContentId}`, { content: postComment })
+            axios.post(`/comment/${commentType}/${parentContentId}`, { content: postComment })
                 .then((_) => {
                     setPostComment("")
-                    axios.get(`/comment/v/${parentContentId}`)
+                    axios.get(`/comment/${commentType}/${parentContentId}?sortType=${sortType}`)
                         .then((value) => {
                             setAllComment(value.data.data);
                         })
@@ -74,7 +83,7 @@ const Comments = ({
                 .then((_) => {
                     setIsEditing(false)
                     if (!showSingleComment) {
-                        axios.get(`/comment/v/${parentContentId}`)
+                        axios.get(`/comment/${commentType}/${parentContentId}?sortType=${sortType}`)
                             .then((value) => {
                                 setAllComment(value.data.data);
                             })
@@ -147,7 +156,7 @@ const Comments = ({
             if (allComment?.comments) {
                 setCommentLoader(true)
                 isFetching.current = true;
-                axios.get(`/comment/v/${parentContentId}?page=${page}&sortType=${sortType}`)
+                axios.get(`/comment/${commentType}/${parentContentId}?page=${page}&sortType=${sortType}`)
                     .then((res) => {
                         setAllComment({
                             ...allComment, comments: [...allComment.comments,
@@ -177,7 +186,7 @@ const Comments = ({
         setCommentLoader(true)
         setShowComment(false)
         setPage(1)
-        axios.get(`/comment/v/${parentContentId}?sortType=${sortType}`)
+        axios.get(`/comment/${commentType}/${parentContentId}?sortType=${sortType}`)
             .then((res) => {
                 setAllComment(res.data.data)
             })
@@ -207,36 +216,9 @@ const Comments = ({
                             }}>
                                 <ArrowBack height="20px" width="20px" className={`relative left-1 fill-primary`} />
                             </button>
-                            <h6 className="font-semibold">{formatNumbers(showSingleComment.repliesCount)} Replies</h6>
-                        </div>
-                        <div className='relative'>
-                            <textarea
-                                aria-hidden="false"
-                                rows="4"
-                                name="reply"
-                                type="text"
-                                className="w-full resize-none border bg-transparent p-2 scroll-smooth scroll-m-0 text-sm border-zinc-500 rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                                placeholder={`Add a Reply on ${showSingleComment.ownerInfo.fullName}'s comment`}
-                                value={postComment}
-                                autoComplete="off"
-                                onChange={(e) => setPostComment(e.target.value)}
-                                maxLength="900"
-                                ref={textArea}
-                            ></textarea>
-                            <div className='flex items-center gap-3'>
-                                <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} >
-
-                                    {isCommentSubmitting ? <Loader height="24px" width="24px" className=
-                                        "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
-
-                                </Button>
-                                {isEditing && <Button title="cancel" onClick={handleCancelEdit}>
-                                    cancel
-                                </Button>}
-                            </div>
+                            <h6 className="font-semibold">{`${showSingleComment.ownerInfo.fullName}'s comment`}</h6>
                         </div>
                     </div>
-                    <hr className="my-4 border-primary" />
                     <div>
                         <div className="block">
                             <div className="flex xs:flex-row flex-col gap-x-4 relative">
@@ -253,9 +235,9 @@ const Comments = ({
 
                                     <div className="flex items-center">
                                         <AccountHover user={{ ...showSingleComment.ownerInfo, isSubscribed: showSingleComment.isSubscribed, subscribers: showSingleComment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                            <div onClick={() => navigate(`/@${showSingleComment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${showSingleComment.isVideoOwner ? "font-bold" : ""}`}>
+                                            <div onClick={() => navigate(`/@${showSingleComment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(showSingleComment?.isVideoOwner || showSingleComment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2" : ""}`}>
                                                 {showSingleComment.ownerInfo.fullName} {showSingleComment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                    <BadgeCheck title="verified" className={`w-5 h-5 fill-blue-600 inline-block ${(showSingleComment?.isVideoOwner || showSingleComment?.isTweetOwner) ? "text-primary" : "text-background"}`} />
                                                 </span>}
                                             </div>
                                         </AccountHover>
@@ -272,7 +254,7 @@ const Comments = ({
                                     </p>
                                 </div>
 
-                                {showSingleComment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={showSingleComment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} setShowSingleComment={setShowSingleComment} />}
+                                {/* {showSingleComment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={showSingleComment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} setShowSingleComment={setShowSingleComment} />} */}
 
                             </div>
                             <hr className="my-4 border-primary" />
@@ -285,7 +267,7 @@ const Comments = ({
 
         if (isMobile) {
             return (
-                <div className="p-4 rounded-lg border border-primary/30">
+                <div className="p-4 rounded-lg border border-primary/30 mb-3">
 
                     <div className="block">
                         <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
@@ -305,7 +287,7 @@ const Comments = ({
                             ref={textArea}
                         ></textarea>
                         <div className='flex items-center gap-3'>
-                            <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
+                            <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleCommentPost}>
 
                                 {isCommentSubmitting ? <Loader height="24px" width="24px" className=
                                     "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
@@ -358,9 +340,9 @@ const Comments = ({
 
                                                 <div className="flex items-center">
                                                     <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
+                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2" : ""}`}>
                                                             {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                                <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                                <BadgeCheck title="verified" className={`w-5 h-5 fill-blue-600 inline-block ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "text-primary" : "text-background"} `} />
                                                             </span>}
                                                         </div>
                                                     </AccountHover>
@@ -377,7 +359,7 @@ const Comments = ({
                                                 </p>
                                             </div>
 
-                                            {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                            {comment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                         </div>
                                         <hr className="my-4 border-primary" />
@@ -400,9 +382,9 @@ const Comments = ({
 
                                                 <div className="flex items-center">
                                                     <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
+                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2" : ""}`}>
                                                             {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                                <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                                <BadgeCheck title="verified" className={`w-5 h-5 fill-blue-600 inline-block ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "text-primary" : " text-background"} `} />
                                                             </span>}
                                                         </div>
                                                     </AccountHover>
@@ -419,14 +401,14 @@ const Comments = ({
                                                 </p>
                                             </div>
 
-                                            {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                            {comment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                         </div>
                                         <hr className="my-4 border-primary" />
                                     </div>
                                 )
                             }
-                        }) : <h1>No comments available</h1> : <p className='w-full mb-3 flex justify-center'>Something went wrong please try to refresh the page</p>}
+                        }) : <h1>No comments available</h1> : <p className={`${!commentLoader ? "block" : "hidden"} w-full mb-3 flex justify-center`}>Something went wrong please try to refresh the page</p>}
                         {commentLoader && <p className='w-full flex justify-center'> <Loader height="24px" width="24px" className="animate-spin fill-primary" /> </p>
                         }
 
@@ -439,7 +421,7 @@ const Comments = ({
                 <>
                     <button type='button' className="w-full border-primary/30 rounded-lg border p-4 text-left text-primary duration-200 hidden"><h6 className="font-semibold">{formatNumbers(allComment.totalComments)} Comments ...</h6></button>
                     <div
-                        className="bg-background border-primary/30 rounded-lg border p-4 duration-200">
+                        className="bg-background border-primary/30 rounded-lg border p-4 duration-200 mb-3">
                         <div className="block">
                             <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
                             <div className='relative'>
@@ -457,7 +439,7 @@ const Comments = ({
                                     ref={textArea}
                                 ></textarea>
                                 <div className='flex items-center gap-3'>
-                                    <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleVideoComment}>
+                                    <Button title="send" disabled={(postComment === "") || (postComment === editingComment?.content) ? true : false} onClick={handleCommentPost}>
 
                                         {isCommentSubmitting ? <Loader height="24px" width="24px" className=
                                             "animate-spin fill-primary" /> : <SendHorizonal height="24px" width="24px" fill="primary" className="relative fill-primary" />}
@@ -511,9 +493,9 @@ const Comments = ({
 
                                                     <div className="flex items-center">
                                                         <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
+                                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2" : ""}`}>
                                                                 {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                                    <BadgeCheck title="verified" className={`w-5 h-5 fill-blue-600 inline-block ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "text-primary" : "text-background"}`} />
                                                                 </span>}
                                                             </div>
                                                         </AccountHover>
@@ -530,7 +512,7 @@ const Comments = ({
                                                     </p>
                                                 </div>
 
-                                                {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                                {comment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                             </div>
                                             <hr className="my-4 border-primary" />
@@ -553,9 +535,9 @@ const Comments = ({
 
                                                     <div className="flex items-center">
                                                         <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${comment.isVideoOwner ? "font-bold" : ""}`}>
+                                                            <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2" : ""}`}>
                                                                 {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
-                                                                    <BadgeCheck title="verified" className='w-5 h-5 fill-blue-600 text-background inline-block ' />
+                                                                    <BadgeCheck title="verified" className={`w-5 h-5 fill-blue-600 ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "text-primary" : "text-background"} inline-block `} />
                                                                 </span>}
                                                             </div>
                                                         </AccountHover>
@@ -572,14 +554,14 @@ const Comments = ({
                                                     </p>
                                                 </div>
 
-                                                {comment.isCommentOwner && < CommentOptions textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                                {comment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                             </div>
                                             <hr className="my-4 border-primary" />
                                         </div>
                                     )
                                 }
-                            }) : <h1>No comments available</h1> : <p className='w-full mb-3 flex justify-center'>Something went wrong please try to refresh the page</p>}
+                            }) : <h1>No comments available</h1> : <p className={`${!commentLoader ? "block" : "hidden"} w-full mb-3 flex justify-center`}>Something went wrong please try to refresh the page</p>}
                             {commentLoader && <p className='w-full flex justify-center'> <Loader height="24px" width="24px" className="animate-spin fill-primary" /> </p>
                             }
 

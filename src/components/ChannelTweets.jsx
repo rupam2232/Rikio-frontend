@@ -4,13 +4,13 @@ import errorMessage from '../utils/errorMessage.js'
 import setAvatar from '../utils/setAvatar.js'
 import formatNumbers from '../utils/formatNumber.js'
 import toast from 'react-hot-toast'
-import { EditIcon, ImagePlus, Loader, LoaderCircle, PencilLine, Trash2 } from 'lucide-react'
+import { EditIcon, ImagePlus, Loader, LoaderCircle, MessageSquareTextIcon, PencilLine, Trash2 } from 'lucide-react'
 import { timeAgo } from '../utils/timeAgo.js'
 import { useSelector, useDispatch } from 'react-redux'
 import { Button, Like, ParseContents } from './index.js'
 import { logout } from '../store/authSlice.js'
-import { useNavigate } from 'react-router-dom'
-import { Card, CardContent } from "@/components/ui/card"
+import { useNavigate, NavLink } from 'react-router-dom'
+import { useIsMobile } from '@/hooks/use-mobile.jsx'
 import {
     Carousel,
     CarouselContent,
@@ -69,6 +69,7 @@ const ChannelTweets = ({ channelData }) => {
     const textAreaRef = useRef()
     const isFetching = useRef(false);
     const observer = useRef();
+    const isMobile = useIsMobile();
 
     useEffect(() => {
         setLoader(true)
@@ -125,6 +126,7 @@ const ChannelTweets = ({ channelData }) => {
                 style: { color: "#ffffff", backgroundColor: "#333333" },
                 position: "top-center"
             })
+            navigate("/login")
             return;
         }
         if (tweetLoader) return;
@@ -531,7 +533,7 @@ const ChannelTweets = ({ channelData }) => {
             {tweets.length > 0 && tweets.map((tweet, index) => {
                 if (tweets.length === index + 1) {
                     return (
-                        <div key={tweet._id} ref={lastTweetElementRef} className='p-2 mb-2 rounded-md shadow-md'>
+                        <div key={tweet._id} ref={lastTweetElementRef} className='p-2 mb-2 rounded-md'>
                             <div className='flex justify-between'>
                                 <div className='flex items-center gap-3'>
                                     <div className='flex items-center'>
@@ -581,36 +583,41 @@ const ChannelTweets = ({ channelData }) => {
                                     </DropdownMenu>
                                 )}
                             </div>
-                            <div className='mt-2'>
-                                {tweet.content.textContent && <p><ParseContents content={tweet.content.textContent} /></p>}
-                            </div>
+                            <NavLink className='py-2 block' to={`/tweet/${tweet._id}`}>
+                                <div>
+                                    {tweet.content.textContent && <p><ParseContents content={tweet.content.textContent} /></p>}
+                                </div>
+                            </NavLink>
                             <div className='w-full'>
-                                {tweet.content.image.length > 0 && <Carousel className="max-w-xs mx-auto md:ml-4">
+                                {tweet.content.image.length > 0 && <Carousel className="max-w-xs mx-auto md:ml-10">
                                     <CarouselContent>
                                         {tweet.content.image.map((img, index) => {
                                             return (
                                                 <CarouselItem key={index}>
-                                                    <div className='p-1'>
-                                                        <Card>
-                                                            <CardContent className="flex aspect-square items-center justify-center p-3">
-                                                                <img src={img} alt={index + 1} className='rounded-md w-full' />
-                                                            </CardContent>
-                                                        </Card>
+                                                    <div className='p-1 w-full h-full flex items-center justify-center border border-primary/30 rounded-md bg-card relative'>
+                                                        {tweet.content.image.length > 1 && <span className='absolute top-3 right-3 text-sm bg-primary/70 text-background px-2 rounded-md'>{`${index + 1}/${tweet.content.image.length}`}</span>}
+                                                        <img src={img} alt={index + 1} className='rounded-md w-full' />
                                                     </div>
                                                 </CarouselItem>
                                             )
                                         })}
                                     </CarouselContent>
-                                    {tweet.content.image.length > 1 && <>
+                                    {(tweet.content.image.length > 1 && !isMobile) && <>
                                         <CarouselPrevious />
                                         <CarouselNext /> </>}
                                 </Carousel>}
                             </div>
-                            <div className='mt-4'>
-                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base"
-                                    data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
+                            <div className='mt-4 flex items-center gap-4'>
+                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
                                     <span className="inline-block">
                                         {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}
+                                    </span>
+                                </Button>
+                                
+                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalComments)} onClick={() => navigate(`/tweet/${tweet._id}`)}>
+                                    <span className="inline-block">
+                                        <MessageSquareTextIcon />
+                                        {/* {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />} */}
                                     </span>
                                 </Button>
                             </div>
@@ -619,7 +626,7 @@ const ChannelTweets = ({ channelData }) => {
                     )
                 } else {
                     return (
-                        <div key={tweet._id} className='p-2 mb-2 rounded-md shadow-md'>
+                        <div key={tweet._id} className='p-2 mb-2 rounded-md'>
                             <div className='flex justify-between'>
                                 <div className='flex items-center gap-3'>
                                     <div className='flex items-center'>
@@ -669,36 +676,41 @@ const ChannelTweets = ({ channelData }) => {
                                     </DropdownMenu>
                                 )}
                             </div>
-                            <div className='mt-2'>
-                                {tweet.content.textContent && <p><ParseContents content={tweet.content.textContent} /></p>}
-                            </div>
+                            <NavLink className='py-2 block' to={`/tweet/${tweet._id}`}>
+                                <div>
+                                    {tweet.content.textContent && <p><ParseContents content={tweet.content.textContent} /></p>}
+                                </div>
+                            </NavLink>
                             <div className='w-full'>
-                                {tweet.content.image.length > 0 && <Carousel className="max-w-xs mx-auto md:ml-4">
+                                {tweet.content.image.length > 0 && <Carousel className="max-w-xs mx-auto md:ml-10">
                                     <CarouselContent>
                                         {tweet.content.image.map((img, index) => {
                                             return (
                                                 <CarouselItem key={index}>
-                                                    <div className='p-1'>
-                                                        <Card>
-                                                            <CardContent className="flex aspect-square items-center justify-center p-3">
-                                                                <img src={img} alt={index + 1} className='rounded-md w-full' />
-                                                            </CardContent>
-                                                        </Card>
+                                                    <div className='p-1 w-full h-full flex items-center justify-center border border-primary/30 rounded-md bg-card relative'>
+                                                        {tweet.content.image.length > 1 && <span className='absolute top-3 right-3 text-sm bg-primary/70 text-background px-2 rounded-md'>{`${index + 1}/${tweet.content.image.length}`}</span>}
+                                                        <img src={img} alt={index + 1} className='rounded-md w-full' />
                                                     </div>
                                                 </CarouselItem>
                                             )
                                         })}
                                     </CarouselContent>
-                                    {tweet.content.image.length > 1 && <>
+                                    {(tweet.content.image.length > 1 && !isMobile) && <>
                                         <CarouselPrevious />
                                         <CarouselNext /> </>}
                                 </Carousel>}
                             </div>
-                            <div className='mt-4'>
-                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base"
-                                    data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
+                            <div className='mt-4 flex items-center gap-4'>
+                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
                                     <span className="inline-block">
                                         {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}
+                                    </span>
+                                </Button>
+                                
+                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalComments)} onClick={() => navigate(`/tweet/${tweet._id}`)}>
+                                    <span className="inline-block">
+                                        <MessageSquareTextIcon />
+                                        {/* {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />} */}
                                     </span>
                                 </Button>
                             </div>

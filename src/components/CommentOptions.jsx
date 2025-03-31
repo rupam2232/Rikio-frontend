@@ -20,12 +20,13 @@ import { Trash2, EditIcon } from 'lucide-react'
 import { Button } from "./index.js"
 import axios from "../utils/axiosInstance"
 import errorMessage from "../utils/errorMessage.js"
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '../store/authSlice.js'
 import toast from "react-hot-toast"
 
-const CommentOptions = ({ className, textarea, setAllComment, parentContentId, currentComment, setPostComment, setIsEditing, setEditingComment, setShowSingleComment }) => {
+const CommentOptions = ({ className, textarea, setAllComment, parentContentId, currentComment, setPostComment, setIsEditing, setEditingComment, setShowSingleComment, sortType, commentType }) => {
   const dispatch = useDispatch()
+  const isUserLoggedin = useSelector((state) => state.auth.status)
 
   const editComment = () => {
     setEditingComment(currentComment)
@@ -33,13 +34,21 @@ const CommentOptions = ({ className, textarea, setAllComment, parentContentId, c
     setPostComment(currentComment.content)
     setTimeout(() => {
       if (textarea.current) textarea.current.focus();
-    }, 0);
+    }, 500);
   }
 
   const deleteComment = () => {
+    if (!isUserLoggedin) {
+      toast.error("You need to login first", {
+        style: { color: "#ffffff", backgroundColor: "#333333" },
+        position: "top-center"
+      })
+      navigate("/login")
+      return;
+    }
     axios.delete(`/comment/c/${currentComment._id}`)
       .then((_) => {
-        axios.get(`/comment/v/${parentContentId}`)
+        axios.get(`/comment/${commentType}/${parentContentId}?sortType=${sortType}`)
           .then((value) => {
             setAllComment(value.data.data);
           })
@@ -58,7 +67,7 @@ const CommentOptions = ({ className, textarea, setAllComment, parentContentId, c
         }
         console.error(errorMessage(error));
       })
-      .finally(()=>{
+      .finally(() => {
         setShowSingleComment(null)
       })
   }

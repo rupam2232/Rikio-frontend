@@ -19,7 +19,8 @@ import PlaylistVideo from './pages/PlaylistVideo.page.jsx'
 import Subscribed from './pages/Subscribed.page.jsx'
 import LikedVideo from './pages/LikedVideo.page.jsx'
 import WatchHistory from './pages/WatchHistory.page.jsx'
-import Settings from './pages/Settings.pages.jsx'
+import Settings from './pages/Settings.page.jsx'
+import Tweet from './pages/Tweet.page.jsx'
 import NotFound from './pages/NotFound.page.jsx'
 import SearchResult from './pages/SearchResult.page.jsx'
 import TermsAndConditions from './pages/TermsAndConditions.page.jsx'
@@ -100,9 +101,12 @@ const router = createBrowserRouter([
             <UploadVideo />
           </AuthLayout>
         )
-      },{
+      }, {
         path: '/playlist/:playlistId',
         element: <PlaylistVideo />
+      }, {
+        path: '/tweet/:tweetId',
+        element: <Tweet />
       }, {
         path: '/signup',
         element: <Signup />,
