@@ -15,7 +15,6 @@ import { useNavigate } from 'react-router-dom'
 import { logout } from '../store/authSlice.js'
 import { useDispatch, useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
-import { useIsMobile } from '@/hooks/use-mobile.jsx'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -42,7 +41,6 @@ const SearchResult = () => {
     const isFetching = useRef(false);
     const observer = useRef();
     const loggedInUser = useSelector((state) => state.auth.userData);
-    const isMobile = useIsMobile()
 
     useEffect(() => {
         if (!query) return;
@@ -90,6 +88,7 @@ const SearchResult = () => {
             })
             .finally(() => {
                 setLoader(false)
+                setVideoLoader(false)
                 isFetching.current = false;
             })
     }, [query])
