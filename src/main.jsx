@@ -12,6 +12,7 @@ import Home from './pages/Home.page.jsx'
 import Signup from './pages/Signup.page.jsx'
 import Login from './pages/Login.page.jsx'
 import Video from './pages/Video.page.jsx'
+import PrivateVideo from './pages/PrivateVideo.page.jsx'
 import UploadVideo from './pages/UploadVideo.page.jsx'
 import Dashboard from './pages/Dashboard.page.jsx'
 import Playlist from './pages/Playlist.page.jsx'
@@ -94,6 +95,13 @@ const router = createBrowserRouter([
       }, {
         path: '/video/:videoId',
         element: <Video />,
+      }, {
+        path: '/prv/video/:videoId',
+        element: (
+          <AuthLayout >
+            <PrivateVideo />
+          </AuthLayout>
+        )
       }, {
         path: '/upload',
         element: (

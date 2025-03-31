@@ -24,7 +24,8 @@ const Comments = ({
     toggleSubscribe,
     allComment,
     setAllComment,
-    commentType
+    commentType,
+    isVideoPublic = true
 }) => {
     const [commentLoader, setCommentLoader] = useState(false)
     const [postComment, setPostComment] = useState("")
@@ -45,7 +46,7 @@ const Comments = ({
     const isUserLoggedin = useSelector((state) => state.auth.status)
 
     const handleCommentPost = () => {
-        if(!isUserLoggedin){
+        if (!isUserLoggedin) {
             toast.error("You need to login first", {
                 style: { color: "#ffffff", backgroundColor: "#333333" },
                 position: "top-center"
@@ -253,9 +254,6 @@ const Comments = ({
                                         <ParseContents content={showSingleComment.content} />
                                     </p>
                                 </div>
-
-                                {/* {showSingleComment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={showSingleComment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} setShowSingleComment={setShowSingleComment} />} */}
-
                             </div>
                             <hr className="my-4 border-primary" />
                         </div>
@@ -272,7 +270,7 @@ const Comments = ({
                     <div className="block">
                         <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
                     </div>
-                    <div className='relative'>
+                    {isVideoPublic && <div className='relative'>
                         <textarea
                             aria-hidden="false"
                             rows="4"
@@ -297,7 +295,7 @@ const Comments = ({
                                 Cancel
                             </Button>}
                         </div>
-                    </div>
+                    </div>}
                     <hr className="mt-4 mb-2 border-primary" />
                     <div className={`relative ${(allComment.comments && allComment.comments.length !== 0)
                         ? "pt-10" : "pt-2"}`}>
@@ -359,7 +357,7 @@ const Comments = ({
                                                 </p>
                                             </div>
 
-                                            {comment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                            {(comment.isCommentOwner && isVideoPublic) && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                         </div>
                                         <hr className="my-4 border-primary" />
@@ -401,7 +399,7 @@ const Comments = ({
                                                 </p>
                                             </div>
 
-                                            {comment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                            {(comment.isCommentOwner && isVideoPublic) && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                         </div>
                                         <hr className="my-4 border-primary" />
@@ -419,12 +417,10 @@ const Comments = ({
         } else {
             return (
                 <>
-                    <button type='button' className="w-full border-primary/30 rounded-lg border p-4 text-left text-primary duration-200 hidden"><h6 className="font-semibold">{formatNumbers(allComment.totalComments)} Comments ...</h6></button>
-                    <div
-                        className="bg-background border-primary/30 rounded-lg border p-4 duration-200 mb-3">
+                    <div className="bg-background border-primary/30 rounded-lg border p-4 duration-200 mb-3">
                         <div className="block">
                             <h6 className="mb-4 font-semibold">{formatNumbers(allComment.totalComments)} Comments</h6>
-                            <div className='relative'>
+                            {isVideoPublic && <div className='relative'>
                                 <textarea
                                     aria-hidden="false"
                                     rows="4"
@@ -449,7 +445,7 @@ const Comments = ({
                                         Cancel
                                     </Button>}
                                 </div>
-                            </div>
+                            </div>}
                         </div>
                         <hr className="mt-4 mb-2 border-primary" />
                         <div className={`relative ${(allComment.comments && allComment.comments.length !== 0)
@@ -512,7 +508,7 @@ const Comments = ({
                                                     </p>
                                                 </div>
 
-                                                {comment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                                {(comment.isCommentOwner && isVideoPublic) && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                             </div>
                                             <hr className="my-4 border-primary" />
@@ -554,7 +550,7 @@ const Comments = ({
                                                     </p>
                                                 </div>
 
-                                                {comment.isCommentOwner && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
+                                                {(comment.isCommentOwner && isVideoPublic) && < CommentOptions sortType={sortType} commentType={commentType} textarea={textArea} currentComment={comment} setEditingComment={setEditingComment} setIsEditing={setIsEditing} setPostComment={setPostComment} parentContentId={parentContentId} setAllComment={setAllComment} />}
 
                                             </div>
                                             <hr className="my-4 border-primary" />

@@ -58,7 +58,7 @@ export default function App({ children }) {
           <Separator />
           <main className='w-full h-full'>
             {children ? children : <Outlet />}
-            <span className='fixed sm:right-8 bottom-2 sm:bottom-1 pl-2 sm:pl-0 text-xs bg-background/50 rounded-md'><span className='animate-pulse text-sm'>⚠️</span> Server may take a few seconds to respond due to auto-sleep.</span>
+            <span className='fixed z-30 sm:right-8 bottom-2 sm:bottom-1 pl-2 sm:pl-0 text-xs bg-background/50 rounded-md'><span className='animate-pulse text-sm'>⚠️</span> Server may take a few seconds to respond due to auto-sleep.</span>
           </main>
         </SidebarInset>
       </SidebarProvider>

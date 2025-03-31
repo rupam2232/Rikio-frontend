@@ -490,7 +490,7 @@ function Signup() {
                             </div>
                         </div>
                     </form>
-                    <p className='text-sm font-light text-primary/70 mt-3'>By signing in, you are accepting the <NavLink to="/terms" className="underline">Terms & Conditions</NavLink> and <NavLink to="/privacy" className="underline">Privacy Policy</NavLink> of this website.</p>
+                    <p className='text-sm font-light text-primary/70 mt-3'>By continuing, you agree to our <NavLink to="/terms" className="underline">Terms & Conditions</NavLink> and <NavLink to="/privacy" className="underline">Privacy Policy.</NavLink></p>
                 </div>
             </div>
         )

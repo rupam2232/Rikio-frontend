@@ -108,6 +108,7 @@ function Login() {
                             >{isSubmitting ? <><span className="animate-spin"><LoaderCircle /></span>Loging...</> : "Log in"}</Button>
                         </div>
                     </form>
+                    <p className='text-sm font-light text-primary/70 mt-3'>By continuing, you agree to our <NavLink to="/terms" className="underline">Terms & Conditions</NavLink> and <NavLink to="/privacy" className="underline">Privacy Policy.</NavLink></p>
                 </div>
             </div>
         )

@@ -233,7 +233,7 @@ const Tweet = () => {
                     </Carousel>}
                 </div>
                 <div className='mt-4'>
-                    <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base"
+                    <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base"
                         data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
                         <span className="inline-block">
                             {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}

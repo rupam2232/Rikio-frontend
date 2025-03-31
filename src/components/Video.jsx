@@ -40,13 +40,14 @@ const Video = ({ poster, src, autoplay = false }) => {
                     if (!isAddedToHistory.current) {
                         isAddedToHistory.current = true
                         axios.post('/users/add-history/', { videoId, userTimeZoneOffset })
-                            .then((_) => {
-                                isAddedToHistory.current = true
-                            })
                             .catch((error) => {
-                                isAddedToHistory.current = false
                                 console.error(errorMessage(error))
                             })
+                            .finally(()=>{
+                                isAddedToHistory.current = true
+                            })
+                    
+                            
                     }
                 }
             } else {
@@ -54,12 +55,11 @@ const Video = ({ poster, src, autoplay = false }) => {
                     if (!isAddedToHistory.current) {
                         isAddedToHistory.current = true
                         axios.post('/users/add-history/', { videoId, userTimeZoneOffset })
-                            .then((_) => {
-                                isAddedToHistory.current = true
-                            })
                             .catch((error) => {
-                                isAddedToHistory.current = false
                                 console.error(errorMessage(error))
+                            })
+                            .finally(()=>{
+                                isAddedToHistory.current = true
                             })
                     }
                 }

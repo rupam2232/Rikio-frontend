@@ -608,13 +608,13 @@ const ChannelTweets = ({ channelData }) => {
                                 </Carousel>}
                             </div>
                             <div className='mt-4 flex items-center gap-4'>
-                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
+                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
                                     <span className="inline-block">
                                         {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}
                                     </span>
                                 </Button>
                                 
-                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalComments)} onClick={() => navigate(`/tweet/${tweet._id}`)}>
+                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalComments)} onClick={() => navigate(`/tweet/${tweet._id}`)}>
                                     <span className="inline-block">
                                         <MessageSquareTextIcon />
                                         {/* {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />} */}
@@ -701,13 +701,13 @@ const ChannelTweets = ({ channelData }) => {
                                 </Carousel>}
                             </div>
                             <div className='mt-4 flex items-center gap-4'>
-                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
+                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalLikes)} onClick={() => toggleLike(tweet._id)}>
                                     <span className="inline-block">
                                         {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}
                                     </span>
                                 </Button>
                                 
-                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 border-r bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalComments)} onClick={() => navigate(`/tweet/${tweet._id}`)}>
+                                <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalComments)} onClick={() => navigate(`/tweet/${tweet._id}`)}>
                                     <span className="inline-block">
                                         <MessageSquareTextIcon />
                                         {/* {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />} */}
