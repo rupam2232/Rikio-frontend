@@ -91,7 +91,7 @@ const WatchHistory = () => {
     const lastVideoElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect()
         observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && (historyData?.totalPages && page < totalPages)) {
+            if (entries[0].isIntersecting) {
                 setPage(prevPageNumber => prevPageNumber + 1)
             }
         })
@@ -151,6 +151,7 @@ const WatchHistory = () => {
             <LoaderCircle className="w-16 h-16 animate-spin" />
         </div>)
     }
+
     return (
         <section className='w-full pt-0 mb-10'>
             <div className="flex flex-wrap gap-x-4 gap-y-10 p-4 lg:flex-nowrap">
@@ -192,116 +193,132 @@ const WatchHistory = () => {
                     <p className="text-center text-zinc-500">No watch history available.</p>
                 ) : (
                     <div className="flex w-full flex-col gap-y-4">
-                        {historyData.history.map((day, index) => (
-                            <div key={index}>
-                                <h3 className="text-xl font-medium mb-3">
-                                    {`${new Date(day.createdAt).getDate()}th ${new Date(day.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(day.createdAt).getFullYear()}`}
-                                </h3>
-                                <hr className="my-4 border-primary" />
+                        {historyData.history.map((day, index) => {
+                            if (historyData.history.length === index + 1) {
+                                return (
+                                    <div ref={lastVideoElementRef} key={index}>
+                                        <h3 className="text-xl font-medium mb-3">
+                                            {`${new Date(day.createdAt).getDate()}th ${new Date(day.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(day.createdAt).getFullYear()}`}
+                                        </h3>
+                                        <hr className="my-4 border-primary" />
 
-                                <div className="flex w-full flex-col gap-y-4">
-                                    {day.videos.map((video, i) => {
-                                        if (historyData.history.length === index + 1 && day.videos.length === i + 1) {
-                                            return (
-                                                <div ref={lastVideoElementRef} key={i + Date.now() + (Math.random() * 10 + Math.random() * 10)} className="sm:border border-zinc-500 rounded-md shadow-md">
-                                                    <div className="w-full  gap-x-4 sm:flex">
-                                                        <div className="relative mb-2 w-full sm:mb-0 sm:w-5/12">
-                                                            <div className="w-full pt-[56%]" aria-label='Thubmnail'>
-                                                                <NavLink to={`/video/${video._id}`} title={video.title} className="absolute inset-0">
-                                                                    <img src={video.thumbnail} alt={`${video.title} | uploaded by @${video.owner.username}`} className="h-full w-full object-cover rounded-md" />
-                                                                </NavLink>
-                                                                <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex gap-x-2 px-2 sm:w-7/12 sm:px-0">
-                                                            <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                                                <div onClick={() => navigate(`/@${video.owner.username}`)} className="h-10 w-10 shrink-0 sm:hidden cursor-pointer">
-                                                                    <img src={video.owner.avatar} alt={`@${video.owner.username}`} className="h-full w-full rounded-full object-cover" />
-                                                                </div>
-                                                            </AccountHover>
-                                                            <div className="w-full">
-                                                                <div className='flex justify-between gap-x-2 items-start'>
-                                                                    <NavLink to={`/video/${video._id}`} className="flex-1">
-                                                                        <h6 className="mb-1 sm:mt-1 font-semibold sm:max-w-[75%] max-h-16 line-clamp-2 whitespace-normal" title={video.title}>{video.title}</h6>
+                                        <div className="flex w-full flex-col gap-y-4">
+                                            {day.videos.map((video, i) => {
+                                                return (
+                                                    <div key={i + Date.now() + (Math.random() * 10 + Math.random() * 10)} className="sm:border s border-zinc-500 rounded-md shadow-md">
+                                                        <div className="w-full  gap-x-4 sm:flex">
+                                                            <div className="relative mb-2 w-full sm:mb-0 sm:w-5/12">
+                                                                <div className="w-full pt-[56%]" aria-label='Thubmnail'>
+                                                                    <NavLink to={`/video/${video._id}`} title={video.title} className="absolute inset-0">
+                                                                        <img src={video.thumbnail} alt={`${video.title} | uploaded by @${video.owner.username}`} className="h-full w-full object-cover rounded-md" />
                                                                     </NavLink>
-
-
+                                                                    <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
                                                                 </div>
-                                                                <NavLink to={`/video/${video._id}`}>
-                                                                    <p className="flex text-sm text-primary/90 sm:pt-3" title={`${formatNumbers(video.views)} Views | uploaded ${timeAgo(video.createdAt)}`}>{`${formatNumbers(video.views)} Views • ${timeAgo(video.createdAt)}`}</p>
-                                                                </NavLink>
-                                                                <div className="flex items-center sm:gap-x-4">
-                                                                    <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                                                        <div className="mt-2 hidden h-10 w-10 shrink-0 sm:block cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
-                                                                            <img src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="h-full w-full rounded-full object-cover" />
-                                                                        </div>
-                                                                    </AccountHover>
+                                                            </div>
+                                                            <div className="flex gap-x-2 px-2 sm:w-7/12 sm:px-0">
+                                                                <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                                                    <div onClick={() => navigate(`/@${video.owner.username}`)} className="h-10 w-10 shrink-0 sm:hidden cursor-pointer">
+                                                                        <img src={video.owner.avatar} alt={`@${video.owner.username}`} className="h-full w-full rounded-full object-cover" />
+                                                                    </div>
+                                                                </AccountHover>
+                                                                <div className="w-full">
+                                                                    <div className='flex justify-between gap-x-2 items-start'>
+                                                                        <NavLink to={`/video/${video._id}`} className="flex-1">
+                                                                            <h6 className="mb-1 sm:mt-1 font-semibold sm:max-w-[75%] max-h-16 line-clamp-2 whitespace-normal" title={video.title}>{video.title}</h6>
+                                                                        </NavLink>
 
-                                                                    <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                                                        <p className="text-sm mt-1 mb-3 sm:mb-0 sm:mt-0 text-primary/80 sm:text-primary/90 sm:font-medium cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>{`@${video.owner.username}`}</p>
-                                                                    </AccountHover>
-                                                                    <NavLink to={`/video/${video._id}`} className="block w-full h-max">
-                                                                        <p className='invisible h-max'>a</p></NavLink>
+
+                                                                    </div>
+                                                                    <NavLink to={`/video/${video._id}`}>
+                                                                        <p className="flex text-sm text-primary/90 sm:pt-3" title={`${formatNumbers(video.views)} Views | uploaded ${timeAgo(video.createdAt)}`}>{`${formatNumbers(video.views)} Views • ${timeAgo(video.createdAt)}`}</p>
+                                                                    </NavLink>
+                                                                    <div className="flex items-center sm:gap-x-4">
+                                                                        <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                                                            <div className="mt-2 hidden h-10 w-10 shrink-0 sm:block cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
+                                                                                <img src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="h-full w-full rounded-full object-cover" />
+                                                                            </div>
+                                                                        </AccountHover>
+
+                                                                        <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                                                            <p className="text-sm mt-1 mb-3 sm:mb-0 sm:mt-0 text-primary/80 sm:text-primary/90 sm:font-medium cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>{`@${video.owner.username}`}</p>
+                                                                        </AccountHover>
+                                                                        <NavLink to={`/video/${video._id}`} className="block w-full h-max">
+                                                                            <p className='invisible h-max'>a</p></NavLink>
+                                                                    </div>
+                                                                    <NavLink to={`/video/${video._id}`} className="hidden sm:block w-full h-1/3"></NavLink>
                                                                 </div>
-                                                                <NavLink to={`/video/${video._id}`} className="hidden sm:block w-full h-1/3"></NavLink>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            )
-                                        } else {
-                                            return (
-                                                <div key={i + Date.now() + (Math.random() * 10 + Math.random() * 10)} className="sm:border border-zinc-500 rounded-md shadow-md">
-                                                    <div className="w-full  gap-x-4 sm:flex">
-                                                        <div className="relative mb-2 w-full sm:mb-0 sm:w-5/12">
-                                                            <div className="w-full pt-[56%]" aria-label='Thubmnail'>
-                                                                <NavLink to={`/video/${video._id}`} title={video.title} className="absolute inset-0">
-                                                                    <img src={video.thumbnail} alt={`${video.title} | uploaded by @${video.owner.username}`} className="h-full w-full object-cover rounded-md" />
-                                                                </NavLink>
-                                                                <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex gap-x-2 px-2 sm:w-7/12 sm:px-0">
-                                                            <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                                                <div onClick={() => navigate(`/@${video.owner.username}`)} className="h-10 w-10 shrink-0 sm:hidden cursor-pointer">
-                                                                    <img src={video.owner.avatar} alt={`@${video.owner.username}`} className="h-full w-full rounded-full object-cover" />
-                                                                </div>
-                                                            </AccountHover>
-                                                            <div className="w-full">
-                                                                <div className='flex justify-between gap-x-2 items-start'>
-                                                                    <NavLink to={`/video/${video._id}`} className="flex-1">
-                                                                        <h6 className="mb-1 sm:mt-1 font-semibold sm:max-w-[75%] max-h-16 line-clamp-2 whitespace-normal" title={video.title}>{video.title}</h6>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )
+                            } else {
+                                return (
+                                    <div key={index}>
+                                        <h3 className="text-xl font-medium mb-3">
+                                            {`${new Date(day.createdAt).getDate()}th ${new Date(day.createdAt).toLocaleString('default', { month: 'long' })} ${new Date(day.createdAt).getFullYear()}`}
+                                        </h3>
+                                        <hr className="my-4 border-primary" />
+
+                                        <div className="flex w-full flex-col gap-y-4">
+                                            {day.videos.map((video, i) => {
+                                                return (
+                                                    <div key={i + Date.now() + (Math.random() * 10 + Math.random() * 10)} className="sm:border border-zinc-500 rounded-md shadow-md">
+                                                        <div className="w-full  gap-x-4 sm:flex">
+                                                            <div className="relative mb-2 w-full sm:mb-0 sm:w-5/12">
+                                                                <div className="w-full pt-[56%]" aria-label='Thubmnail'>
+                                                                    <NavLink to={`/video/${video._id}`} title={video.title} className="absolute inset-0">
+                                                                        <img src={video.thumbnail} alt={`${video.title} | uploaded by @${video.owner.username}`} className="h-full w-full object-cover rounded-md" />
                                                                     </NavLink>
-
-
+                                                                    <span className="absolute bottom-1 right-1 inline-block rounded bg-black/100 text-white px-1.5 text-sm">{videoDuration(video.duration)}</span>
                                                                 </div>
-                                                                <NavLink to={`/video/${video._id}`}>
-                                                                    <p className="flex text-sm text-primary/90 sm:pt-3" title={`${formatNumbers(video.views)} Views | uploaded ${timeAgo(video.createdAt)}`}>{`${formatNumbers(video.views)} Views • ${timeAgo(video.createdAt)}`}</p>
-                                                                </NavLink>
-                                                                <div className="flex items-center sm:gap-x-4">
-                                                                    <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                                                        <div className="mt-2 hidden h-10 w-10 shrink-0 sm:block cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
-                                                                            <img src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="h-full w-full rounded-full object-cover" />
-                                                                        </div>
-                                                                    </AccountHover>
+                                                            </div>
+                                                            <div className="flex gap-x-2 px-2 sm:w-7/12 sm:px-0">
+                                                                <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                                                    <div onClick={() => navigate(`/@${video.owner.username}`)} className="h-10 w-10 shrink-0 sm:hidden cursor-pointer">
+                                                                        <img src={video.owner.avatar} alt={`@${video.owner.username}`} className="h-full w-full rounded-full object-cover" />
+                                                                    </div>
+                                                                </AccountHover>
+                                                                <div className="w-full">
+                                                                    <div className='flex justify-between gap-x-2 items-start'>
+                                                                        <NavLink to={`/video/${video._id}`} className="flex-1">
+                                                                            <h6 className="mb-1 sm:mt-1 font-semibold sm:max-w-[75%] max-h-16 line-clamp-2 whitespace-normal" title={video.title}>{video.title}</h6>
+                                                                        </NavLink>
 
-                                                                    <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
-                                                                        <p className="text-sm mt-1 mb-3 sm:mb-0 sm:mt-0 text-primary/80 sm:text-primary/90 sm:font-medium cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>{`@${video.owner.username}`}</p>
-                                                                    </AccountHover>
-                                                                    <NavLink to={`/video/${video._id}`} className="block w-full h-max">
-                                                                        <p className='invisible h-max'>a</p></NavLink>
+
+                                                                    </div>
+                                                                    <NavLink to={`/video/${video._id}`}>
+                                                                        <p className="flex text-sm text-primary/90 sm:pt-3" title={`${formatNumbers(video.views)} Views | uploaded ${timeAgo(video.createdAt)}`}>{`${formatNumbers(video.views)} Views • ${timeAgo(video.createdAt)}`}</p>
+                                                                    </NavLink>
+                                                                    <div className="flex items-center sm:gap-x-4">
+                                                                        <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                                                            <div className="mt-2 hidden h-10 w-10 shrink-0 sm:block cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>
+                                                                                <img src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="h-full w-full rounded-full object-cover" />
+                                                                            </div>
+                                                                        </AccountHover>
+
+                                                                        <AccountHover user={{ ...video.owner, subscribers: video.owner.subscribers, isSubscribed: video.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>
+                                                                            <p className="text-sm mt-1 mb-3 sm:mb-0 sm:mt-0 text-primary/80 sm:text-primary/90 sm:font-medium cursor-pointer" onClick={() => navigate(`/@${video.owner.username}`)}>{`@${video.owner.username}`}</p>
+                                                                        </AccountHover>
+                                                                        <NavLink to={`/video/${video._id}`} className="block w-full h-max">
+                                                                            <p className='invisible h-max'>a</p></NavLink>
+                                                                    </div>
+                                                                    <NavLink to={`/video/${video._id}`} className="hidden sm:block w-full h-1/3"></NavLink>
                                                                 </div>
-                                                                <NavLink to={`/video/${video._id}`} className="hidden sm:block w-full h-1/3"></NavLink>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            )
-                                        }
-                                    })}
-                                </div>
-                            </div>
-                        ))}
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )
+                            }
+
+                        })}
                         {videoLoader && <div className='w-full flex justify-center items-center'>
                             <Loader className="animate-spin" />
                         </div>}

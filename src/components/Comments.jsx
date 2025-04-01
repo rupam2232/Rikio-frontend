@@ -338,7 +338,7 @@ const Comments = ({
 
                                                 <div className="flex items-center">
                                                     <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2" : ""}`}>
+                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2 mt-1" : ""}`}>
                                                             {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
                                                                 <BadgeCheck title="verified" className={`w-5 h-5 fill-blue-600 inline-block ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "text-primary" : "text-background"} `} />
                                                             </span>}
@@ -380,7 +380,7 @@ const Comments = ({
 
                                                 <div className="flex items-center">
                                                     <AccountHover user={{ ...comment.ownerInfo, isSubscribed: comment.isSubscribed, subscribers: comment.subscribers }} toggleSubscribe={toggleSubscribe}>
-                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2" : ""}`}>
+                                                        <div onClick={() => navigate(`/@${comment.ownerInfo.username}`)} className={`flex items-center cursor-pointer ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "bg-primary text-background font-bold rounded-md px-2 mt-1" : ""}`}>
                                                             {comment.ownerInfo.fullName} {comment.ownerInfo.verified && <span className='inline-block w-min h-min ml-1 cursor-pointer' title='verified'>
                                                                 <BadgeCheck title="verified" className={`w-5 h-5 fill-blue-600 inline-block ${(comment?.isVideoOwner || comment?.isTweetOwner) ? "text-primary" : " text-background"} `} />
                                                             </span>}

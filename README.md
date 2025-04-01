@@ -1,44 +1,124 @@
-# Hi there, I'm Rupam! 👋
+# Rikio - Frontend
 
-Welcome to my GitHub profile! I'm a passionate developer with a keen interest in software development, open-source contributions, and learning new technologies.
+<p align="center">
+<img src="https://rikio.vercel.app/logo.svg" alt="Rikio" width="100"/>
+</p>
 
-## 🔭 What I'm Currently Working On
-- [Project 1](https://github.com/rupam2232/project-1): Brief description of the project.
-- [Project 2](https://github.com/rupam2232/project-2): Brief description of the project.
+## 🚀 About Rikio
+Rikio is a modern and feature-rich platform designed to provide users with seamless video streaming and content management. The frontend of Rikio is built with **React, Vite, Tailwind CSS, and ShadCN**, ensuring a fast, scalable, and responsive user experience.
 
-## 🌱 What I'm Learning
-- Advanced Python programming
-- Cloud computing with AWS
-- Machine learning and AI
-
-## 💬 Ask Me About
-- Python development
-- Web development with JavaScript, HTML, and CSS
-- Open-source contributions
-
-## 📫 How to Reach Me
-- Email: [your-email@example.com](mailto:your-email@example.com)
-- LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- Twitter: [@yourtwitterhandle](https://twitter.com/yourtwitterhandle)
-
-## ⚡ Fun Fact
-- I love exploring new tech gadgets and working on DIY electronics projects.
-
-## 📈 GitHub Stats
-![Rupam's GitHub stats](https://github-readme-stats.vercel.app/api?username=rupam2232&show_icons=true&theme=radical)
-
-## 🛠️ Languages and Tools
-![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=white)
-![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
-![HTML5](https://img.shields.io/badge/-HTML5-E34F26?style=flat&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/-CSS3-1572B6?style=flat&logo=css3&logoColor=white)
-![AWS](https://img.shields.io/badge/-AWS-232F3E?style=flat&logo=amazon-aws&logoColor=white)
-![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat&logo=docker&logoColor=white)
-
-## 🏆 Achievements
-- Completed [Course/Certification Name](https://www.example.com)
-- Contributed to [Open Source Project](https://github.com/open-source-project)
+### 🌐 Live Demo: [rikio.vercel.app](https://rikio.vercel.app/)
 
 ---
 
-Thank you for visiting my profile! Feel free to explore my repositories and connect with me.
+## 📌 Features
+- 🎥 **Video Streaming**: Watch high-quality videos with a smooth playback experience.
+- 🔍 **Search Functionality**: Find videos easily with an intuitive search bar.
+- 🔄 **Authentication**: Sign up & sign in with email/password.
+- 🌎 **Responsive Design**: Optimized for mobile, tablet, and desktop users.
+- 🌙 **Dark Mode**: Enjoy an eye-friendly dark mode experience.
+- ⚡ **Optimized Performance**: Leveraging Vite for fast builds and Tailwind CSS for efficient styling.
+- 🔐 **Secure API Integration**: Works seamlessly with the [Rikio backend](https://github.com/rupam2232/Rikio-backend) for secure data handling.
+
+---
+
+## 🛠️ Tech Stack
+  - **Frontend**\*: React (with Vite) ⚡\*
+  - **Styling**\*: Tailwind CSS + ShadCN ✨\*
+  - **State Management**\*: React Redux\*
+  - **Routing**\*: React Router DOM\*
+  - **Toast Notifications**\*: React Hot Toast\*
+  - **Icons**\*: Lucide React\*
+  - **Video Player**\*: Video.js\*
+  - **File Upload**\*: React Dropzone\*
+  - **HTTP Requests**\*: Axios\*
+  - **Authentication**\*: Standard email/password authentication\*
+  - **Backend API**\*: Integrated with [Rikio backend](https://github.com/rupam2232/Rikio-backend) (MERN Stack)\*
+  - **Hosting**\*: Deployed on ****[Vercel](https://rikio.vercel.app/)**** 🌍\*
+
+---
+
+## 📦 Installation & Setup
+
+### Clone the Repository
+```bash
+git clone https://github.com/rupam2232/Rikio-frontend.git
+cd Rikio-frontend
+```
+
+### Install Dependencies
+```bash
+npm install
+```
+
+### Environment Variables
+Create a `.env` file in the root directory and add the following variables:
+```env
+VITE_BACKEND_URI=your-backend-url
+VITE_APP_NAME = "Rikio"
+```
+
+### Run the Development Server
+```bash
+npm run dev
+```
+The app will be available at **[http://localhost:5173](http://localhost:5173)**.
+
+---
+
+## 📄 Folder Structure
+```
+Rikio-frontend/
+│── src/
+│   ├── components/    # Reusable UI components
+│   ├── pages/         # Application pages (Home, Login, Dashboard, etc.)
+│   ├── hooks/         # Custom React hooks
+│   ├── store/       # Global state management
+│   ├── utils/         # Helper functions
+│   ├── conf/         # Object of .env variables
+│   ├── assets/        # Static assets like images & icons
+│── public/            # Static files (favicon)
+│── package.json       # Project dependencies
+│── vite.config.js     # Vite configuration
+```
+
+---
+
+## 🔗 API Endpoints
+The frontend interacts with the [Rikio backend](https://github.com/rupam2232/Rikio-backend) API. Ensure that the backend is running and update the `VITE_BACKEND_URI` in your `.env` file accordingly.
+
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `POST` | `/users/register` | Register a new user |
+| `POST` | `/users/login` | Authenticate user |
+| `GET`  | `/videos` | Fetch all videos |
+| `GET`  | `/videos/:id` | Fetch a specific video |
+
+---
+
+## 🚀 Deployment
+Rikio frontend is deployed on **[Vercel](https://rikio.vercel.app/)**.
+
+
+---
+
+## 🛠️ Contributing
+We welcome contributions to improve Rikio! 🚀
+1. **Fork** the repository.
+2. **Create** a new branch: `git checkout -b feature-name`.
+3. **Commit** your changes: `git commit -m 'Add new feature'`.
+4. **Push** to the branch: `git push origin feature-name`.
+5. Submit a **Pull Request**.
+
+---
+
+## 📜 License
+This project is licensed under the **MIT License**.
+
+---
+
+## 📞 Contact
+For questions, issues, or collaborations, reach out to:  
+**Twitter**: [rupam2232](https://x.com/rupam2232)  
+**GitHub**: [rupam2232](https://github.com/rupam2232)  
+**Linkedin**: [rupam2232](https://www.linkedin.com/in/rupam2232/)

@@ -6,7 +6,7 @@ import formatNumbers from '../utils/formatNumber.js'
 import setAvatar from '../utils/setAvatar.js'
 import errorMessage from '../utils/errorMessage.js';
 import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import VideoNotFound from './VideoNotFound.jsx'
 import {
     Select,
@@ -15,13 +15,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { AccountHover } from './index.js';
-import toast from 'react-hot-toast';
-import { logout } from '../store/authSlice.js'
-import { useDispatch } from 'react-redux'
-import { ThumbsUp } from 'lucide-react';
 
-const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLikedVideoHeading }) => {
+const ChannelVideo = ({ username, isChannelOwner }) => {
     const [videos, setVideos] = useState([]);
     const [totalPages, setTotalPages] = useState(null)
     const [page, setPage] = useState(1)
@@ -30,8 +25,6 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
     const [loader, setLoader] = useState(true);
     const isFetching = useRef(false);
     const observer = useRef();
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
 
     useEffect(() => {
         const fetchVideos = () => {
@@ -63,119 +56,24 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
                 return;
             }
         }
-
-        const fetchLikedVideos = () => {
-            if ((totalPages && page > totalPages) || isFetching.current === true) {
-                setVideoLoader(false)
-                setLoader(false)
-                return;
-            }
-            if (videos.length !== 0) {
-                isFetching.current = true;
-                setVideoLoader(true)
-                axios.get(`/like/videos/?sortType=${sortType}&page=${page}`)
-                    .then((value) => {
-                        setTotalPages(value.data.data.totalPages)
-                        setVideos([
-                            ...videos,
-                            ...value.data.data.likedVideos.filter((video) =>
-                                !videos.some((v) =>
-                                    v._id === video._id
-                                ))
-                        ])
-
-                    })
-                    .catch((error) => console.error(errorMessage(error)))
-                    .finally(() => {
-                        isFetching.current = false;
-                        setVideoLoader(false)
-                    })
-                return;
-            }
-        }
-        if (likedVideos) {
-            fetchLikedVideos();
-        } else {
-            fetchVideos();
-        }
+        fetchVideos();
     }, [username, page])
 
     useEffect(() => {
-        fetchFirstVideoSet();
-    }, [sortType])
-
-
-    const fetchFirstVideoSet = useCallback(() => {
         isFetching.current = true;
         setLoader(true)
         setPage(1)
-        if (likedVideos) {
-            axios.get(`/like/videos/?sortType=${sortType}`)
-                .then((value) => {
-                    setTotalPages(value.data.data.totalPages)
-                    setVideos(value.data.data.likedVideos)
-                })
-                .catch((error) => console.error(errorMessage(error)))
-                .finally(() => {
-                    isFetching.current = false;
-                    setLoader(false)
-                })
-        } else {
-            axios.get(`/videos/?channel=${username}&sortType=${sortType}`)
-                .then((value) => {
-                    setTotalPages(value.data.data.totalPages)
-                    setVideos(value.data.data.channelsAllVideo)
-                })
-                .catch((error) => console.error(errorMessage(error)))
-                .finally(() => {
-                    isFetching.current = false;
-                    setLoader(false)
-                })
-        }
-    }, [sortType, username])
-
-    const toggleSubscribe = (ownerId) => {
-        axios.post(`/subscription/c/${ownerId}`)
+        axios.get(`/videos/?channel=${username}&sortType=${sortType}`)
             .then((value) => {
-                if (value.data.message.toLowerCase() === "subscribed") {
-                    let updatedVideos = videos.map((video) => {
-                        if (video.owner._id === ownerId) {
-                            video.owner.isSubscribed = true
-                            video.owner.subscribers += 1
-                        }
-                        return video
-                    })
-                    setVideos(updatedVideos)
-                } else if (value.data.message.toLowerCase() === "unsubscribed") {
-                    let updatedVideos = videos.map((video) => {
-                        if (video.owner._id === ownerId) {
-                            video.owner.isSubscribed = false
-                            video.owner.subscribers -= 1
-                        }
-                        return video
-                    })
-                    setVideos(updatedVideos)
-                } else {
-                    setVideos(videos)
-                }
+                setTotalPages(value.data.data.totalPages)
+                setVideos(value.data.data.channelsAllVideo)
             })
-            .catch((error) => {
-                if (error.status === 401) {
-                    toast.error("You need to login first", {
-                        style: { color: "#ffffff", backgroundColor: "#333333" },
-                        position: "top-center"
-                    })
-                    dispatch(logout())
-                    navigate("/login")
-                } else {
-                    toast.error(errorMessage(error), {
-                        style: { color: "#ffffff", backgroundColor: "#333333" },
-                        position: "top-center"
-                    })
-                }
-                console.error(errorMessage(error));
+            .catch((error) => console.error(errorMessage(error)))
+            .finally(() => {
+                isFetching.current = false;
+                setLoader(false)
             })
-    }
+    }, [sortType, username])
 
     const lastVideoElementRef = useCallback(node => {
         if (observer.current) observer.current.disconnect()
@@ -273,21 +171,10 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
     }
 
     if (videos.length === 0) {
-        if (likedVideos) {
-            showLikedVideoHeading(false)
-            return (<section className='h-[80vh] flex items-center justify-center flex-col'>
-                <div className='mb-2 px-2 py-2 w-auto  text-[#AE7AFF] bg-[#E4D3FF] rounded-full'>
-                    <ThumbsUp className='size-7' />
-                </div>
-                <h3 className='font-bold mb-2'>No liked videos</h3>
-                <p>You haven't liked any video</p>
-            </section>)
-        } else {
-            return (<div className='h-[80vh] flex items-center justify-center flex-col'>
-                <VideoNotFound className="!h-max !pb-0" pText="This channel has yet to upload a video. Search another channel in order to find more videos." />
-                {isChannelOwner && <NavLink to="/upload" className="flex justify-center mt-4 bg-[#ae7aff] px-4 py-2 rounded-md font-medium text-sm">Upload Video</NavLink>}
-            </div>)
-        }
+        return (<div className='h-[80vh] flex items-center justify-center flex-col'>
+            <VideoNotFound className="!h-max !pb-0" pText="This channel has yet to upload a video. Search another channel in order to find more videos." />
+            {isChannelOwner && <NavLink to="/upload" className="flex justify-center mt-4 bg-[#ae7aff] px-4 py-2 rounded-md font-medium text-sm">Upload Video</NavLink>}
+        </div>)
     }
 
     return (
@@ -298,22 +185,13 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
                         <SelectValue placeholder="Sort" />
                     </SelectTrigger>
                     <SelectContent>
-                        {likedVideos ?
-                            <>
-                                <SelectItem value="desc">Latest liked</SelectItem>
-                                <SelectItem value="asc">Oldest liked</SelectItem>
-                            </> :
-                            <>
-                                <SelectItem value="desc">Latest</SelectItem>
-                                <SelectItem value="asc">Oldest</SelectItem>
-                            </>
-                        }
+                        <SelectItem value="desc">Latest</SelectItem>
+                        <SelectItem value="asc">Oldest</SelectItem>
                     </SelectContent>
                 </Select>
             </div>
 
             {videos ? videos.map((video, index) => {
-                if(video.isPublished){
                 if (videos.length === index + 1) {
                     return (
                         <div key={video._id} ref={lastVideoElementRef} className="aspect-video rounded-xl">
@@ -328,14 +206,9 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
                             <div className="flex gap-x-2 cursor-pointer">
 
                                 <div className="cursor-pointer">
-                                    {likedVideos ?
-                                        <AccountHover user={video.owner} toggleSubscribe={toggleSubscribe} >
-                                            <Avatar className='h-10 w-10 shrink-0' onClick={() => navigate(`/@${video.owner.username}`)}>
-                                                <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                            </Avatar>
-                                        </AccountHover> : <Avatar className='h-10 w-10 shrink-0'>
-                                            <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                        </Avatar>}
+                                    <Avatar className='h-10 w-10 shrink-0'>
+                                        <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
+                                    </Avatar>
                                 </div>
 
                                 <div className="w-full">
@@ -347,11 +220,7 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
                                         </p>
                                     </NavLink>
 
-                                    {likedVideos ?
-                                        <AccountHover user={video.owner} toggleSubscribe={toggleSubscribe} >
-                                            <span onClick={() => navigate(`/@${video.owner.username}`)} className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
-                                        </AccountHover> : <span className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
-                                    }
+                                    <span className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
 
                                 </div>
                             </div>
@@ -371,14 +240,9 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
                             <div className="flex gap-x-2 cursor-pointer">
 
                                 <div className="cursor-pointer">
-                                    {likedVideos ?
-                                        <AccountHover user={video.owner} toggleSubscribe={toggleSubscribe} >
-                                            <Avatar className='h-10 w-10 shrink-0' onClick={() => navigate(`/@${video.owner.username}`)}>
-                                                <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                            </Avatar>
-                                        </AccountHover> : <Avatar className='h-10 w-10 shrink-0'>
-                                            <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
-                                        </Avatar>}
+                                    <Avatar className='h-10 w-10 shrink-0'>
+                                        <AvatarImage src={setAvatar(video.owner.avatar)} alt={`@${video.owner.username}`} className="object-cover" />
+                                    </Avatar>
                                 </div>
 
                                 <div className="w-full">
@@ -390,17 +254,13 @@ const ChannelVideo = ({ username, isChannelOwner, likedVideos = false, showLiked
                                         </p>
                                     </NavLink>
 
-                                    {likedVideos ?
-                                        <AccountHover user={video.owner} toggleSubscribe={toggleSubscribe} >
-                                            <span onClick={() => navigate(`/@${video.owner.username}`)} className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
-                                        </AccountHover> : <span className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
-                                    }
+                                    <span className='text-sm cursor-pointer text-secondary-foreground/70'>{`@${video.owner.username}`}</span>
 
                                 </div>
                             </div>
                         </div>
                     )
-                }}
+                }
             }) : <h1>Some thing went wrong please refresh the page or else contact to the support</h1>}
 
             {videoLoader && (
