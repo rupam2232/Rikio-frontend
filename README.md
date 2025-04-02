@@ -55,7 +55,7 @@ npm install
 Create a `.env` file in the root directory and add the following variables:
 ```env
 VITE_BACKEND_URI=your-backend-url
-VITE_APP_NAME = "Rikio"
+VITE_APP_NAME=Rikio
 ```
 
 ### Run the Development Server
@@ -73,9 +73,9 @@ Rikio-frontend/
 │   ├── components/    # Reusable UI components
 │   ├── pages/         # Application pages (Home, Login, Dashboard, etc.)
 │   ├── hooks/         # Custom React hooks
-│   ├── store/       # Global state management
+│   ├── store/         # Global state management
 │   ├── utils/         # Helper functions
-│   ├── conf/         # Object of .env variables
+│   ├── conf/          # Object of .env variables
 │   ├── assets/        # Static assets like images & icons
 │── public/            # Static files (favicon)
 │── package.json       # Project dependencies
@@ -86,13 +86,6 @@ Rikio-frontend/
 
 ## 🔗 API Endpoints
 The frontend interacts with the [Rikio backend](https://github.com/rupam2232/Rikio-backend) API. Ensure that the backend is running and update the `VITE_BACKEND_URI` in your `.env` file accordingly.
-
-| Method | Endpoint | Description |
-|--------|---------|-------------|
-| `POST` | `/users/register` | Register a new user |
-| `POST` | `/users/login` | Authenticate user |
-| `GET`  | `/videos` | Fetch all videos |
-| `GET`  | `/videos/:id` | Fetch a specific video |
 
 ---
 

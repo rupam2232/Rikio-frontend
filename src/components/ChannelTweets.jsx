@@ -454,12 +454,63 @@ const ChannelTweets = ({ channelData }) => {
 
     if (tweets?.length === 0) {
         return (
-            <div className='h-[80vh] flex items-center justify-center flex-col'>
-                <div className='mb-2 px-2 py-2 w-auto  text-[#AE7AFF] bg-[#E4D3FF] rounded-full'>
-                    <PencilLine className='size-7' />
+            <div className='mt-2'>
+                {(channelData.isChannelOwner && isUserLoggedin) && <form onSubmit={(e) => postTweet(e)}>
+                    <div className={`border-zinc-500 border rounded-md ${isTextAreaFocused ? 'ring-1 ring-primary' : ''}`}>
+                        <textarea rows="3" placeholder='Write a tweet' value={tweetInput} ref={textAreaRef} maxLength="400" onChange={(e) => setTweetInput(e.target.value)} onFocus={() => setIsTextAreaFocused(true)} onBlur={() => setIsTextAreaFocused(false)} className='bg-transparent w-full rounded-md resize-none p-3 outline-none border-none' />
+                        <div>
+                            <label htmlFor="pictures" title='upload image' className='ml-2 cursor-pointer inline-block px-2 py-2 rounded-md self-center hover:bg-accent'><ImagePlus className='size-5' /></label>
+                            <input type="file" onChange={handleImageChange} name="pictures[]" id="pictures" accept='image/*' multiple className='hidden' />
+                        </div>
+                    </div>
+                    <p className='text-sm text-primary/80'>{tweetInput.length}/400</p>
+                    {error && <p className='text-red-500 text-sm transition-opacity'>{error}</p>}
+                    <div className="flex flex-wrap">
+                        {isTweetEditing && editingTweet.content?.image.map((image, index) => (
+                            <div key={index} className="m-2 relative">
+                                <img
+                                    src={image}
+                                    alt={`Selected Image ${index}`}
+                                    className="max-w-[150px] max-h-[150px]"
+                                />
+                                <button type='button'
+                                    onClick={() => handleRemoveEditingImage(index)}
+                                    className="absolute top-0 right-0 px-2 py-0 bg-red-500 text-white border-none cursor-pointer"
+                                >
+                                    X
+                                </button>
+                            </div>
+                        ))}
+                        {selectedImages.map((image, index) => (
+                            <div key={index} className="m-2 relative">
+                                <img
+                                    src={URL.createObjectURL(image)}
+                                    alt={`Selected Image ${index}`}
+                                    className="max-w-[150px] max-h-[150px]"
+                                />
+                                <button type='button'
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="absolute top-0 right-0 px-2 py-0 bg-red-500 text-white border-none cursor-pointer"
+                                >
+                                    X
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+
+                    <Button type="submit" className='mt-2' disabled={diableSubmitBtn}>{tweetLoader ? <Loader className='animate-spin' /> : isTweetEditing ? "Update" : "Tweet"}</Button>
+
+                    {isTweetEditing && <Button className="ml-3" title="Cancel" type="button" onClick={handleCancelEditing}>Cancel</Button>}
+
+                    <hr className='border-zinc-500 mt-3' />
+                </form>}
+                <div className='h-[80vh] flex items-center justify-center flex-col'>
+                    <div className='mb-2 px-2 py-2 w-auto  text-[#AE7AFF] bg-[#E4D3FF] rounded-full'>
+                        <PencilLine className='size-7' />
+                    </div>
+                    <h3 className='font-bold mb-2'>No tweet available</h3>
+                    <p>There are no tweet posted on this channel.</p>
                 </div>
-                <h3 className='font-bold mb-2'>No tweet available</h3>
-                <p>There are no tweet posted on this channel.</p>
             </div>
         )
     }
@@ -613,7 +664,7 @@ const ChannelTweets = ({ channelData }) => {
                                         {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}
                                     </span>
                                 </Button>
-                                
+
                                 <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalComments)} onClick={() => navigate(`/tweet/${tweet._id}`)}>
                                     <span className="inline-block">
                                         <MessageSquareTextIcon />
@@ -706,7 +757,7 @@ const ChannelTweets = ({ channelData }) => {
                                         {tweet.isLiked ? <Like className='fill-[#ae7aff] text-border' /> : <Like className='fill-transparent' />}
                                     </span>
                                 </Button>
-                                
+
                                 <Button className="flex items-center border font-medium  border-primary/50 shadow-none gap-x-2 bg-border text-primary hover:bg-primary/20 after:content-[attr(data-like)] xs:[&_svg]:size-5 [&_svg]:size-4 text-sm xs:text-base" data-like={formatNumbers(tweet.totalComments)} onClick={() => navigate(`/tweet/${tweet._id}`)}>
                                     <span className="inline-block">
                                         <MessageSquareTextIcon />
