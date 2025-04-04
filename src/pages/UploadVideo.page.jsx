@@ -55,7 +55,7 @@ const UploadVideo = () => {
         };
     }, [videoPreviewUrl]);
 
-    const MAX_VIDEO_SIZE = 70 * 1024 * 1024;
+    const MAX_VIDEO_SIZE = 50 * 1024 * 1024;
     const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
 
     const onDrop = (acceptedFiles, rejectedFiles) => {
@@ -67,7 +67,7 @@ const UploadVideo = () => {
         if (acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
             if (file.size > MAX_VIDEO_SIZE) {
-                setErrorMessage('Video file size exceeds 70MB.');
+                setErrorMessage('Video file size exceeds 50MB.');
                 return;
             }
 
