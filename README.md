@@ -112,6 +112,5 @@ This project is licensed under the **MIT License**.
 
 ## 📞 Contact
 For questions, issues, or collaborations, reach out to:  
-**Twitter**: [rupam2232](https://x.com/rupam2232)  
-**GitHub**: [rupam2232](https://github.com/rupam2232)  
-**Linkedin**: [rupam2232](https://www.linkedin.com/in/rupam2232/)
+[**Twitter**](https://x.com/rupam2232)    
+[**Linkedin**](https://www.linkedin.com/in/rupam2232/)
