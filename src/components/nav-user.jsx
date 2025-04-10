@@ -3,7 +3,6 @@ import {
   BadgeCheck,
   ChevronsUpDown,
   LogOut,
-  Sparkles,
   Upload,
   LoaderCircle,
   LayoutDashboard,
@@ -42,7 +41,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useSelector, useDispatch } from "react-redux";
 import setAvatar from '../utils/setAvatar.js'
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../store/authSlice.js";
 import axios from "../utils/axiosInstance.js";
 import toast from "react-hot-toast"
@@ -54,10 +53,10 @@ export function NavUser() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loader, setLoader] = useState(false);
+  const location = useLocation();
+  const pathName = location.pathname.substring(1);
 
   const logoutUser = () => {
-    setLoader(true);
-
     if (!user) {
       toast.error("You are not logged in", {
         style: { color: "#ffffff", backgroundColor: "#333333" },
@@ -65,6 +64,8 @@ export function NavUser() {
       });
       return;
     }
+    
+    setLoader(true);
 
     axios.post(`/users/logout`)
       .then((res) => {
@@ -145,17 +146,17 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
-            <DropdownMenuGroup>
+            <DropdownMenuGroup className="space-y-1">
               <DropdownMenuItem className="px-0 py-0">
-                <button onClick={() => navigate(`/@${user.username}`)} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><CircleUserRound />Profile</button>
+                <button onClick={() => navigate(`/@${user.username}`)} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 ${pathName === `@${user.username}` ? "active" : ""}`}><CircleUserRound />Profile</button>
               </DropdownMenuItem>
 
               <DropdownMenuItem className="px-0 py-0">
-                <button onClick={() => navigate(`/dashboard`)} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><LayoutDashboard />Dashboard</button>
+                <button onClick={() => navigate(`/dashboard`)} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 ${pathName === `dashboard` ? "active" : ""}`}><LayoutDashboard />Dashboard</button>
               </DropdownMenuItem>
 
               <DropdownMenuItem className="px-0 py-0">
-                <button onClick={() => navigate("/upload")} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 deactive`}><Upload /> Upload</button>
+                <button onClick={() => navigate("/upload")} className={`w-full px-2 py-1.5 relative flex select-none items-center gap-2 rounded-sm text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled] group-focus:bg-accent :pointer-events-none data-[disabled]:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0 ${pathName === `upload` ? "active" : ""}`}><Upload /> Upload</button>
               </DropdownMenuItem>
               {/* <DropdownMenuItem>
                 <Bell />

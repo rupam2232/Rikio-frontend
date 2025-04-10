@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Header from "./components/Header.jsx"
 import { useDispatch, useSelector } from 'react-redux'
@@ -18,11 +18,14 @@ export default function App({ children }) {
   const dispatch = useDispatch();
   const userStatus = useSelector((state) => state.auth.status);
   const [recheck, setRecheck] = useState(false)
+  const isCurrentUserFetched = useRef(false);
 
-  const refreshAccessToken = ()=>{
+  const refreshAccessToken = () => {
+    if (isCurrentUserFetched.current) return;
+
     axios.post('/users/refresh-token')
-      .then((res)=>{
-        if(res.data.message.toLowerCase().trim() === "access token refreshed"){
+      .then((res) => {
+        if (res.data.message.toLowerCase().trim() === "access token refreshed") {
           setRecheck(!recheck)
         }
       })
@@ -30,9 +33,12 @@ export default function App({ children }) {
   }
 
   useEffect(() => {
+    if (isCurrentUserFetched.current) return;
+
     axios.get('/users/current-user')
       .then((res) => {
         if (res.data.data) {
+          isCurrentUserFetched.current = true
           dispatch(login({ userData: res.data.data }))
         } else {
           dispatch(logout());
@@ -40,7 +46,7 @@ export default function App({ children }) {
       })
       .catch((error) => {
         dispatch(logout());
-        if(errorMessage(error).toLowerCase().trim() === "invalid access token"){
+        if (errorMessage(error).toLowerCase().trim() === "invalid access token") {
           refreshAccessToken()
         }
         console.error(errorMessage(error))
@@ -57,7 +63,7 @@ export default function App({ children }) {
           <Separator />
           <main className='w-full h-full'>
             {children ? children : <Outlet />}
-            <span className='fixed z-30 sm:right-8 bottom-2 sm:bottom-1 pl-2 sm:pl-0 text-xs bg-background/50 rounded-md'><span className='animate-pulse text-sm'>⚠️</span> Server may take a few seconds to respond due to auto-sleep.</span>
+            <span className='fixed z-30 sm:right-8 bottom-2 sm:bottom-1 pl-2 sm:pl-0 text-xs bg-background/50 rounded-md'><span className='animate-pulse text-sm'>⚠️</span> Server may take a few moments to respond due to auto-sleep.</span>
           </main>
         </SidebarInset>
       </SidebarProvider>
