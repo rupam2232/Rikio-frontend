@@ -73,7 +73,7 @@ const AccountHover = ({ user, toggleSubscribe, children,className="" }) => {
                                 {`@${user.username}`}
                             </NavLink>
                         </p>
-                        <p className='text-sm mt-2 line-clamp-3 break-words break-all whitespace-pre-wrap'>{<ParseContents content={user?.bio} />}</p>
+                        {user?.bio && <p className='text-sm mt-2 line-clamp-3 break-words break-all whitespace-pre-wrap'>{<ParseContents content={user?.bio} />}</p>}
                         <p className='text-sidebar-foreground/70 text-sm mt-2'>
                             <span className='text-primary font-bold mr-3'>
                                 {`${formatNumbers(user.subscribers)}`}
