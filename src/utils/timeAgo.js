@@ -3,6 +3,9 @@ export function timeAgo(dateString = "") {
     const now = new Date();
     const diffInSeconds = Math.floor((now - createdAt) / 1000);
 
+     // Handle future timestamps or same time
+     if (diffInSeconds <= 0) return "just now";
+
     const years = Math.floor(diffInSeconds / (365 * 24 * 60 * 60));
     if (years > 0) return `${years} year${years > 1 ? 's' : ''} ago`;
 
