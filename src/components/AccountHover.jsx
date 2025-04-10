@@ -10,7 +10,7 @@ import { AvatarImage, Avatar } from '@/components/ui/avatar.jsx'
 import formatNumbers from '../utils/formatNumber.js'
 import joinedAt from '../utils/joinedAt.js'
 import setAvatar from '../utils/setAvatar.js'
-import { Button } from './index.js'
+import { Button, ParseContents } from './index.js'
 import { useSelector } from 'react-redux'
 import {
     AlertDialog,
@@ -73,7 +73,7 @@ const AccountHover = ({ user, toggleSubscribe, children,className="" }) => {
                                 {`@${user.username}`}
                             </NavLink>
                         </p>
-                        <p className='text-sm mt-2 line-clamp-3 whitespace-normal'>{user?.bio}</p>
+                        <p className='text-sm mt-2 line-clamp-3 break-words break-all whitespace-pre-wrap'>{<ParseContents content={user?.bio} />}</p>
                         <p className='text-sidebar-foreground/70 text-sm mt-2'>
                             <span className='text-primary font-bold mr-3'>
                                 {`${formatNumbers(user.subscribers)}`}
