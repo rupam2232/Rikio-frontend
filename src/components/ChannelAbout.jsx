@@ -1,4 +1,4 @@
-import { Facebook, Linkedin, Instagram, Github, X, Website } from "./index.js"
+import { Facebook, Linkedin, Instagram, Github, X, Website, ParseContents } from "./index.js"
 import { Calendar } from "lucide-react"
 import joinedAt from "../utils/joinedAt.js"
 
@@ -8,7 +8,7 @@ const ChannelAbout = ({ channelData }) => {
             <div className="flex flex-col lg:flex-row justify-between">
             <div className="lg:w-2/3 lg:pr-5">
                 <h2 className={`text-2xl font-bold mt-4 mb-3`}>About</h2>
-                {channelData.bio && <p>{channelData.bio}</p>}
+                {channelData.bio && <p className="break-words whitespace-pre-wrap">{<ParseContents content={channelData.bio} />}</p>}
             </div>
             <div className="lg:w-1/3 lg:pl-5">
                 {(channelData?.socials && (channelData?.socials?.instagram || channelData?.socials?.github || channelData?.socials?.linkedin || channelData?.socials?.facebook || channelData?.socials?.x || channelData?.socials?.website)) && <h2 className='text-2xl font-bold mt-4 mb-3'>Social Links</h2>}
