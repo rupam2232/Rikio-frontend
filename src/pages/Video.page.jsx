@@ -458,7 +458,7 @@ const Video = () => {
                             </div>
                             <hr className="my-4 border-primary" />
 
-                            <div ref={descriptionRef} className={`w-full relative cursor-pointer text-sm break-words break-all whitespace-pre-wrap transition-all ${isDescOverflowing && fullDesc ? "h-full" : "line-clamp-3"}`} onClick={() => setFullDesc(!fullDesc)}>
+                            <div ref={descriptionRef} className={`w-full relative cursor-pointer text-sm break-words whitespace-pre-wrap transition-all ${isDescOverflowing && fullDesc ? "h-full" : "line-clamp-3 break-all"}`} onClick={() => setFullDesc(!fullDesc)}>
                                 {video.description && <p className='relative'>{<ParseContents content={video.description} />}</p>}
                                 <div className={`block ${video.description && "pt-4"}`}>
                                     {video?.tags && video.tags.map((tag, index) => (<span key={index} className="inline-block px-2 py-1 bg-primary/20 text-primary text-xs rounded-md mr-2">{tag}</span>))}

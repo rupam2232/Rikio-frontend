@@ -271,7 +271,7 @@ const PlaylistVideo = () => {
                                 </span>
                             )}
                         </div>
-                        {playlistData.description && <p ref={descriptionRef} role="button" className={`w-full relative cursor-pointer text-sm text-primary/60 break-words break-all whitespace-pre-wrap transition-all ${showFullDescription ? "h-full" : "line-clamp-3 "}`} onClick={() => setShowFullDescription(!showFullDescription)}>{<ParseContents content={playlistData.description} />} {isDescOverflowing && <span className={`font-bold bottom-0 left-0 ${showFullDescription ? "block" : "absolute w-full bg-background"}`}>{showFullDescription ? "Show Less" : "...more"}</span>} </p>}
+                        {playlistData.description && <p ref={descriptionRef} role="button" className={`w-full relative cursor-pointer text-sm text-primary/60 break-words whitespace-pre-wrap transition-all ${showFullDescription ? "h-full" : "line-clamp-3 break-all"}`} onClick={() => setShowFullDescription(!showFullDescription)}>{<ParseContents content={playlistData.description} />} {isDescOverflowing && <span className={`font-bold bottom-0 left-0 ${showFullDescription ? "block" : "absolute w-full bg-background"}`}>{showFullDescription ? "Show Less" : "...more"}</span>} </p>}
                     </div>
                     <div className="mt-6 flex items-center gap-x-3">
                         <AccountHover user={{ ...playlistData.owner, subscribers: playlistData.owner.subscribersCount, isSubscribed: playlistData.owner.isSubscribed }} toggleSubscribe={toggleSubscribe}>

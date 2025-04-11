@@ -341,7 +341,7 @@ const AccountTab = ({ user, setRecheckUser }) => {
                     {(email.trim().toLowerCase() === user.email) ? <p className='text-xs mt-3 text-primary/80'>Type a different email to check if it's available</p> : !errors.email && isEmailChecked && (isEmailValid ? <p className='text-xs font-bold mt-3 text-green-500'>Email is available</p> : <p className='text-xs font-bold mt-3 text-red-500'>A user with same email already exists</p>)}
                 </div>
 
-                {isEmailValid && <div className={`w-full sm:w-1/2`}>
+                {(isEmailChecked && isEmailValid && !errors.email) && <div className={`w-full sm:w-1/2 transition-all duration-300 ease-in-out`}>
                     <p className='text-center sm:text-left'>Enter the 6-digit code sent to your email address.</p>
                     <p className='text-xs font-light text-primary/70 mb-3'>If the OTP is not found in your inbox, then check in your spam folder.</p>
 
